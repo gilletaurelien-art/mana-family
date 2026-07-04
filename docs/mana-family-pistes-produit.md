@@ -8,6 +8,8 @@
 
 **Protocole de test :** atelier avec 20 grands-parents. Réussite si 80 % envoient leur première transmission en moins de 2 minutes, sans aide. Mesurer aussi la frustration (échelle 1–5) et l'envie déclarée de recommencer.
 
+**L'épreuve d'apaisement** (Corvus) — mesurer aussi ce que le premier contact *fait au corps* : posture, souffle, verbatim spontané dans les trois premières secondes. La question n'est pas « est-ce qu'elle y arrive » mais « est-ce que ça l'apaise ». Une app familiale qui stresse a échoué même si elle fonctionne.
+
 **Pistes :**
 
 * **Kit d'onboarding physique** — un coffret papier + QR code, offert en cadeau : « Mamie, voici ton Cercle ». L'entrée dans le produit est un objet qu'on reçoit, pas une app qu'on télécharge.

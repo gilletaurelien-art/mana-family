@@ -213,18 +213,124 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 .empty { text-align: center; color: var(--brume); font-style: italic; margin-top: 3rem; line-height: 1.7; font-family: var(--serif); }
 
-/* Le bouton Transmettre — pièce de laiton flottante */
-.transmit-fab {
+/* ============================================================
+   LE CIEL — la constellation respire (corrections Corvus + Gemini)
+   Les astres dérivent comme des navires au mouillage ; la lueur
+   respire sur un cycle de 12 s, le rythme d'un sommeil paisible.
+   ============================================================ */
+
+.ciel { position: relative; height: 50vh; min-height: 330px; margin-top: 0.4rem; }
+
+.astre-ciel {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  animation: derive ease-in-out infinite alternate;
+}
+
+@keyframes derive {
+  from { margin-top: -7px; margin-left: -5px; }
+  to   { margin-top: 7px;  margin-left: 5px; }
+}
+
+.initiale {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: var(--carte);
+  border: 1px solid var(--filet);
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--etoile);
+  position: relative;
+}
+
+/* La lueur respirante : opacité 15 % → 35 %, cycle 12 s. Jamais de pulse, jamais d'appel. */
+.halo .initiale::before {
+  content: '';
+  position: absolute;
+  inset: -38%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 184, 66, 0.35) 0%, rgba(229, 184, 66, 0) 70%);
+  filter: blur(8px);
+  z-index: -1;
+  pointer-events: none;
+  animation: respire 12s ease-in-out infinite;
+}
+
+@keyframes respire {
+  0%, 100% { opacity: 0.43; }
+  50%      { opacity: 1; }
+}
+
+.prenom { font-size: 0.8rem; color: var(--brume); font-family: var(--sans); }
+
+/* L'État du Ciel — un bulletin météo affectif : une phrase, nue */
+.etat-ciel {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px dashed var(--filet);
+  border-radius: 0;
+  margin-top: 0.5rem;
+  padding: 1.1rem 0.5rem;
+  color: var(--encre);
+  font-size: 1.08rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Le galet — une invitation, pas un ordre. Concave, poli par la mer. */
+.galet {
   position: fixed;
-  bottom: 1.4rem;
+  bottom: 1.2rem;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(160deg, #f0cd6b, var(--or-mana) 45%, var(--or-sombre));
-  color: var(--noir-atlantique);
-  font-weight: 700;
-  font-size: 1.05rem;
-  border: 1px solid rgba(255, 245, 214, 0.55);
-  border-radius: 999px;
-  padding: 0.9rem 2.6rem;
-  box-shadow: inset 0 1px 0 rgba(255, 250, 230, 0.55), 0 6px 24px rgba(229, 184, 66, 0.3);
+  width: 160px;
+  min-height: 64px;
+  border-radius: 50% / 46%;
+  background: radial-gradient(ellipse at 50% 28%, rgba(234, 230, 223, 0.14), rgba(234, 230, 223, 0.04) 72%);
+  border: 1px solid var(--filet);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  transition: transform 0.35s ease;
+}
+.galet:active { transform: translateX(-50%) scale(1.07); } /* l'onde dans l'eau, pas le clic sec */
+
+.galet-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--or-mana);
+  box-shadow: 0 0 12px 4px rgba(229, 184, 66, 0.5);
+  animation: respire 12s ease-in-out infinite;
+}
+
+.galet-mot {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brume);
+}
+
+@media (prefers-color-scheme: light) {
+  .galet { box-shadow: inset 0 3px 10px rgba(43, 82, 117, 0.12); background: radial-gradient(ellipse at 50% 28%, rgba(234, 230, 223, 0.9), rgba(234, 230, 223, 0.5) 72%); }
+}
+
+/* Le calme est aussi un droit du corps : si le système demande moins de
+   mouvement, le ciel se fige sans rien perdre. */
+@media (prefers-reduced-motion: reduce) {
+  .astre-ciel, .halo .initiale::before, .galet-dot { animation: none; }
 }

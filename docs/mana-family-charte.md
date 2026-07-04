@@ -33,6 +33,18 @@ Les cinq soins sont des variantes **sourdes, jamais saturées** : santé et éco
 - Livres et coffrets : reliure **toile de lin brut** ou **cuir bleu marine mat**, marquage à chaud **or/laiton**.
 - La clé des archives (le Legs) : une vraie clé en **bronze ou laiton lourd**, gravée aux coordonnées de la Constellation, dans son écrin de bois.
 
+## L'accueil : le Ciel (corrections Corvus, retaillées par Gemini, codées le 05/07)
+
+Trois zones immuables — identité (20 %), la Constellation (60 %), l'État du Ciel (20 %) — et le galet.
+
+- **La constellation respire.** Les astres ne sont pas une grille ni un organigramme : ellipse brisée (l'orbite s'élargit avec le Cercle), dérive lente en `ease-in-out alternate` (9–16 s, déphasés) comme des navires au mouillage. `prefers-reduced-motion` fige le ciel sans rien perdre.
+- **La lueur respire, elle n'appelle pas.** Halo radial Or Mana, opacité 15 % → 35 % sur un cycle de **12 secondes** — le rythme d'un sommeil paisible. Jamais de pulse, jamais de clignotement.
+- **L'État du Ciel** remplace toute timeline : une seule phrase, nue, sans icône — un **bulletin météo affectif**, pas un rapport d'activité. « La constellation veille sur Jules. » / « Un souvenir a été déposé dans le cercle. » / « Douceur sur votre constellation ce soir. » La phrase est aussi la porte du fil de vie.
+- **Le galet** remplace le FAB : ellipse concave translucide, ombre intérieure, un point lumineux Or Mana qui respire — un astre en devenir, pas un « + ». À l'appui : dilatation douce (l'onde dans l'eau), pas de vibration sèche. Le mot « Transmettre » reste inscrit en petites capitales : l'invitation doit rester lisible pour des yeux de 78 ans — la poésie ne prime jamais sur la grand-mère.
+- **La mission en 15 secondes** : ouvrir, voir la lueur, lire la phrase, refermer apaisé. Si l'application a rempli sa mission sans qu'aucun bouton ne soit pressé, elle a gagné.
+
+**L'épreuve d'apaisement** (Corvus) : la vraie mesure du premier contact n'est pas « est-ce que ça marche » mais **« est-ce que ça apaise »**. Mana Family n'est pas une interface, c'est un rythme.
+
 ## Notes d'implémentation
 
 - Mode nuit par défaut, mode jour via `prefers-color-scheme` — le jour servira de base à l'interface **Veilleuse** (grands-parents).

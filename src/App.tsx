@@ -3,10 +3,12 @@ import type { Astre, Constellation, Role, TransmissionKind } from './types'
 import { KINDS, ROLES } from './types'
 import { found, load, transmit, veiller } from './store'
 
+type Vue = { ecran: 'ciel' } | { ecran: 'frise'; aboutId: string | null } | { ecran: 'composer' }
+
 export default function App() {
   const [constellation, setConstellation] = useState<Constellation | null>(() => load())
   const [meId, setMeId] = useState<string | null>(null)
-  const [composing, setComposing] = useState(false)
+  const [vue, setVue] = useState<Vue>({ ecran: 'ciel' })
 
   if (!constellation) {
     return <Fondation onFound={(c) => setConstellation(c)} />
@@ -33,32 +35,120 @@ export default function App() {
     )
   }
 
-  if (composing) {
+  if (vue.ecran === 'composer') {
     return (
       <Composer
         constellation={constellation}
         me={me}
         onDone={(next) => {
           if (next) setConstellation(next)
-          setComposing(false)
+          setVue({ ecran: 'ciel' })
         }}
       />
     )
   }
+
+  if (vue.ecran === 'frise') {
+    return (
+      <FriseVue
+        constellation={constellation}
+        me={me}
+        aboutId={vue.aboutId}
+        onRetour={() => setVue({ ecran: 'ciel' })}
+        onVeiller={(txId) => setConstellation(veiller(constellation, txId, me.id))}
+      />
+    )
+  }
+
+  return (
+    <Ciel
+      constellation={constellation}
+      me={me}
+      onChanger={() => setMeId(null)}
+      onOuvrirFrise={(aboutId) => setVue({ ecran: 'frise', aboutId })}
+      onTransmettre={() => setVue({ ecran: 'composer' })}
+    />
+  )
+}
+
+/* ---------- Le Ciel — la constellation respire, l'État du Ciel murmure ---------- */
+
+function etatDuCiel(c: Constellation): string {
+  if (c.transmissions.length === 0) return 'Le ciel attend sa première étoile.'
+  const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
+  if (veillee) {
+    const nom = c.astres.find((a) => a.id === veillee.aboutId)?.name
+    if (nom) return `La constellation veille sur ${nom}.`
+  }
+  if (c.transmissions[0].kind === 'souvenir') return 'Un souvenir a été déposé dans le cercle.'
+  return 'Douceur sur votre constellation ce soir.'
+}
+
+function Ciel({
+  constellation,
+  me,
+  onChanger,
+  onOuvrirFrise,
+  onTransmettre,
+}: {
+  constellation: Constellation
+  me: Astre
+  onChanger: () => void
+  onOuvrirFrise: (aboutId: string | null) => void
+  onTransmettre: () => void
+}) {
+  const n = constellation.astres.length
+  // Un astre a sa lueur si une transmission à son sujet a été veillée.
+  const halos = new Set(
+    constellation.transmissions
+      .filter((t) => t.aboutId && Object.keys(t.veilles).length > 0)
+      .map((t) => t.aboutId as string),
+  )
 
   return (
     <div className="shell">
       <header className="sky">
         <h1>{constellation.name}</h1>
         <p className="whisper">
-          {me.name} · <button className="link" onClick={() => setMeId(null)}>changer</button>
+          {me.name} · <button className="link" onClick={onChanger}>changer</button>
         </p>
       </header>
 
-      <Frise constellation={constellation} me={me} onVeiller={(txId) => setConstellation(veiller(constellation, txId, me.id))} />
+      <div className="ciel">
+        {constellation.astres.map((a, i) => {
+          // Ellipse brisée, jamais une grille : l'orbite s'élargit avec le Cercle.
+          const angle = (i / n) * 2 * Math.PI - Math.PI / 2 + (i % 2 ? 0.35 : -0.2)
+          const r = 26 + (a.circle - 1) * 10 + (i % 3) * 2
+          const left = 50 + r * Math.cos(angle)
+          const top = 48 + r * 0.8 * Math.sin(angle)
+          return (
+            <button
+              key={a.id}
+              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''}`}
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                animationDuration: `${9 + (i % 5) * 1.7}s`,
+                animationDelay: `${-(i * 2.3)}s`,
+              }}
+              onClick={() => onOuvrirFrise(a.id)}
+            >
+              <span className="initiale">{a.name[0]}</span>
+              <span className="prenom">{a.name}</span>
+            </button>
+          )
+        })}
+      </div>
 
-      <button className="transmit-fab" onClick={() => setComposing(true)}>
-        Transmettre
+      {/* L'État du Ciel — un bulletin météo affectif, jamais un journal de logs */}
+      <button className="etat-ciel" onClick={() => onOuvrirFrise(null)}>
+        {etatDuCiel(constellation)}
+      </button>
+
+      {/* Le galet — une invitation, pas un ordre. Pas de « + ». */}
+      <button className="galet" onClick={onTransmettre} aria-label="Transmettre">
+        <span className="galet-dot" />
+        <span className="galet-mot">Transmettre</span>
       </button>
     </div>
   )
@@ -224,57 +314,74 @@ function Composer({
 
 /* ---------- Le fil de vie — se contemple, ne se scrolle pas frénétiquement ---------- */
 
-function Frise({
+function FriseVue({
   constellation,
   me,
+  aboutId,
+  onRetour,
   onVeiller,
 }: {
   constellation: Constellation
   me: Astre
+  aboutId: string | null
+  onRetour: () => void
   onVeiller: (txId: string) => void
 }) {
+  const sujet = aboutId ? constellation.astres.find((a) => a.id === aboutId) : null
   const nameOf = (id: string | null) => constellation.astres.find((a) => a.id === id)?.name ?? null
-
-  if (constellation.transmissions.length === 0) {
-    return <p className="empty">Le ciel est calme. La première transmission allumera la première étoile.</p>
-  }
+  const txs = constellation.transmissions.filter(
+    (t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId,
+  )
 
   return (
-    <ul className="frise">
-      {constellation.transmissions.map((t) => {
-        const k = KINDS.find((x) => x.kind === t.kind)!
-        const mine = t.authorId === me.id
-        const forMe = t.recipientIds.includes(me.id)
-        const iVeilled = Boolean(t.veilles[me.id])
-        const lueurs = Object.keys(t.veilles).map((id) => nameOf(id)).filter(Boolean) as string[]
+    <div className="shell">
+      <header className="sky">
+        <h1>{sujet ? sujet.name : 'Le fil de vie'}</h1>
+        <p className="whisper">
+          <button className="link" onClick={onRetour}>← retour au ciel</button>
+        </p>
+      </header>
 
-        return (
-          <li key={t.id} className={`tx kind-${t.kind}`}>
-            <div className="tx-head">
-              <span className="tx-kind">
-                {k.emoji} {k.label}
-              </span>
-              <span className="tx-when">
-                {new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-              </span>
-            </div>
-            <p className="tx-body">{t.body}</p>
-            <div className="tx-foot">
-              <span className="tx-meta">
-                {nameOf(t.authorId)}
-                {t.aboutId ? ` · au sujet de ${nameOf(t.aboutId)}` : ''}
-              </span>
-              {/* La lueur, asymétrique : on montre qui a veillé, jamais qui manque. */}
-              {lueurs.length > 0 && <span className="lueur">✦ {lueurs.join(', ')}</span>}
-            </div>
-            {forMe && !mine && !iVeilled && (
-              <button className="veiller" onClick={() => onVeiller(t.id)}>
-                J'ai veillé
-              </button>
-            )}
-          </li>
-        )
-      })}
-    </ul>
+      {txs.length === 0 ? (
+        <p className="empty">Le ciel est calme. La première transmission allumera la première étoile.</p>
+      ) : (
+        <ul className="frise">
+          {txs.map((t) => {
+            const k = KINDS.find((x) => x.kind === t.kind)!
+            const mine = t.authorId === me.id
+            const forMe = t.recipientIds.includes(me.id)
+            const iVeilled = Boolean(t.veilles[me.id])
+            const lueurs = Object.keys(t.veilles).map((id) => nameOf(id)).filter(Boolean) as string[]
+
+            return (
+              <li key={t.id} className={`tx kind-${t.kind}`}>
+                <div className="tx-head">
+                  <span className="tx-kind">
+                    {k.emoji} {k.label}
+                  </span>
+                  <span className="tx-when">
+                    {new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                  </span>
+                </div>
+                <p className="tx-body">{t.body}</p>
+                <div className="tx-foot">
+                  <span className="tx-meta">
+                    {nameOf(t.authorId)}
+                    {t.aboutId ? ` · au sujet de ${nameOf(t.aboutId)}` : ''}
+                  </span>
+                  {/* La lueur, asymétrique : on montre qui a veillé, jamais qui manque. */}
+                  {lueurs.length > 0 && <span className="lueur">✦ {lueurs.join(', ')}</span>}
+                </div>
+                {forMe && !mine && !iVeilled && (
+                  <button className="veiller" onClick={() => onVeiller(t.id)}>
+                    J'ai veillé
+                  </button>
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
   )
 }
