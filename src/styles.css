@@ -82,6 +82,16 @@ body {
   padding: 1.1rem;
   margin-top: 1rem;
   backdrop-filter: blur(8px);
+  animation: onde 0.45s ease-out; /* l'espace s'ouvre comme une onde, pas comme un pop-up */
+}
+
+@keyframes onde {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none; }
 }
 .card h2 {
   font-size: 0.78rem;
@@ -148,7 +158,20 @@ button:disabled { opacity: 0.35; cursor: default; }
   opacity: 1;
 }
 
-.link { background: none; border: none; color: var(--or-mana); padding: 0; font-size: inherit; text-decoration: underline; }
+/* Les passages discrets — jamais un hyperlien de 1999 */
+.link {
+  background: none;
+  border: none;
+  color: var(--brume);
+  padding: 0 0 1px;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--filet);
+  border-radius: 0;
+}
 
 .row { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
 .row input { flex: 1; }
@@ -293,7 +316,7 @@ button:disabled { opacity: 0.35; cursor: default; }
   50%      { opacity: 1; }
 }
 
-.prenom { font-size: 0.8rem; color: var(--brume); font-family: var(--sans); }
+.prenom { font-size: 0.8rem; color: var(--brume); font-family: var(--sans); opacity: 0.72; } /* l'astre brille plus fort que son étiquette */
 
 /* L'État du Ciel — un bulletin météo affectif : une phrase, nue */
 .etat-ciel {
@@ -332,7 +355,14 @@ button:disabled { opacity: 0.35; cursor: default; }
   gap: 0.25rem;
   transition: transform 0.35s ease;
 }
-.galet:active { transform: translateX(-50%) scale(1.07); } /* l'onde dans l'eau, pas le clic sec */
+/* La marée montante — jamais d'ombre portée : le halo interne se dilate */
+.galet:active {
+  transform: translateX(-50%) scale(1.07);
+  background: radial-gradient(ellipse at 50% 28%, rgba(234, 230, 223, 0.22), rgba(234, 230, 223, 0.08) 72%);
+}
+.galet:active .galet-dot {
+  box-shadow: 0 0 22px 9px rgba(229, 184, 66, 0.55);
+}
 
 .galet-dot {
   width: 10px; height: 10px;

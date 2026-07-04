@@ -116,11 +116,13 @@ function Ciel({
 
       <div className="ciel">
         {constellation.astres.map((a, i) => {
-          // Ellipse brisée, jamais une grille : l'orbite s'élargit avec le Cercle.
-          const angle = (i / n) * 2 * Math.PI - Math.PI / 2 + (i % 2 ? 0.35 : -0.2)
-          const r = 26 + (a.circle - 1) * 10 + (i % 3) * 2
-          const left = 50 + r * Math.cos(angle)
-          const top = 48 + r * 0.8 * Math.sin(angle)
+          // Ellipse brisée, jamais une grille : l'orbite s'élargit avec le Cercle,
+          // et chaque astre porte un écart propre, semé par son nom — un ciel n'a pas d'angles droits.
+          const graine = [...a.id].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) % 9973, 7)
+          const angle = (i / n) * 2 * Math.PI - Math.PI / 2 + ((graine % 100) / 100 - 0.5) * 0.9
+          const r = 24 + (a.circle - 1) * 10 + (graine % 7)
+          const left = 50 + r * Math.cos(angle) + ((graine % 11) - 5) * 0.8
+          const top = 48 + r * 0.8 * Math.sin(angle) + ((graine % 13) - 6) * 0.7
           return (
             <button
               key={a.id}
