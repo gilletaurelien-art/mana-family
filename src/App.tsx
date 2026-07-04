@@ -195,7 +195,7 @@ function Fondation({ onFound }: { onFound: (c: Constellation) => void }) {
               </option>
             ))}
           </select>
-          <button onClick={add}>+</button>
+          <button onClick={add} aria-label="Ajouter cet astre" className="ajout-astre">✦</button>
         </div>
 
         <ul className="astre-list">
