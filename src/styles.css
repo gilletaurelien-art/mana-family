@@ -1,65 +1,119 @@
-/* Mana Family — ciel calme. Pas de rouge d'urgence, pas de badge, pas de compteur. */
+/* ============================================================
+   MANA FAMILY — charte « Haute Mer & Clarté calme » (Gemini, 05/07)
+   Pas de rouge d'urgence, pas de badge, pas de compteur, pas de blanc
+   chirurgical. Les séparations sont des routes maritimes (pointillés).
+   Nuit = Noir Atlantique (défaut) · Jour = Écume & Toile de Lin.
+   ============================================================ */
 
 :root {
-  --nuit: #0b1026;
-  --nuit-2: #141b3a;
-  --voile: #1e2750;
-  --etoile: #f5e9c8;
-  --lueur: #e8c15a;
-  --brume: #9aa3c7;
-  --encre: #eef1ff;
-  --sante: #7fc8a9;
-  --ecole: #8ab4e8;
-  --emotionnel: #e8a4b8;
-  --logistique: #b0a8e8;
-  --souvenir: #e8c15a;
+  /* Les fonds & structures — le calme */
+  --noir-atlantique: #0b131f;
+  --cale: #141f30;            /* un cran au-dessus du fond, pour les cartes */
+  --ecume: #f8f9fa;
+  --toile-de-lin: #eae6df;
+
+  /* Les couleurs de vie — la présence & le soin */
+  --or-mana: #e5b842;
+  --or-sombre: #c49a30;
+  --bleu-horizon: #2b5275;
+
+  /* Encres */
+  --encre: #edf1f6;
+  --brume: #93a3b8;
+  --filet: rgba(234, 230, 223, 0.16);      /* les routes maritimes */
+  --etoile: #f5edd8;
+
+  /* Les cinq soins — sourds, jamais saturés */
+  --sante: #7db8d8;
+  --ecole: #5f88ad;
+  --emotionnel: #d8a3b5;
+  --logistique: #b9b0a2;
+  --souvenir: #e5b842;
+
+  --fond: var(--noir-atlantique);
+  --carte: rgba(20, 31, 48, 0.8);
+  --champ: #101a29;
+
+  /* L'ancrage (mémoire, serif) et la transmission (présence, sans-serif) */
+  --serif: 'Iowan Old Style', 'Palatino', 'Caslon', Georgia, serif;
+  --sans: 'Inter', 'Avenir Next', -apple-system, 'Segoe UI', system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --fond: var(--ecume);
+    --carte: #ffffff;
+    --champ: var(--toile-de-lin);
+    --encre: #24313f;
+    --brume: #6d7a88;
+    --filet: rgba(43, 82, 117, 0.22);
+    --etoile: var(--bleu-horizon);
+  }
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: radial-gradient(ellipse at 50% -20%, var(--voile), var(--nuit) 60%);
+  background: radial-gradient(ellipse at 50% -20%, color-mix(in srgb, var(--fond) 82%, var(--bleu-horizon)), var(--fond) 60%);
   min-height: 100vh;
   color: var(--encre);
-  font-family: 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--sans);
 }
 
 .shell { max-width: 480px; margin: 0 auto; padding: 1.2rem 1rem 6rem; }
 
+/* Le ciel — les titres portent la mémoire, donc le serif */
 .sky { text-align: center; padding: 1.2rem 0 0.6rem; }
-.sky h1 { margin: 0; font-size: 1.5rem; letter-spacing: 0.04em; color: var(--etoile); font-weight: 600; }
-.whisper { margin: 0.3rem 0 0; color: var(--brume); font-size: 0.85rem; font-style: italic; }
+.sky h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.65rem;
+  letter-spacing: 0.02em;
+  color: var(--etoile);
+  font-weight: 600;
+}
+.whisper { margin: 0.35rem 0 0; color: var(--brume); font-size: 0.85rem; font-style: italic; }
 
 .card {
-  background: rgba(20, 27, 58, 0.75);
-  border: 1px solid rgba(245, 233, 200, 0.12);
+  background: var(--carte);
+  border: 1px solid var(--filet);
   border-radius: 18px;
   padding: 1.1rem;
   margin-top: 1rem;
   backdrop-filter: blur(8px);
 }
-.card h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--brume); margin: 1.1rem 0 0.5rem; font-weight: 600; }
+.card h2 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--brume);
+  margin: 1.2rem 0 0.5rem;
+  font-weight: 600;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px dotted var(--filet); /* la route maritime */
+}
 .card h2:first-child { margin-top: 0; }
 
 input, select, textarea {
   width: 100%;
-  background: var(--nuit-2);
-  border: 1px solid rgba(245, 233, 200, 0.15);
+  background: var(--champ);
+  border: 1px solid var(--filet);
   border-radius: 12px;
   color: var(--encre);
   padding: 0.7rem 0.8rem;
   font-size: 1rem;
-  font-family: inherit;
+  font-family: var(--sans);
 }
-textarea { resize: vertical; margin-top: 0.8rem; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--lueur); }
+textarea { resize: vertical; margin-top: 0.8rem; line-height: 1.5; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--or-mana); }
+::placeholder { color: var(--brume); opacity: 0.7; }
 
 button {
-  font-family: inherit;
+  font-family: var(--sans);
   font-size: 0.95rem;
-  border: 1px solid rgba(245, 233, 200, 0.2);
-  background: var(--nuit-2);
+  border: 1px solid var(--filet);
+  background: var(--champ);
   color: var(--encre);
   border-radius: 12px;
   padding: 0.6rem 1rem;
@@ -67,51 +121,60 @@ button {
 }
 button:disabled { opacity: 0.35; cursor: default; }
 
+/* Le laiton — bouton principal, comme une pièce ancienne */
 .primary {
-  background: linear-gradient(135deg, #caa64a, var(--lueur));
-  color: var(--nuit);
+  background: linear-gradient(160deg, #f0cd6b, var(--or-mana) 45%, var(--or-sombre));
+  color: var(--noir-atlantique);
   font-weight: 700;
-  border: none;
+  border: 1px solid rgba(255, 245, 214, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 250, 230, 0.55), 0 2px 10px rgba(229, 184, 66, 0.25);
   width: 100%;
   padding: 0.85rem;
   margin-top: 1.1rem;
 }
 
-.link { background: none; border: none; color: var(--lueur); padding: 0; font-size: inherit; text-decoration: underline; }
+.link { background: none; border: none; color: var(--or-mana); padding: 0; font-size: inherit; text-decoration: underline; }
 
 .row { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
 .row input { flex: 1; }
 .row select { width: auto; }
 
 .astre-list { list-style: none; padding: 0; margin: 0.6rem 0 0; }
-.astre-list li { padding: 0.45rem 0.2rem; border-bottom: 1px dashed rgba(245, 233, 200, 0.1); }
-.astre-list em { color: var(--brume); font-size: 0.8rem; }
+.astre-list li { padding: 0.45rem 0.2rem; border-bottom: 1px dotted var(--filet); font-family: var(--serif); font-size: 1.02rem; }
+.astre-list em { color: var(--brume); font-size: 0.78rem; font-family: var(--sans); font-style: normal; }
 
 .astre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-top: 1.4rem; }
-.astre-pick { padding: 1.3rem 0.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-size: 1.05rem; border-radius: 16px; }
+.astre-pick {
+  padding: 1.3rem 0.5rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  font-size: 1.08rem;
+  font-family: var(--serif);
+  border-radius: 16px;
+  background: var(--carte);
+}
 
 .astre-dot {
   width: 10px; height: 10px; border-radius: 50%;
-  background: var(--etoile);
+  background: var(--or-mana);
   display: inline-block;
-  box-shadow: 0 0 8px 2px rgba(245, 233, 200, 0.45);
+  box-shadow: 0 0 10px 3px rgba(229, 184, 66, 0.4);
 }
 
 /* Composer */
 .kind-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.45rem; }
 .kind { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.6rem 0.2rem; font-size: 0.72rem; border-radius: 14px; }
 .kind-emoji { font-size: 1.3rem; }
-.kind.on { border-color: var(--lueur); background: rgba(232, 193, 90, 0.12); }
+.kind.on { border-color: var(--or-mana); background: rgba(229, 184, 66, 0.12); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
 .chip { padding: 0.4rem 0.85rem; border-radius: 999px; font-size: 0.88rem; color: var(--brume); }
-.chip.on { color: var(--nuit); background: var(--etoile); border-color: var(--etoile); font-weight: 600; }
+.chip.on { color: var(--noir-atlantique); background: var(--toile-de-lin); border-color: var(--toile-de-lin); font-weight: 600; }
 
-/* Frise */
+/* Le fil de vie — se contemple, ne se scrolle pas frénétiquement */
 .frise { list-style: none; padding: 0; margin: 1.2rem 0 0; display: flex; flex-direction: column; gap: 0.8rem; }
 .tx {
-  background: rgba(20, 27, 58, 0.75);
-  border: 1px solid rgba(245, 233, 200, 0.1);
+  background: var(--carte);
+  border: 1px solid var(--filet);
   border-left: 3px solid var(--brume);
   border-radius: 14px;
   padding: 0.85rem 1rem;
@@ -123,35 +186,45 @@ button:disabled { opacity: 0.35; cursor: default; }
 .tx.kind-souvenir { border-left-color: var(--souvenir); }
 
 .tx-head { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--brume); }
-.tx-body { margin: 0.45rem 0; line-height: 1.45; }
-.tx-foot { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: var(--brume); }
+.tx-body { margin: 0.45rem 0; line-height: 1.5; font-size: 1rem; }
+.tx-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.78rem; color: var(--brume);
+  padding-top: 0.4rem;
+  border-top: 1px dotted var(--filet);
+}
 
+/* La lueur — un halo chaud, jamais un point rouge, jamais un chiffre */
 .lueur {
-  color: var(--lueur);
-  text-shadow: 0 0 10px rgba(232, 193, 90, 0.6);
+  color: var(--or-mana);
+  text-shadow: 0 0 12px rgba(229, 184, 66, 0.65);
 }
 
 .veiller {
   margin-top: 0.7rem;
   width: 100%;
-  border-color: rgba(232, 193, 90, 0.4);
-  color: var(--lueur);
-  background: rgba(232, 193, 90, 0.06);
+  border-color: rgba(229, 184, 66, 0.4);
+  color: var(--or-sombre);
+  background: rgba(229, 184, 66, 0.07);
+}
+@media (prefers-color-scheme: dark) {
+  .veiller { color: var(--or-mana); }
 }
 
-.empty { text-align: center; color: var(--brume); font-style: italic; margin-top: 3rem; line-height: 1.6; }
+.empty { text-align: center; color: var(--brume); font-style: italic; margin-top: 3rem; line-height: 1.7; font-family: var(--serif); }
 
+/* Le bouton Transmettre — pièce de laiton flottante */
 .transmit-fab {
   position: fixed;
   bottom: 1.4rem;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #caa64a, var(--lueur));
-  color: var(--nuit);
+  background: linear-gradient(160deg, #f0cd6b, var(--or-mana) 45%, var(--or-sombre));
+  color: var(--noir-atlantique);
   font-weight: 700;
   font-size: 1.05rem;
-  border: none;
+  border: 1px solid rgba(255, 245, 214, 0.55);
   border-radius: 999px;
   padding: 0.9rem 2.6rem;
-  box-shadow: 0 6px 24px rgba(232, 193, 90, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 250, 230, 0.55), 0 6px 24px rgba(229, 184, 66, 0.3);
 }
