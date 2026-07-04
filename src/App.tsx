@@ -1,7 +1,20 @@
 import { useState } from 'react'
 import type { Astre, Constellation, Role, TransmissionKind } from './types'
 import { KINDS, ROLES } from './types'
-import { found, load, transmit, veiller } from './store'
+import { found, load, setAvatar, transmit, veiller } from './store'
+
+/** Portrait : recadré carré, réduit à 128px — jamais l'original dans la mémoire locale. */
+async function preparerPortrait(file: File): Promise<string> {
+  const img = await createImageBitmap(file)
+  const size = 128
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')!
+  const s = Math.min(img.width, img.height)
+  ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size)
+  return canvas.toDataURL('image/jpeg', 0.82)
+}
 
 type Vue = { ecran: 'ciel' } | { ecran: 'frise'; aboutId: string | null } | { ecran: 'composer' }
 
@@ -56,6 +69,7 @@ export default function App() {
         aboutId={vue.aboutId}
         onRetour={() => setVue({ ecran: 'ciel' })}
         onVeiller={(txId) => setConstellation(veiller(constellation, txId, me.id))}
+        onPortrait={(astreId, dataUrl) => setConstellation(setAvatar(constellation, astreId, dataUrl))}
       />
     )
   }
@@ -135,7 +149,13 @@ function Ciel({
               }}
               onClick={() => onOuvrirFrise(a.id)}
             >
-              <span className="initiale">{a.name[0]}</span>
+              <span className="astre-core">
+                {a.avatarUrl ? (
+                  <img src={a.avatarUrl} alt="" className="astre-photo" />
+                ) : (
+                  <span className="astre-pure-light" />
+                )}
+              </span>
               <span className="prenom">{a.name}</span>
             </button>
           )
@@ -322,12 +342,14 @@ function FriseVue({
   aboutId,
   onRetour,
   onVeiller,
+  onPortrait,
 }: {
   constellation: Constellation
   me: Astre
   aboutId: string | null
   onRetour: () => void
   onVeiller: (txId: string) => void
+  onPortrait: (astreId: string, dataUrl: string) => void
 }) {
   const sujet = aboutId ? constellation.astres.find((a) => a.id === aboutId) : null
   const nameOf = (id: string | null) => constellation.astres.find((a) => a.id === id)?.name ?? null
@@ -338,9 +360,27 @@ function FriseVue({
   return (
     <div className="shell">
       <header className="sky">
+        {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
         <h1>{sujet ? sujet.name : 'Le fil de vie'}</h1>
         <p className="whisper">
           <button className="link" onClick={onRetour}>← retour au ciel</button>
+          {sujet && (
+            <>
+              {' · '}
+              <label className="link portrait-label">
+                {sujet.avatarUrl ? 'changer le portrait' : 'poser un portrait'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0]
+                    if (f) onPortrait(sujet.id, await preparerPortrait(f))
+                  }}
+                />
+              </label>
+            </>
+          )}
         </p>
       </header>
 

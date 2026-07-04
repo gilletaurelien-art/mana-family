@@ -7,6 +7,8 @@ export interface Astre {
   name: string
   role: Role
   circle: 1 | 2 | 3
+  /** Portrait argentique (dataURL 128px). Sans lui, l'astre est une lumière pure. */
+  avatarUrl?: string
 }
 
 export interface Transmission {

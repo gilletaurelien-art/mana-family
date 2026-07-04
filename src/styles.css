@@ -287,34 +287,85 @@ button:disabled { opacity: 0.35; cursor: default; }
   to   { margin-top: 7px;  margin-left: 5px; }
 }
 
-.initiale {
-  width: 58px; height: 58px;
-  border-radius: 50%;
-  background: var(--carte);
-  border: 1px solid var(--filet);
-  font-family: var(--serif);
-  font-size: 1.5rem;
+/* Le cœur de l'astre : lumière pure (sans portrait) ou aura photographique.
+   La zone tactile reste à 64px quoi qu'il arrive — le doigt ne vise pas une étincelle. */
+.astre-core {
+  width: 64px; height: 64px;
   display: flex; align-items: center; justify-content: center;
-  color: var(--etoile);
   position: relative;
 }
 
-/* La lueur respirante : opacité 15 % → 35 %, cycle 12 s. Jamais de pulse, jamais d'appel. */
-.halo .initiale::before {
+/* L'astre nu — une étincelle tamisée, lointaine mais bien vivante */
+.astre-pure-light {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(248, 249, 250, 0.4);
+  box-shadow: 0 0 10px rgba(248, 249, 250, 0.2);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Veillé, l'astre nu se dilate en mini-soleil */
+.halo .astre-pure-light {
+  width: 14px; height: 14px;
+  background: var(--or-mana);
+  box-shadow: 0 0 20px rgba(229, 184, 66, 0.6);
+}
+
+/* Le visage — tirage argentique doux, jamais de filtre flatteur */
+.astre-photo {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0.75;
+  filter: grayscale(100%) contrast(90%) brightness(95%);
+  transition: all 0.8s ease;
+  position: relative;
+  z-index: 2;
+}
+
+/* Veillé, le visage émerge de la nuit, rétroéclairé par l'Or Mana */
+.halo .astre-photo {
+  opacity: 0.95;
+  filter: grayscale(72%) contrast(94%) brightness(1);
+}
+
+/* La lueur gazeuse commune — respiration de 12 s, jamais de pulse, jamais d'appel */
+.halo .astre-core::before {
   content: '';
   position: absolute;
-  inset: -38%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90px; height: 90px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(229, 184, 66, 0.35) 0%, rgba(229, 184, 66, 0) 70%);
-  filter: blur(8px);
-  z-index: -1;
+  background: radial-gradient(circle, rgba(229, 184, 66, 0.35) 0%, rgba(11, 19, 31, 0) 70%);
+  z-index: 1;
   pointer-events: none;
-  animation: respire 12s ease-in-out infinite;
+  animation: respiration-gazeuse 12s ease-in-out infinite;
+}
+
+@keyframes respiration-gazeuse {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.95); }
+  50%      { opacity: 0.8; transform: translate(-50%, -50%) scale(1.08); }
 }
 
 @keyframes respire {
   0%, 100% { opacity: 0.43; }
   50%      { opacity: 1; }
+}
+
+/* Le portrait en tête de frise */
+.portrait-frise {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0.85;
+  filter: grayscale(100%) contrast(90%) brightness(95%);
+  margin-bottom: 0.4rem;
+}
+.portrait-label { cursor: pointer; }
+
+@media (prefers-color-scheme: light) {
+  .astre-pure-light { background: rgba(43, 82, 117, 0.55); box-shadow: 0 0 10px rgba(43, 82, 117, 0.25); }
 }
 
 .prenom { font-size: 0.8rem; color: var(--brume); font-family: var(--sans); opacity: 0.72; } /* l'astre brille plus fort que son étiquette */
@@ -387,5 +438,5 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* Le calme est aussi un droit du corps : si le système demande moins de
    mouvement, le ciel se fige sans rien perdre. */
 @media (prefers-reduced-motion: reduce) {
-  .astre-ciel, .halo .initiale::before, .galet-dot { animation: none; }
+  .astre-ciel, .halo .astre-core::before, .galet-dot { animation: none; }
 }

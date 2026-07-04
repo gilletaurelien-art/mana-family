@@ -39,6 +39,13 @@ export function transmit(
   return next
 }
 
+/** Poser un portrait sur un astre (dataURL déjà réduit — jamais l'original). */
+export function setAvatar(c: Constellation, astreId: string, avatarUrl: string): Constellation {
+  const next = { ...c, astres: c.astres.map((a) => (a.id === astreId ? { ...a, avatarUrl } : a)) }
+  save(next)
+  return next
+}
+
 /** Veiller : allume la lueur pour ce couple (transmission, astre). Jamais l'inverse. */
 export function veiller(c: Constellation, transmissionId: string, astreId: string): Constellation {
   const next = {
