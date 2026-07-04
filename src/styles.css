@@ -138,12 +138,12 @@ button:disabled { opacity: 0.35; cursor: default; }
   font-weight: 600;
   letter-spacing: 0.05em;
   border: none;
-  border-radius: 12px; /* aligné sur la géométrie des champs */
-  box-shadow: 0 0 15px rgba(229, 184, 66, 0.2);
+  border-radius: 24px; /* la rondeur rassurante des jetons */
+  box-shadow: 0 4px 15px rgba(229, 184, 66, 0.15);
   width: 100%;
   padding: 0.85rem;
   margin-top: 1.1rem;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 .primary:hover:not(:disabled) {
   background: #f1cc67;
@@ -174,6 +174,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 
 .row { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+.row button { border-radius: 24px; }
 .row input { flex: 1; }
 .row select { width: auto; }
 
@@ -210,12 +211,12 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* Composer */
 .kind-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.45rem; }
 .kind { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.6rem 0.2rem; font-size: 0.72rem; border-radius: 14px; }
-.kind-emoji { font-size: 1.3rem; }
+.kind-emoji { font-size: 1.3rem; filter: grayscale(25%) brightness(0.9); } /* fondre le plastique brillant dans la nuit — en attendant les glyphes gravés */
 .kind.on { border-color: var(--or-mana); background: rgba(229, 184, 66, 0.12); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
 .chip { padding: 0.4rem 0.85rem; border-radius: 999px; font-size: 0.88rem; color: var(--brume); }
-.chip.on { color: var(--noir-atlantique); background: var(--toile-de-lin); border-color: var(--toile-de-lin); font-weight: 600; }
+.chip.on { color: #15202e; background: rgba(234, 230, 223, 0.9); border-color: transparent; font-weight: 600; } /* Toile de Lin voilée — jamais de blanc cru la nuit */
 
 /* Le fil de vie — se contemple, ne se scrolle pas frénétiquement */
 .frise { list-style: none; padding: 0; margin: 1.2rem 0 0; display: flex; flex-direction: column; gap: 0.8rem; }
