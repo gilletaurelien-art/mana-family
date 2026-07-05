@@ -47,6 +47,8 @@ export interface Transmission {
   aboutId: string | null
   kind: TransmissionKind
   body: string
+  /** Le moment que la transmission CONCERNE (facultatif). Passé = souvenir, futur = organiser. */
+  happensOn?: string | null
   /** Projection publique : ce que l'appareil doit savoir, pas toute l'audience. */
   forMe: boolean
   /** Héritage local uniquement, utilisé pendant le hissage de l'incrément 1. */

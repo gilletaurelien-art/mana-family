@@ -73,6 +73,7 @@ type Phase =
   | { ecran: 'rejoindre'; retour?: 'jardin' }
   | { ecran: 'hisser' }
   | { ecran: 'ciel' }
+  | { ecran: 'chronologie' }
   | { ecran: 'galaxie' }
   | { ecran: 'jardin' }
   | { ecran: 'inviter' }
@@ -242,6 +243,16 @@ export default function App() {
     )
   }
 
+  if (phase.ecran === 'chronologie') {
+    return (
+      <ChronologieVue
+        ciel={ciel}
+        onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
+        onRetour={() => setPhase({ ecran: 'ciel' })}
+      />
+    )
+  }
+
   if (phase.ecran === 'jardin') {
     return (
       <JardinVue
@@ -287,6 +298,7 @@ export default function App() {
       onTransmettre={() => setPhase({ ecran: 'composer' })}
       onInviter={() => setPhase({ ecran: 'inviter' })}
       onGalaxie={() => setPhase({ ecran: 'galaxie' })}
+      onChronologie={() => setPhase({ ecran: 'chronologie' })}
       onJardin={() => setPhase({ ecran: 'jardin' })}
       onParametres={() => setPhase({ ecran: 'parametres' })}
     />
@@ -511,7 +523,7 @@ function etatDuCiel(c: CielData): string {
   return 'Douceur sur votre famille ce soir.'
 }
 
-function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onJardin, onParametres }: {
+function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onChronologie, onJardin, onParametres }: {
   ciel: CielData
   me: Astre
   horsLigne: boolean
@@ -519,6 +531,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
   onTransmettre: () => void
   onInviter: () => void
   onGalaxie: () => void
+  onChronologie: () => void
   onJardin: () => void
   onParametres: () => void
 }) {
@@ -560,7 +573,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
         })}
       </div>
 
-      <button className="etat-ciel" onClick={() => onOuvrirFrise(null)}>{etatDuCiel(ciel)}</button>
+      <button className="etat-ciel" onClick={onChronologie}>{etatDuCiel(ciel)}</button>
 
       <button className="galet" onClick={onTransmettre} aria-label="Transmettre">
         <span className="galet-dot" />
@@ -672,6 +685,95 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
   )
 }
 
+/* ---------- La chronologie — le fil du temps de la famille ---------- */
+
+const UN_JOUR = 86400000
+
+function ChronologieVue({ ciel, onOuvrirFrise, onRetour }: {
+  ciel: CielData
+  onOuvrirFrise: (aboutId: string | null) => void
+  onRetour: () => void
+}) {
+  const scroll = useRef<HTMLDivElement>(null)
+  const now = Date.now()
+
+  const items = ciel.transmissions
+    .map((t) => ({ t, ms: new Date(t.happensOn ?? t.createdAt).getTime(), date: t.happensOn ?? t.createdAt }))
+    .sort((a, b) => a.ms - b.ms)
+
+  const tous = [now, ...items.map((i) => i.ms)]
+  const min = Math.min(...tous) - 10 * UN_JOUR
+  const max = Math.max(...tous) + 10 * UN_JOUR
+  const jours = Math.max(1, (max - min) / UN_JOUR)
+  const largeur = Math.min(5200, Math.max(660, jours * 18))
+  const posX = (ms: number) => ((ms - min) / (max - min)) * largeur
+
+  useEffect(() => {
+    const el = scroll.current
+    if (el) el.scrollLeft = posX(now) - el.clientWidth / 2
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const court = (s: string) => (s.length > 24 ? s.slice(0, 23) + '…' : s)
+  const jourCourt = (iso: string) => new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+
+  // Anti-collision : ce qui partage (à peu près) une date s'empile de part et
+  // d'autre de l'horizon, au lieu de se chevaucher.
+  const SEUIL = 100, RANGEE = 64, ECART = 16
+  let clusterX = -Infinity, rang = 0
+  const places = items.map((it) => {
+    const x = posX(it.ms)
+    if (x - clusterX >= SEUIL) { clusterX = x; rang = 0 } else { rang += 1 }
+    const haut = rang % 2 === 0
+    const offset = ECART + Math.floor(rang / 2) * RANGEE
+    return { it, x, haut, offset, futur: it.ms > now }
+  })
+
+  return (
+    <div className="shell chrono-shell">
+      <header className="sky">
+        <h1>Le fil du temps</h1>
+        <p className="whisper">
+          souvenirs ← · aujourd'hui · → ce qui vient &nbsp;·&nbsp; <button className="link" onClick={onRetour}>← retour aux astres</button>
+        </p>
+      </header>
+
+      {items.length === 0 ? (
+        <p className="empty">Le temps de la famille est encore vierge. La première transmission y déposera une étoile.</p>
+      ) : (
+        <div className="chrono-scroll" ref={scroll}>
+          <div className="chrono-inner" style={{ width: `${largeur}px` }}>
+            <div className="chrono-horizon" />
+            <div className="chrono-maintenant" style={{ left: `${posX(now)}px` }}>
+              <span className="chrono-maintenant-mot">aujourd'hui</span>
+            </div>
+            {places.map(({ it, x, haut, offset, futur }) => (
+              <button
+                key={it.t.id}
+                className={`chrono-node ${futur ? 'futur' : ''}`}
+                style={{
+                  left: `${x}px`,
+                  color: `var(--${it.t.kind})`,
+                  ...(haut ? { bottom: `calc(50% + ${offset}px)` } : { top: `calc(50% + ${offset}px)` }),
+                }}
+                onClick={() => onOuvrirFrise(it.t.aboutId)}
+              >
+                <span className="chrono-glyph"><KindGlyph kind={it.t.kind} /></span>
+                <span className="chrono-corps">{court(it.t.body)}</span>
+                <span className="chrono-date">{jourCourt(it.date)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <p className="whisper naissance-note chrono-legende">
+        Chaque transmission trouve sa place dans le temps : les souvenirs derrière, ce qu'on organise devant.
+        Rien ne « passe en retard » — ce qui vient rejoint doucement la mémoire.
+      </p>
+    </div>
+  )
+}
+
 /* ---------- Le jardin — les galaxies où l'on appartient ---------- */
 
 function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
@@ -762,13 +864,14 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 function Composer({ ciel, me, onDone }: {
   ciel: CielData
   me: Astre
-  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[] } | null) => void
+  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null } | null) => void
 }) {
   const others = ciel.astres.filter((a) => a.id !== me.id)
   const [kind, setKind] = useState<TransmissionKind | null>(null)
   const [recipients, setRecipients] = useState<string[]>(others.map((a) => a.id))
   const [aboutId, setAboutId] = useState<string | null>(null)
   const [body, setBody] = useState('')
+  const [quand, setQuand] = useState('')
 
   const toggle = (id: string) =>
     setRecipients((r) => (r.includes(id) ? r.filter((x) => x !== id) : [...r, id]))
@@ -824,12 +927,20 @@ function Composer({ ciel, me, onDone }: {
           rows={3}
         />
 
+        <h2>Quand ?</h2>
+        <div className="row naissance-row">
+          <input type="date" value={quand} onChange={(e) => setQuand(e.target.value)} aria-label="Quand" />
+          <span className="whisper naissance-note">
+            {kind === 'organiser' ? 'ce qui vient — la date du rendez-vous' : kind === 'souvenir' ? 'le jour du souvenir, s’il a une date' : 'facultatif — pour la place sur le fil du temps'}
+          </span>
+        </div>
+
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>
           <button
             className="primary"
             disabled={!kind || !body.trim() || recipients.length === 0}
-            onClick={() => onDone({ kind: kind!, body: body.trim(), aboutId, recipientIds: recipients })}
+            onClick={() => onDone({ kind: kind!, body: body.trim(), aboutId, recipientIds: recipients, happensOn: quand || null })}
           >
             Transmettre
           </button>
@@ -982,7 +1093,9 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
                 <div className="tx-head">
                   <span className="tx-kind"><span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}</span>
                   <span className="tx-when">
-                    {new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                    {t.happensOn
+                      ? `pour le ${new Date(t.happensOn).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
+                      : new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>
                 </div>
                 <p className="tx-body">{t.body}</p>

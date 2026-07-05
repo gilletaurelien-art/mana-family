@@ -19,7 +19,7 @@ const CACHE = 'mana-family-ciel-cache'
 const OUTBOX = 'mana-family-outbox'
 
 type Geste =
-  | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[] }
+  | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null }
   | { geste: 'veiller'; txId: string }
   | { geste: 'portrait'; astreId: string; url: string }
   | { geste: 'naissance'; astreId: string; date: string }
@@ -41,7 +41,7 @@ async function rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> {
 
 async function jouer(g: Geste): Promise<void> {
   if (g.geste === 'transmettre') {
-    await rpc('transmettre', { p_id: g.id, p_kind: g.kind, p_body: g.body, p_about: g.aboutId, p_recipients: g.recipientIds })
+    await rpc('transmettre', { p_id: g.id, p_kind: g.kind, p_body: g.body, p_about: g.aboutId, p_recipients: g.recipientIds, p_happens_on: g.happensOn })
   } else if (g.geste === 'veiller') {
     await rpc('veiller', { p_tx: g.txId })
   } else if (g.geste === 'naissance') {
@@ -79,7 +79,7 @@ interface CielServeur {
   astres: Astre[]
   transmissions: {
     id: string; authorId: string; aboutId: string | null; kind: TransmissionKind
-    body: string; createdAt: string; forMe: boolean; veilles: Record<string, string>
+    body: string; createdAt: string; happensOn?: string | null; forMe: boolean; veilles: Record<string, string>
   }[]
 }
 
@@ -107,7 +107,7 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
       next = {
         ...next,
         transmissions: [
-          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
+          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, happensOn: g.happensOn, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
           ...next.transmissions,
         ],
       }
@@ -157,14 +157,14 @@ export async function charger(): Promise<{ ciel: Ciel | null; horsLigne: boolean
 
 export function transmettre(
   ciel: Ciel,
-  t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[] },
+  t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null },
 ): Ciel {
   const id = crypto.randomUUID()
   enfiler({ geste: 'transmettre', id, ...t })
   return {
     ...ciel,
     transmissions: [
-      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
+      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, happensOn: t.happensOn, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
       ...ciel.transmissions,
     ],
   }
