@@ -3,8 +3,8 @@ import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } fr
 import { CALENDAR_LAYERS, KINDS, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import {
-  astresDe, charger, fonder, hisser, modifierCalendriers, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
-  type Ciel as CielData,
+  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
+  type Ciel as CielData, type Galaxie,
 } from './remote'
 
 /** Portrait : recadré carré, réduit à 128px — jamais l'original dans la mémoire. */
@@ -70,10 +70,11 @@ type Phase =
   | { ecran: 'porte' }
   | { ecran: 'fondation' }
   | { ecran: 'choisir-moi'; nom: string; brouillon: AstreDraft[] }
-  | { ecran: 'rejoindre' }
+  | { ecran: 'rejoindre'; retour?: 'jardin' }
   | { ecran: 'hisser' }
   | { ecran: 'ciel' }
   | { ecran: 'galaxie' }
+  | { ecran: 'jardin' }
   | { ecran: 'inviter' }
   | { ecran: 'parametres' }
   | { ecran: 'frise'; aboutId: string | null }
@@ -169,7 +170,7 @@ export default function App() {
     return (
       <Rejoindre
         onArrime={(code, astreId) => tenter(() => rejoindre(code, astreId))}
-        onRetour={() => setPhase({ ecran: 'porte' })}
+        onRetour={() => setPhase({ ecran: phase.retour === 'jardin' ? 'jardin' : 'porte' })}
       />
     )
   }
@@ -241,6 +242,16 @@ export default function App() {
     )
   }
 
+  if (phase.ecran === 'jardin') {
+    return (
+      <JardinVue
+        onActiver={(id) => tenter(() => activerGalaxie(id))}
+        onRejoindreAutre={() => setPhase({ ecran: 'rejoindre', retour: 'jardin' })}
+        onRetour={() => setPhase({ ecran: 'ciel' })}
+      />
+    )
+  }
+
   if (phase.ecran === 'inviter') {
     return (
       <Inviter
@@ -276,6 +287,7 @@ export default function App() {
       onTransmettre={() => setPhase({ ecran: 'composer' })}
       onInviter={() => setPhase({ ecran: 'inviter' })}
       onGalaxie={() => setPhase({ ecran: 'galaxie' })}
+      onJardin={() => setPhase({ ecran: 'jardin' })}
       onParametres={() => setPhase({ ecran: 'parametres' })}
     />
   )
@@ -499,7 +511,7 @@ function etatDuCiel(c: CielData): string {
   return 'Douceur sur votre famille ce soir.'
 }
 
-function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onParametres }: {
+function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onJardin, onParametres }: {
   ciel: CielData
   me: Astre
   horsLigne: boolean
@@ -507,6 +519,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
   onTransmettre: () => void
   onInviter: () => void
   onGalaxie: () => void
+  onJardin: () => void
   onParametres: () => void
 }) {
   const n = ciel.astres.length
@@ -519,7 +532,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
       <header className="sky">
         <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
         <p className="whisper">
-          {nomIntime(me)} · <button className="link" onClick={onGalaxie}>la galaxie</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
+          {nomIntime(me)} · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
           {horsLigne && <> · en mer, hors réseau — les gestes attendent</>}
         </p>
       </header>
@@ -655,6 +668,57 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
           </section>
         )
       })}
+    </div>
+  )
+}
+
+/* ---------- Le jardin — les galaxies où l'on appartient ---------- */
+
+function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
+  onActiver: (constellationId: string) => void
+  onRejoindreAutre: () => void
+  onRetour: () => void
+}) {
+  const [galaxies, setGalaxies] = useState<Galaxie[] | null>(null)
+  useEffect(() => {
+    mesGalaxies().then(setGalaxies).catch(() => setGalaxies([]))
+  }, [])
+
+  return (
+    <div className="shell">
+      <header className="sky">
+        <h1>Le jardin</h1>
+        <p className="whisper">
+          Les galaxies où vous veillez · <button className="link" onClick={onRetour}>← retour aux astres</button>
+        </p>
+      </header>
+
+      {galaxies === null ? (
+        <p className="empty">Le jardin s'éveille…</p>
+      ) : (
+        <section className="card">
+          <ul className="jardin-list">
+            {galaxies.map((g) => (
+              <li key={g.constellationId}>
+                <button
+                  className={`jardin-galaxie ${g.active ? 'active' : ''}`}
+                  disabled={g.active}
+                  onClick={() => onActiver(g.constellationId)}
+                >
+                  <span className="astre-dot" />
+                  <span className="jardin-nom">Famille {g.name}</span>
+                  <span className="jardin-moi">{g.active ? 'vous y êtes' : 'passer ici'} · {g.monSurnom || g.monNom}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button className="primary" onClick={onRejoindreAutre}>Rejoindre une autre galaxie</button>
+          <p className="whisper naissance-note">
+            Une même personne peut appartenir à plusieurs galaxies — deux maisons, la famille de cœur, la lignée.
+            Chacune garde sa propre lumière.
+          </p>
+        </section>
+      )}
     </div>
   )
 }

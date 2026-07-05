@@ -236,6 +236,27 @@ export async function rejoindre(code: string, astreId: string): Promise<void> {
   await rpc('rejoindre', { p_code: code, p_astre: astreId })
 }
 
+/* ---------- Le jardin : les galaxies de cet appareil ---------- */
+
+export interface Galaxie {
+  constellationId: string
+  name: string
+  inviteCode: string
+  monNom: string
+  monSurnom: string | null
+  active: boolean
+}
+
+export async function mesGalaxies(): Promise<Galaxie[]> {
+  await assurerSession()
+  return await rpc<Galaxie[]>('mes_galaxies')
+}
+
+export async function activerGalaxie(constellationId: string): Promise<void> {
+  await assurerSession()
+  await rpc('activer_galaxie', { p_constellation: constellationId })
+}
+
 /** Ouvrir une famille locale (héritage de l'incrément 1) dans la galaxie familiale. */
 export async function hisser(heritage: Constellation, meId: string): Promise<void> {
   await assurerSession()
