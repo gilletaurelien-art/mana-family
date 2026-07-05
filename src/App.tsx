@@ -641,7 +641,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
         </button>
 
         <button className="satellite" onClick={() => setTiroirOuvert(true)} aria-label="L'univers Mana">
-          <span className="satellite-rond satellite-visage"><img src="/icon-192.png" alt="" /></span>
+          <span className="satellite-rond satellite-visage"><img src="/avatar-univers.png" alt="" /></span>
           <span className="satellite-mot">l'univers</span>
         </button>
       </div>
