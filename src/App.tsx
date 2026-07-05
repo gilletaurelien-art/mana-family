@@ -3,7 +3,7 @@ import type { Astre, Constellation, Role, TransmissionKind } from './types'
 import { KINDS, ROLES } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import {
-  astresDe, charger, fonder, hisser, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
+  astresDe, charger, fonder, hisser, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
   type Ciel as CielData,
 } from './remote'
 
@@ -202,6 +202,7 @@ export default function App() {
         onVeiller={(txId) => setCiel(veiller(ciel, txId))}
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
+        onProfil={(astreId, nom, date, role) => setCiel(modifierProfil(ciel, astreId, nom, date, role))}
       />
     )
   }
@@ -694,9 +695,41 @@ function Composer({ ciel, me, onDone }: {
   )
 }
 
+/* ---------- Modifier le profil d'un astre ---------- */
+
+function ProfilForm({ sujet, onEnregistrer }: {
+  sujet: Astre
+  onEnregistrer: (nom: string, date: string | null, role: Role) => void
+}) {
+  const [nom, setNom] = useState(sujet.name)
+  const [date, setDate] = useState(sujet.birthDate ?? '')
+  const [role, setRole] = useState<Role>(sujet.role)
+
+  return (
+    <section className="card profil-form">
+      <h2>Le profil de {sujet.name}</h2>
+      <div className="row">
+        <input value={nom} onChange={(e) => setNom(e.target.value)} aria-label="Prénom" placeholder="Prénom" />
+        <select value={role} onChange={(e) => setRole(e.target.value as Role)}>
+          {ROLES.map((r) => (
+            <option key={r.role} value={r.role}>{r.label}</option>
+          ))}
+        </select>
+      </div>
+      <div className="row naissance-row">
+        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Date de naissance" />
+        <span className="whisper naissance-note">naissance — facultatif</span>
+      </div>
+      <button className="primary" disabled={!nom.trim()} onClick={() => onEnregistrer(nom.trim(), date || null, role)}>
+        Enregistrer
+      </button>
+    </section>
+  )
+}
+
 /* ---------- Le fil de vie ---------- */
 
-function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissance }: {
+function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissance, onProfil }: {
   ciel: CielData
   me: Astre
   aboutId: string | null
@@ -704,8 +737,10 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
   onVeiller: (txId: string) => void
   onPortrait: (astreId: string, dataUrl: string) => void
   onNaissance: (astreId: string, date: string) => void
+  onProfil: (astreId: string, nom: string, date: string | null, role: Role) => void
 }) {
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
+  const [enEdition, setEnEdition] = useState(false)
   const nameOf = (id: string | null) => ciel.astres.find((a) => a.id === id)?.name ?? null
   const txs = ciel.transmissions.filter(
     (t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId,
@@ -733,10 +768,23 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
                   }}
                 />
               </label>
+              {' · '}
+              <button className="link" onClick={() => setEnEdition(!enEdition)}>
+                {enEdition ? 'fermer' : 'modifier le profil'}
+              </button>
             </>
           )}
         </p>
-        {sujet && (
+        {sujet && enEdition && (
+          <ProfilForm
+            sujet={sujet}
+            onEnregistrer={(nom, date, role) => {
+              onProfil(sujet.id, nom, date, role)
+              setEnEdition(false)
+            }}
+          />
+        )}
+        {sujet && !enEdition && (
           sujet.birthDate ? (
             <p className="naissance">
               {naissanceEnClair(sujet.birthDate)} · {ageDe(sujet.birthDate)} an{ageDe(sujet.birthDate) > 1 ? 's' : ''}

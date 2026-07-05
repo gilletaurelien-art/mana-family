@@ -143,5 +143,34 @@ begin
   return r;
 end $$;
 
+-- Modifier le profil d'un astre : prénom, naissance, place dans la famille.
+-- Même cercle de confiance que le portrait (membre de la constellation).
+create or replace function modifier_profil(p_astre uuid, p_nom text, p_date date, p_role text)
+returns jsonb
+language plpgsql security definer set search_path = public, pg_temp as $$
+declare v device_links;
+begin
+  v := mf_lien();
+  if v is null then raise exception 'appareil non relié'; end if;
+  if not exists (select 1 from members where constellation_id = v.constellation_id and astre_id = p_astre) then
+    raise exception 'astre hors de la constellation';
+  end if;
+  if p_nom is not null and length(trim(p_nom)) > 0 then
+    update astres set display_name = trim(p_nom) where id = p_astre;
+  end if;
+  if p_date is not null then
+    update astres set birth_date = p_date where id = p_astre;
+  end if;
+  if p_role is not null then
+    update members set
+      role = p_role,
+      circle_level = case p_role when 'grand_parent' then 2 when 'soutien' then 2 when 'famille' then 3 else 1 end
+    where constellation_id = v.constellation_id and astre_id = p_astre;
+  end if;
+  return jsonb_build_object('ok', true);
+end $$;
+
 revoke execute on function poser_naissance(uuid, date) from public, anon;
 grant execute on function poser_naissance(uuid, date) to authenticated;
+revoke execute on function modifier_profil(uuid, text, date, text) from public, anon;
+grant execute on function modifier_profil(uuid, text, date, text) to authenticated;

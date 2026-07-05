@@ -22,6 +22,7 @@ type Geste =
   | { geste: 'veiller'; txId: string }
   | { geste: 'portrait'; astreId: string; url: string }
   | { geste: 'naissance'; astreId: string; date: string }
+  | { geste: 'profil'; astreId: string; nom: string; date: string | null; role: Role }
 
 function lireOutbox(): Geste[] {
   try { return JSON.parse(localStorage.getItem(OUTBOX) ?? '[]') } catch { return [] }
@@ -43,6 +44,8 @@ async function jouer(g: Geste): Promise<void> {
     await rpc('veiller', { p_tx: g.txId })
   } else if (g.geste === 'naissance') {
     await rpc('poser_naissance', { p_astre: g.astreId, p_date: g.date })
+  } else if (g.geste === 'profil') {
+    await rpc('modifier_profil', { p_astre: g.astreId, p_nom: g.nom, p_date: g.date, p_role: g.role })
   } else {
     await rpc('poser_portrait', { p_astre: g.astreId, p_url: g.url })
   }
@@ -99,6 +102,8 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
       next = { ...next, astres: next.astres.map((a) => (a.id === g.astreId ? { ...a, avatarUrl: g.url } : a)) }
     } else if (g.geste === 'naissance') {
       next = { ...next, astres: next.astres.map((a) => (a.id === g.astreId ? { ...a, birthDate: g.date } : a)) }
+    } else if (g.geste === 'profil') {
+      next = appliquerProfil(next, g.astreId, g.nom, g.date, g.role)
     }
   }
   return next
@@ -161,6 +166,21 @@ export function poserPortrait(ciel: Ciel, astreId: string, url: string): Ciel {
 export function poserNaissance(ciel: Ciel, astreId: string, date: string): Ciel {
   enfiler({ geste: 'naissance', astreId, date })
   return { ...ciel, astres: ciel.astres.map((a) => (a.id === astreId ? { ...a, birthDate: date } : a)) }
+}
+
+function appliquerProfil(ciel: Ciel, astreId: string, nom: string, date: string | null, role: Role): Ciel {
+  const circle: 1 | 2 | 3 = role === 'grand_parent' || role === 'soutien' ? 2 : role === 'famille' ? 3 : 1
+  return {
+    ...ciel,
+    astres: ciel.astres.map((a) =>
+      a.id === astreId ? { ...a, name: nom, birthDate: date ?? a.birthDate, role, circle } : a,
+    ),
+  }
+}
+
+export function modifierProfil(ciel: Ciel, astreId: string, nom: string, date: string | null, role: Role): Ciel {
+  enfiler({ geste: 'profil', astreId, nom, date, role })
+  return appliquerProfil(ciel, astreId, nom, date, role)
 }
 
 /* ---------- Fondation, arrimage, hissage ---------- */
