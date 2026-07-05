@@ -307,7 +307,7 @@ function ChoisirMoi({ nom, brouillon, onChoisi }: { nom: string; brouillon: Astr
   return (
     <div className="shell">
       <header className="sky">
-        <h1>{nom}</h1>
+        <h1>Famille {nom}</h1>
         <p className="whisper">Et toi, quel astre es-tu ?</p>
       </header>
       <div className="astre-grid">
@@ -377,7 +377,7 @@ function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHi
   return (
     <div className="shell">
       <header className="sky">
-        <h1>{heritage.name}</h1>
+        <h1>Famille {heritage.name}</h1>
         <p className="whisper">
           {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} rejoindr{heritage.transmissions.length > 1 ? 'ont' : 'a'} l'Univers partagé, dates et lueurs préservées.<br />
           <button className="link" onClick={onRetour}>← retour</button>
@@ -433,7 +433,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter 
   return (
     <div className="shell">
       <header className="sky">
-        <h1>{ciel.name}</h1>
+        <h1>Famille {ciel.name}</h1>
         <p className="whisper">
           {me.name} · <button className="link" onClick={onInviter}>inviter</button>
           {horsLigne && <> · en mer, hors réseau — les gestes attendent</>}
