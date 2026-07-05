@@ -78,6 +78,11 @@ body::before {
   z-index: 0;
 }
 
+/* En mode jour, la spirale de fond disparaît partout — l'Écume reste nue */
+@media (prefers-color-scheme: light) {
+  body::before { display: none; }
+}
+
 #root {
   position: relative;
   z-index: 1;
@@ -141,7 +146,13 @@ body:has(.carnet-hero)::before { display: none; }
 /* Écrire — hero compact : la spirale à la hauteur du texte, le formulaire juste sous « Retour » */
 .composer-hero { padding-bottom: 0; }
 .composer-hero .carnet-hero-top { align-items: center; }
-.composer-hero .carnet-hero-visage { flex: 0 0 38%; width: 38%; }
+.composer-hero .carnet-hero-visage { flex: 0 0 42%; width: 42%; overflow: visible; justify-content: center; }
+/* La spirale est ronde : on la centre entière, jamais tronquée */
+.composer-hero .carnet-hero-visage img {
+  width: 100%; margin: 0 auto;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 72%, transparent 95%);
+          mask-image: radial-gradient(circle at 50% 50%, #000 72%, transparent 95%);
+}
 .composer-card { margin-top: 0.5rem; }
 
 .assistante-mot {
@@ -175,6 +186,16 @@ body:has(.carnet-hero)::before { display: none; }
 .assistante-signature p {
   font-family: var(--serif); font-style: italic; color: var(--brume);
   text-align: center; line-height: 1.6; max-width: 40ch; margin: 0 auto;
+}
+
+/* La grande déesse de la Porte — pleine opacité, accueil du premier seuil */
+.porte-sky { padding-top: 0.4rem; }
+.porte-deesse { text-align: center; margin: 0.2rem 0 0.4rem; }
+.porte-deesse img { width: min(64vw, 300px); height: auto; }
+.porte-deesse .logo-jour { display: none; }
+@media (prefers-color-scheme: light) {
+  .porte-deesse .logo-nuit { display: none; }
+  .porte-deesse .logo-jour { display: inline; }
 }
 
 /* Le visage aux seuils — doré la nuit, marine le jour */

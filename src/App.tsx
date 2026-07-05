@@ -471,8 +471,11 @@ function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
 }) {
   return (
     <div className="shell">
-      <header className="sky">
-        <LogoSeuil />
+      <header className="sky porte-sky">
+        <div className="porte-deesse">
+          <img src="/logo-nuit.png" alt="" className="logo-nuit" />
+          <img src="/logo-jour.png" alt="" className="logo-jour" />
+        </div>
         <h1>Mana Family</h1>
         <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
