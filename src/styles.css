@@ -210,6 +210,11 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .astre-fixe .naissance { line-height: 1.35; }
 
+/* Le nom doux — comment je l'appelle (relationnel) */
+.nom-doux-ligne b { color: var(--etoile); font-weight: 600; }
+.nom-doux-row { justify-content: center; margin-top: 0.6rem; }
+.nom-doux-row input { max-width: 14rem; }
+
 /* Le carnet — filtres par catégorie (Apple Photos : tout, puis les sortes) */
 .carnet-filtres { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1rem; }
 .chip-filtre { display: inline-flex; align-items: center; gap: 0.4rem; }

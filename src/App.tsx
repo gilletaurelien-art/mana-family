@@ -3,7 +3,7 @@ import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } fr
 import { CALENDAR_LAYERS, KINDS, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import {
-  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
+  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
   type Ciel as CielData, type Galaxie,
 } from './remote'
 
@@ -229,6 +229,7 @@ export default function App() {
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
         onProfil={(astreId, nom, surnom, date, role, pays, codePostal) => setCiel(modifierProfil(ciel, astreId, nom, surnom, date, role, pays, codePostal))}
+        onNommer={(astreId, nomDoux) => setCiel(modifierNomDoux(ciel, astreId, nomDoux))}
       />
     )
   }
@@ -1005,7 +1006,7 @@ function ProfilForm({ sujet, onEnregistrer }: {
 
 /* ---------- Le fil de vie ---------- */
 
-function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissance, onProfil }: {
+function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissance, onProfil, onNommer }: {
   ciel: CielData
   me: Astre
   aboutId: string | null
@@ -1014,9 +1015,12 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
   onPortrait: (astreId: string, dataUrl: string) => void
   onNaissance: (astreId: string, date: string) => void
   onProfil: (astreId: string, nom: string, surnom: string, date: string | null, role: Role, pays: string, codePostal: string) => void
+  onNommer: (astreId: string, nomDoux: string) => void
 }) {
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const [enEdition, setEnEdition] = useState(false)
+  const [nomDouxEdit, setNomDouxEdit] = useState(false)
+  const [nomDouxVal, setNomDouxVal] = useState('')
   const [filtre, setFiltre] = useState<TransmissionKind | 'tous'>('tous')
   const nameOf = (id: string | null) => {
     const a = ciel.astres.find((x) => x.id === id)
@@ -1063,6 +1067,28 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
               setEnEdition(false)
             }}
           />
+        )}
+        {sujet && !enEdition && sujet.id !== me.id && (
+          nomDouxEdit ? (
+            <div className="row nom-doux-row">
+              <input
+                autoFocus
+                value={nomDouxVal}
+                onChange={(e) => setNomDouxVal(e.target.value)}
+                placeholder="Papa, Mamie, Tonton Marc…"
+                aria-label="Nom doux"
+                onKeyDown={(e) => { if (e.key === 'Enter') { onNommer(sujet.id, nomDouxVal); setNomDouxEdit(false) } }}
+              />
+              <button className="primary" style={{ width: 'auto', marginTop: 0 }} onClick={() => { onNommer(sujet.id, nomDouxVal); setNomDouxEdit(false) }}>ok</button>
+            </div>
+          ) : (
+            <p className="naissance nom-doux-ligne">
+              {sujet.nomDoux ? <>je l'appelle <b>{sujet.nomDoux}</b></> : 'lui donner un petit nom'}{' '}
+              <button className="link" onClick={() => { setNomDouxVal(sujet.nomDoux ?? ''); setNomDouxEdit(true) }}>
+                {sujet.nomDoux ? 'changer' : '＋'}
+              </button>
+            </p>
+          )
         )}
         {sujet && !enEdition && (sujet.postalCode || sujet.country) && (
           <p className="naissance">{[sujet.postalCode, sujet.country].filter(Boolean).join(' · ')}</p>

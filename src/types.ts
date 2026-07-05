@@ -29,6 +29,8 @@ export interface Astre {
   birthDate?: string | null
   /** Le petit nom de la maison — très intime. La Présence le dit ; la Mémoire garde le prénom. */
   nickname?: string | null
+  /** Le nom doux : comment MOI (le porteur) j'appelle ce proche (Papa, Mamie, Tonton Marc). Relationnel, propre à chacun. */
+  nomDoux?: string | null
   /** Couches de temps choisies par cet astre. Vide par défaut : MANA n'impose aucune tradition. */
   calendarIds?: CalendarLayerId[]
   /** Pays et code postal — facultatifs, jamais exigés. Préparent la proximité et les événements de la commune. */
@@ -36,9 +38,11 @@ export interface Astre {
   postalCode?: string | null
 }
 
-/** La voix du quotidien : le surnom s'il existe, sinon le prénom. */
+/** La voix de l'attachement : le nom doux (comment je l'appelle), sinon le surnom, sinon le prénom. */
 export function nomIntime(a: Astre): string {
-  return a.nickname && a.nickname.trim() ? a.nickname : a.name
+  if (a.nomDoux && a.nomDoux.trim()) return a.nomDoux
+  if (a.nickname && a.nickname.trim()) return a.nickname
+  return a.name
 }
 
 export interface Transmission {

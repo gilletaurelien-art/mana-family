@@ -25,6 +25,7 @@ type Geste =
   | { geste: 'naissance'; astreId: string; date: string }
   | { geste: 'profil'; astreId: string; nom: string; surnom: string; date: string | null; role: Role; pays: string; codePostal: string }
   | { geste: 'calendriers'; astreId: string; calendarIds: CalendarLayerId[] }
+  | { geste: 'nommer'; astreId: string; nomDoux: string }
 
 function lireOutbox(): Geste[] {
   try { return JSON.parse(localStorage.getItem(OUTBOX) ?? '[]') } catch { return [] }
@@ -50,6 +51,8 @@ async function jouer(g: Geste): Promise<void> {
     await rpc('modifier_profil', { p_astre: g.astreId, p_nom: g.nom, p_surnom: g.surnom, p_date: g.date, p_role: g.role, p_pays: g.pays, p_code_postal: g.codePostal })
   } else if (g.geste === 'calendriers') {
     await rpc('modifier_calendriers', { p_astre: g.astreId, p_calendriers: g.calendarIds })
+  } else if (g.geste === 'nommer') {
+    await rpc('nommer', { p_target: g.astreId, p_nom_doux: g.nomDoux })
   } else {
     await rpc('poser_portrait', { p_astre: g.astreId, p_url: g.url })
   }
@@ -126,6 +129,8 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
       next = appliquerProfil(next, g.astreId, g.nom, g.surnom, g.date, g.role, g.pays, g.codePostal)
     } else if (g.geste === 'calendriers') {
       next = appliquerCalendriers(next, g.astreId, g.calendarIds)
+    } else if (g.geste === 'nommer') {
+      next = { ...next, astres: next.astres.map((a) => (a.id === g.astreId ? { ...a, nomDoux: g.nomDoux.trim() || null } : a)) }
     }
   }
   return next
@@ -217,6 +222,12 @@ function appliquerCalendriers(ciel: Ciel, astreId: string, calendarIds: Calendar
 export function modifierCalendriers(ciel: Ciel, astreId: string, calendarIds: CalendarLayerId[]): Ciel {
   enfiler({ geste: 'calendriers', astreId, calendarIds })
   return appliquerCalendriers(ciel, astreId, calendarIds)
+}
+
+/** Le nom doux : comment MOI j'appelle ce proche. Relationnel, privé. */
+export function modifierNomDoux(ciel: Ciel, astreId: string, nomDoux: string): Ciel {
+  enfiler({ geste: 'nommer', astreId, nomDoux })
+  return { ...ciel, astres: ciel.astres.map((a) => (a.id === astreId ? { ...a, nomDoux: nomDoux.trim() || null } : a)) }
 }
 
 /* ---------- Fondation, arrimage, hissage ---------- */
