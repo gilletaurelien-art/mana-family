@@ -41,36 +41,92 @@ function ThemeIcon({ jour, nuit }: { jour: string; nuit: string }) {
   )
 }
 
-/** Le tiroir — le vestibule discret de l'univers Mana + l'assistante (silencieuse pour l'instant). */
-function TiroirUnivers({ ouvert, onClose }: { ouvert: boolean; onClose: () => void }) {
-  if (!ouvert) return null
+/** Les questions douces — pensées pour la grand-mère : chaque mot lui est naturel. */
+const FAQ: { q: string; r: string }[] = [
+  { q: 'Comment je partage un moment ?', r: 'Le galet doré, tout en bas au centre. Touchez « écrire », choisissez une sorte, écrivez quelques mots. C’est tout.' },
+  { q: 'Où je retrouve ce que la famille a partagé ?', r: 'À gauche, « lire » : c’est le carnet de famille. Tout y est rangé, du plus récent au plus ancien.' },
+  { q: 'C’est quoi la petite lumière autour d’un visage ?', r: 'Quelqu’un a veillé sur ce moment — il l’a lu, il y a pensé. On voit qui a veillé, jamais qui ne l’a pas fait.' },
+  { q: 'Est-ce que la famille voit si je n’ai pas lu ?', r: 'Non. Jamais. Votre silence vous appartient. Personne n’est jamais montré du doigt ici.' },
+  { q: 'Dois-je écrire tous les jours ?', r: 'Non. Le silence est un état légitime. La maison vous attend sans rien réclamer — même après de longues saisons.' },
+  { q: 'Comment j’ajoute quelqu’un à la famille ?', r: 'En haut, « inviter ». Vous confiez la clé de la maison à un proche ; il choisit alors qui il est parmi vous.' },
+  { q: 'Comment je change mon nom, ma photo, ma date de naissance ?', r: 'Touchez votre visage, puis « modifier le profil ». Tout est facultatif : vous ne donnez que ce que vous voulez.' },
+  { q: 'Puis-je appartenir à deux familles ?', r: 'Oui : c’est le jardin. Une même personne peut vivre dans plusieurs maisons — deux foyers, une famille de cœur, une lignée.' },
+  { q: 'Est-ce que nos souvenirs peuvent disparaître ?', r: 'Non. Ce qui est transmis ne s’efface pas : c’est une ligne que nous ne franchirons jamais. La mémoire de la famille est gardée.' },
+  { q: 'Qui peut voir nos moments ?', r: 'Seulement votre famille. Rien n’est public, rien n’est vendu, rien ne sert à autre chose qu’à vous relier.' },
+]
+
+/** Les portes de la maison Mana — chacune expliquée, pas seulement nommée. */
+const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boolean; bientot?: boolean }[] = [
+  { nom: 'Mana Family', etat: 'vous y êtes', mot: 'La maison de votre famille : partager un moment, veiller sur les autres, garder la mémoire vivante.', ici: true },
+  { nom: 'Mana Home', etat: 'le site', mot: 'La porte publique de la maison. Pour découvrir ce qu’est Mana Family et le faire connaître autour de vous.', href: 'https://manahome.org' },
+  { nom: 'La Constitution numérique', etat: 'nos engagements', mot: 'Ce que nous refuserons toujours de faire : capter votre attention, vous culpabiliser, vendre vos données, effacer votre mémoire.', href: 'https://github.com/gilletaurelien-art/Digital-Constitution' },
+  { nom: 'Mana citoyen', etat: 'bientôt', mot: 'L’entraide entre voisins d’un même territoire — se rendre service, reconnaître le temps donné.', bientot: true },
+  { nom: 'TempoSystem', etat: 'bientôt', mot: 'La comptabilité discrète du temps que les êtres humains se consacrent. Elle travaille en coulisse ; vous ne la voyez jamais.', bientot: true },
+]
+
+/** L'univers Mana — pleine page : l'assistante, les questions douces, les portes de la maison. */
+function AssistanteVue({ ciel, onRetour }: { ciel: CielData; onRetour: () => void }) {
   return (
-    <div className="tiroir-scrim" onClick={onClose}>
-      <section className="tiroir-panneau" onClick={(e) => e.stopPropagation()}>
-        <div className="tiroir-assistante">
-          <img src="/logo-nuit.png" alt="" className="tiroir-visage logo-nuit" />
-          <img src="/logo-jour.png" alt="" className="tiroir-visage logo-jour" />
-          <p className="tiroir-mot">Bienvenue chez vous. Voici les portes de la maison Mana — je vous les montre quand vous voulez.</p>
+    <div className="shell assistante-shell">
+      <header className="sky assistante-hero">
+        <div className="assistante-hero-texte">
+          <h1>L'univers Mana</h1>
+          <p className="assistante-mot">
+            Bienvenue chez vous,<br />
+            dans la famille {ciel.name}.<br />
+            Voici la maison :<br />
+            comment y vivre,<br />
+            et les portes qu’elle ouvre.
+          </p>
+          <p className="whisper"><button className="link" onClick={onRetour}>← Retour à la famille</button></p>
         </div>
+        <div className="assistante-hero-visage" aria-hidden="true">
+          <img src="/logo-nuit.png" alt="" className="logo-nuit" />
+          <img src="/logo-jour.png" alt="" className="logo-jour" />
+        </div>
+      </header>
 
-        <h2>L'univers Mana</h2>
-        <ul className="tiroir-portes">
-          <li className="ici"><span className="porte-nom">Mana Family</span><span className="porte-mot">vous y êtes</span></li>
-          <li>
-            <a href="https://gilletaurelien-art.github.io/family/" target="_blank" rel="noopener">
-              <span className="porte-nom">Le site</span><span className="porte-mot">découvrir Mana Family →</span>
-            </a>
-          </li>
-          <li>
-            <a href="https://github.com/gilletaurelien-art/Digital-Constitution" target="_blank" rel="noopener">
-              <span className="porte-nom">La Constitution numérique</span><span className="porte-mot">nos engagements →</span>
-            </a>
-          </li>
-          <li className="bientot"><span className="porte-nom">Mana citoyen</span><span className="porte-mot">bientôt</span></li>
-          <li className="bientot"><span className="porte-nom">TempoSystem</span><span className="porte-mot">bientôt</span></li>
+      <section className="assistante-bloc">
+        <h2>Comment ça marche ?</h2>
+        <div className="faq">
+          {FAQ.map((f, i) => (
+            <div className="faq-item" key={i}>
+              <p className="faq-q">{f.q}</p>
+              <p className="faq-r">{f.r}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="assistante-bloc">
+        <h2>Les portes de la maison Mana</h2>
+        <ul className="portes">
+          {PORTES.map((p) => {
+            const contenu = (
+              <>
+                <span className="porte-tete">
+                  <span className="porte-nom">{p.nom}</span>
+                  <span className="porte-mot">{p.etat}{p.href ? ' →' : ''}</span>
+                </span>
+                <span className="porte-desc">{p.mot}</span>
+              </>
+            )
+            return (
+              <li className={`porte ${p.ici ? 'ici' : ''} ${p.bientot ? 'bientot' : ''}`} key={p.nom}>
+                {p.href
+                  ? <a href={p.href} target="_blank" rel="noopener">{contenu}</a>
+                  : contenu}
+              </li>
+            )
+          })}
         </ul>
+      </section>
 
-        <button className="link tiroir-fermer" onClick={onClose}>fermer</button>
+      <section className="assistante-bloc assistante-signature">
+        <p>
+          Bientôt, je pourrai vous montrer les gestes quand vous le voudrez —
+          jamais sans que vous me le demandiez. Le logiciel disparaît ; la famille reste.
+        </p>
       </section>
     </div>
   )
@@ -139,6 +195,7 @@ type Phase =
   | { ecran: 'jardin' }
   | { ecran: 'inviter' }
   | { ecran: 'parametres' }
+  | { ecran: 'assistante' }
   | { ecran: 'frise'; aboutId: string | null }
   | { ecran: 'composer' }
 
@@ -351,6 +408,10 @@ export default function App() {
     )
   }
 
+  if (phase.ecran === 'assistante') {
+    return <AssistanteVue ciel={ciel} onRetour={() => setPhase({ ecran: 'ciel' })} />
+  }
+
   return (
     <CielVue
       ciel={ciel}
@@ -363,6 +424,7 @@ export default function App() {
       onChronologie={() => setPhase({ ecran: 'chronologie' })}
       onJardin={() => setPhase({ ecran: 'jardin' })}
       onParametres={() => setPhase({ ecran: 'parametres' })}
+      onAssistante={() => setPhase({ ecran: 'assistante' })}
     />
   )
 }
@@ -587,7 +649,7 @@ function etatDuCiel(c: CielData): string {
   return 'Douceur sur votre famille ce soir.'
 }
 
-function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onChronologie, onJardin, onParametres }: {
+function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onChronologie, onJardin, onParametres, onAssistante }: {
   ciel: CielData
   me: Astre
   horsLigne: boolean
@@ -598,9 +660,9 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
   onChronologie: () => void
   onJardin: () => void
   onParametres: () => void
+  onAssistante: () => void
 }) {
   const n = ciel.astres.length
-  const [tiroirOuvert, setTiroirOuvert] = useState(false)
   const halos = new Set(
     ciel.transmissions.filter((t) => t.aboutId && Object.keys(t.veilles).length > 0).map((t) => t.aboutId as string),
   )
@@ -651,13 +713,11 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
           <span className="geste-mot">écrire</span>
         </button>
 
-        <button className="geste" onClick={() => setTiroirOuvert(true)} aria-label="L'univers Mana — l'assistante">
+        <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — l'assistante">
           <span className="geste-rond geste-visage"><ThemeIcon jour="/avatar-univers-jour.png" nuit="/avatar-univers-nuit.png" /></span>
           <span className="geste-mot">l'assistante</span>
         </button>
       </div>
-
-      <TiroirUnivers ouvert={tiroirOuvert} onClose={() => setTiroirOuvert(false)} />
     </div>
   )
 }
@@ -1121,6 +1181,39 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
 
   return (
     <div className="shell">
+      {!sujet ? (
+        <header className="sky assistante-hero carnet-hero">
+          <div className="carnet-hero-top">
+            <div className="assistante-hero-texte">
+              <h1>Le carnet de famille</h1>
+              <p className="assistante-mot">
+                Ici vit la mémoire<br />
+                de la famille.<br />
+                Tout ce qu’on a partagé,<br />
+                du plus récent au plus ancien.
+              </p>
+              <p className="whisper"><button className="link" onClick={onRetour}>← Retour</button></p>
+            </div>
+            <div className="assistante-hero-visage carnet-hero-visage" aria-hidden="true">
+              <img src="/carnet-hero-nuit.png" alt="" className="logo-nuit" />
+              <img src="/carnet-hero-jour.png" alt="" className="logo-jour" />
+            </div>
+          </div>
+          <div className="carnet-filtres">
+            <button className={`chip ${filtre === 'tous' ? 'on' : ''}`} onClick={() => setFiltre('tous')}>Tout</button>
+            {KINDS.map((k) => (
+              <button
+                key={k.kind}
+                className={`chip chip-filtre ${filtre === k.kind ? 'on' : ''}`}
+                style={filtre === k.kind ? undefined : { color: `var(--${k.kind})` }}
+                onClick={() => setFiltre(k.kind)}
+              >
+                <span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}
+              </button>
+            ))}
+          </div>
+        </header>
+      ) : (
       <header className="sky">
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
         <h1>{sujet ? nomIntime(sujet) : 'Le carnet de famille'}</h1>
@@ -1201,21 +1294,6 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
           )
         )}
       </header>
-
-      {!sujet && (
-        <div className="carnet-filtres">
-          <button className={`chip ${filtre === 'tous' ? 'on' : ''}`} onClick={() => setFiltre('tous')}>Tout</button>
-          {KINDS.map((k) => (
-            <button
-              key={k.kind}
-              className={`chip chip-filtre ${filtre === k.kind ? 'on' : ''}`}
-              style={filtre === k.kind ? undefined : { color: `var(--${k.kind})` }}
-              onClick={() => setFiltre(k.kind)}
-            >
-              <span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}
-            </button>
-          ))}
-        </div>
       )}
 
       {txs.length === 0 ? (

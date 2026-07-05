@@ -89,41 +89,87 @@ body::before {
 /* Le ciel — les titres portent la mémoire, donc le serif */
 .sky { text-align: center; padding: 1.2rem 0 0.6rem; }
 
-/* Le tiroir — vestibule discret de l'univers Mana */
+/* L'univers Mana — pleine page : l'assistante, la déesse en fond, les portes */
 
-.tiroir-scrim {
-  position: fixed; inset: 0; z-index: 40;
-  background: rgba(6, 10, 20, 0.55); backdrop-filter: blur(2px);
-  display: flex; align-items: flex-end; justify-content: center;
-}
-.tiroir-panneau {
-  width: 100%; max-width: 480px;
-  background: var(--carte); border: 1px solid var(--filet);
-  border-radius: 22px 22px 0 0; padding: 1.4rem 1.3rem 1.8rem;
-  backdrop-filter: blur(10px);
-  animation: tiroir-monte 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes tiroir-monte { from { transform: translateY(100%); } to { transform: translateY(0); } }
-@media (prefers-reduced-motion: reduce) { .tiroir-panneau { animation: none; } }
+.assistante-shell { position: relative; }
 
-.tiroir-assistante { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.6rem; }
-.tiroir-visage { width: 52px; height: auto; flex: 0 0 auto; }
-.tiroir-mot { font-family: var(--serif); font-style: italic; color: var(--lin); font-size: 0.92rem; line-height: 1.4; margin: 0; }
-.tiroir-panneau h2 { border-bottom: 1px dotted var(--filet); padding-bottom: 0.4rem; }
-
-.tiroir-portes { list-style: none; padding: 0; margin: 0.6rem 0 1rem; }
-.tiroir-portes li { border-bottom: 1px dotted var(--filet); }
-.tiroir-portes a, .tiroir-portes li > .porte-nom {
-  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-  padding: 0.75rem 0.2rem; text-decoration: none; color: var(--encre);
+/* Le hero — le texte à gauche, la déesse à droite qui déborde en fond */
+.assistante-hero {
+  position: relative; text-align: left; overflow: hidden;
+  min-height: 44vh; padding: 1.4rem 0 0.8rem;
 }
-.tiroir-portes li { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.75rem 0.2rem; }
-.tiroir-portes a { padding: 0; width: 100%; }
-.porte-nom { font-family: var(--serif); font-size: 1.05rem; color: var(--etoile); }
+.assistante-hero-texte { position: relative; z-index: 1; max-width: 64%; }
+.assistante-hero-texte h1 { text-align: left; }
+.assistante-hero .whisper { text-align: left; }
+
+.assistante-hero-visage {
+  position: absolute; top: -3vh; right: 0; z-index: 0; pointer-events: none;
+  width: min(82vw, 460px);
+}
+.assistante-hero-visage img {
+  width: 100%; height: auto; display: block;
+  margin-right: -22%; margin-left: auto;
+  opacity: 1;
+  -webkit-mask-image: radial-gradient(ellipse at 46% 40%, #000 52%, transparent 82%);
+          mask-image: radial-gradient(ellipse at 46% 40%, #000 52%, transparent 82%);
+}
+
+/* Bascule jour/nuit du visage hero — spécificité qui l'emporte sur `img { display:block }` */
+.assistante-hero-visage .logo-jour { display: none; }
+.assistante-hero-visage .logo-nuit { display: block; }
+@media (prefers-color-scheme: light) {
+  .assistante-hero-visage .logo-nuit { display: none; }
+  .assistante-hero-visage .logo-jour { display: block; }
+}
+
+/* Le carnet à spirale — texte + illustration en haut, filtres pleine largeur dessous */
+.carnet-hero { min-height: 0; padding-bottom: 0.4rem; }
+.carnet-hero-top { display: flex; align-items: flex-start; gap: 0.3rem; }
+.carnet-hero .assistante-hero-texte { max-width: none; flex: 1 1 auto; }
+.carnet-hero-visage {
+  position: static; flex: 0 0 48%; width: 48%; overflow: visible; align-self: center;
+  display: flex; align-items: center;
+}
+.carnet-hero-visage img {
+  width: 122%; margin: 0 -20% 0 auto;
+  -webkit-mask-image: radial-gradient(ellipse at 48% 50%, #000 66%, transparent 92%);
+          mask-image: radial-gradient(ellipse at 48% 50%, #000 66%, transparent 92%);
+}
+/* La spirale de fond disparaît sur le carnet — l'illustration porte déjà la spirale */
+body:has(.carnet-hero)::before { display: none; }
+
+.assistante-mot {
+  font-family: var(--serif); font-style: italic; color: var(--etoile);
+  font-size: 1rem; line-height: 1.5; margin: 0.4rem 0 0.9rem;
+}
+
+.assistante-bloc { margin: 1.8rem 0; }
+.assistante-bloc h2 {
+  font-family: var(--serif); color: var(--etoile);
+  border-bottom: 1px dotted var(--filet); padding-bottom: 0.4rem; margin-bottom: 0.9rem;
+}
+
+/* Les questions douces */
+.faq { display: flex; flex-direction: column; gap: 1.1rem; }
+.faq-item { }
+.faq-q { font-family: var(--serif); color: var(--or-doux); font-size: 1.05rem; margin: 0 0 0.25rem; }
+.faq-r { color: var(--encre); line-height: 1.55; margin: 0; font-size: 0.96rem; }
+
+/* Les portes de la maison */
+.portes { list-style: none; padding: 0; margin: 0; }
+.porte { border-bottom: 1px dotted var(--filet); padding: 0.9rem 0.2rem; }
+.porte a { display: block; text-decoration: none; color: inherit; }
+.porte-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.porte-nom { font-family: var(--serif); font-size: 1.08rem; color: var(--etoile); }
 .porte-mot { font-size: 0.8rem; color: var(--brume); white-space: nowrap; }
-.tiroir-portes .ici .porte-mot { color: var(--or-mana); }
-.tiroir-portes .bientot { opacity: 0.5; }
-.tiroir-fermer { display: block; margin: 0.4rem auto 0; }
+.porte-desc { display: block; margin-top: 0.35rem; color: var(--brume); line-height: 1.5; font-size: 0.92rem; }
+.porte.ici .porte-mot { color: var(--or-mana); }
+.porte.bientot { opacity: 0.55; }
+
+.assistante-signature p {
+  font-family: var(--serif); font-style: italic; color: var(--brume);
+  text-align: center; line-height: 1.6; max-width: 40ch; margin: 0 auto;
+}
 
 /* Le visage aux seuils — doré la nuit, marine le jour */
 .logo-seuil-wrap { text-align: center; margin: 0.4rem 0 0.2rem; }
