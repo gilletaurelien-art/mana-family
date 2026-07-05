@@ -32,6 +32,18 @@ function LogoSeuil() {
   )
 }
 
+/** Navigation constante — « ← Retour » collant en haut à gauche (au-dessus de tout) + un fixe en bas à gauche. */
+function RetourNav({ onRetour }: { onRetour: () => void }) {
+  return (
+    <>
+      <div className="retour-haut">
+        <button className="retour-btn" onClick={onRetour}><span aria-hidden="true">←</span> Retour</button>
+      </div>
+      <button className="retour-btn retour-bas" onClick={onRetour} aria-label="Retour"><span aria-hidden="true">←</span> Retour</button>
+    </>
+  )
+}
+
 function ThemeIcon({ jour, nuit }: { jour: string; nuit: string }) {
   return (
     <picture>
@@ -68,6 +80,7 @@ const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boo
 function AssistanteVue({ ciel, onRetour }: { ciel: CielData; onRetour: () => void }) {
   return (
     <div className="shell assistante-shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky assistante-hero">
         <div className="assistante-hero-texte">
           <h1>L'univers Mana</h1>
@@ -78,8 +91,7 @@ function AssistanteVue({ ciel, onRetour }: { ciel: CielData; onRetour: () => voi
             comment y vivre,<br />
             et les portes qu’elle ouvre.
           </p>
-          <p className="whisper"><button className="link" onClick={onRetour}>← Retour à la famille</button></p>
-        </div>
+          </div>
         <div className="assistante-hero-visage" aria-hidden="true">
           <img src="/logo-nuit.png" alt="" className="logo-nuit" />
           <img src="/logo-jour.png" alt="" className="logo-jour" />
@@ -303,7 +315,12 @@ export default function App() {
   }
 
   if (phase.ecran === 'fondation') {
-    return <Fondation onPrete={(nom, brouillon) => setPhase({ ecran: 'choisir-moi', nom, brouillon })} />
+    return (
+      <Fondation
+        onPrete={(nom, brouillon) => setPhase({ ecran: 'choisir-moi', nom, brouillon })}
+        onRetour={() => setPhase({ ecran: 'porte' })}
+      />
+    )
   }
 
   if (phase.ecran === 'choisir-moi') {
@@ -312,6 +329,7 @@ export default function App() {
         nom={phase.nom}
         brouillon={phase.brouillon}
         onChoisi={(index) => tenter(() => fonder(phase.nom, phase.brouillon, index))}
+        onRetour={() => setPhase({ ecran: 'fondation' })}
       />
     )
   }
@@ -499,7 +517,7 @@ function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
 
 /* ---------- Fondation du Cercle ---------- */
 
-function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]) => void }) {
+function Fondation({ onPrete, onRetour }: { onPrete: (nom: string, brouillon: AstreDraft[]) => void; onRetour: () => void }) {
   const [name, setName] = useState('')
   const [astres, setAstres] = useState<AstreDraft[]>([])
   const [draft, setDraft] = useState('')
@@ -516,6 +534,7 @@ function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]
 
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <LogoSeuil />
         <h1>Mana Family</h1>
@@ -563,9 +582,10 @@ function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]
   )
 }
 
-function ChoisirMoi({ nom, brouillon, onChoisi }: { nom: string; brouillon: AstreDraft[]; onChoisi: (index: number) => void }) {
+function ChoisirMoi({ nom, brouillon, onChoisi, onRetour }: { nom: string; brouillon: AstreDraft[]; onChoisi: (index: number) => void; onRetour: () => void }) {
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Famille {nom}</h1>
         <p className="whisper">Et toi, qui es-tu dans la famille ?</p>
@@ -591,9 +611,9 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
 
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Rejoindre</h1>
-        <p className="whisper"><button className="link" onClick={onRetour}>← retour</button></p>
       </header>
       <section className="card">
         <h2>La clé de la famille</h2>
@@ -636,11 +656,11 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
 function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHisse: (meId: string) => void; onRetour: () => void }) {
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Famille {heritage.name}</h1>
         <p className="whisper">
-          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} rejoindr{heritage.transmissions.length > 1 ? 'ont' : 'a'} la famille, dates et lueurs préservées.<br />
-          <button className="link" onClick={onRetour}>← retour</button>
+          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} rejoindr{heritage.transmissions.length > 1 ? 'ont' : 'a'} la famille, dates et lueurs préservées.
         </p>
       </header>
       <section className="card">
@@ -773,9 +793,9 @@ function ParametresVue({ me, onRetour, onCalendriers }: {
 
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Paramètres</h1>
-        <p className="whisper"><button className="link" onClick={onRetour}>← Retour</button></p>
       </header>
 
       <section className="card">
@@ -823,11 +843,10 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
 
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Les générations</h1>
-        <p className="whisper">
-          les générations, des aînés aux enfants · <button className="link" onClick={onRetour}>← Retour</button>
-        </p>
+        <p className="whisper">les générations, des aînés aux enfants</p>
       </header>
 
       {GENERATIONS.map((g) => {
@@ -904,11 +923,10 @@ function ChronologieVue({ ciel, onOuvrirFrise, onRetour }: {
 
   return (
     <div className="shell chrono-shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Le fil du temps</h1>
-        <p className="whisper">
-          souvenirs ← · aujourd'hui · → ce qui vient &nbsp;·&nbsp; <button className="link" onClick={onRetour}>← Retour</button>
-        </p>
+        <p className="whisper">souvenirs ← · aujourd'hui · → ce qui vient</p>
       </header>
 
       {items.length === 0 ? (
@@ -961,11 +979,10 @@ function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
 
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Le jardin</h1>
-        <p className="whisper">
-          Les familles où vous comptez · <button className="link" onClick={onRetour}>← Retour</button>
-        </p>
+        <p className="whisper">Les familles où vous comptez</p>
       </header>
 
       {galaxies === null ? (
@@ -1008,9 +1025,9 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 }) {
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>La clé de la maison</h1>
-        <p className="whisper"><button className="link" onClick={onRetour}>← Retour</button></p>
       </header>
       <section className="card" style={{ textAlign: 'center' }}>
         <p>Chaque proche ouvre l'application sur son appareil, choisit « Rejoindre avec une clé », et entre :</p>
@@ -1087,6 +1104,7 @@ function Composer({ ciel, me, onDone }: {
 
   return (
     <div className="shell">
+      <RetourNav onRetour={() => onDone(null)} />
       <header className="sky assistante-hero carnet-hero composer-hero">
         <div className="carnet-hero-top">
           <div className="assistante-hero-texte">
@@ -1095,7 +1113,6 @@ function Composer({ ciel, me, onDone }: {
               Un acte de soin aujourd'hui,<br />
               un acte de mémoire demain.
             </p>
-            <p className="whisper"><button className="link" onClick={() => onDone(null)}>← Retour</button></p>
           </div>
           <div className="assistante-hero-visage carnet-hero-visage" aria-hidden="true">
             <img src="/ecrire-hero-nuit.png" alt="" className="logo-nuit" />
@@ -1285,6 +1302,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
 
   return (
     <div className="shell">
+      <RetourNav onRetour={onRetour} />
       {!sujet ? (
         <header className="sky assistante-hero carnet-hero">
           <div className="carnet-hero-top">
@@ -1296,7 +1314,6 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
                 Tout ce qu’on a partagé,<br />
                 du plus récent au plus ancien.
               </p>
-              <p className="whisper"><button className="link" onClick={onRetour}>← Retour</button></p>
             </div>
             <div className="assistante-hero-visage carnet-hero-visage" aria-hidden="true">
               <img src="/carnet-hero-nuit.png" alt="" className="logo-nuit" />
@@ -1337,10 +1354,8 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
         <h1>{sujet ? nomIntime(sujet) : 'Le carnet de famille'}</h1>
         <p className="whisper">
-          <button className="link" onClick={onRetour}>← Retour</button>
           {sujet && (
             <>
-              {' · '}
               <label className="link portrait-label">
                 {sujet.avatarUrl ? 'changer le portrait' : 'poser un portrait'}
                 <input

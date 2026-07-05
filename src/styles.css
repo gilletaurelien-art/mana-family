@@ -91,6 +91,31 @@ body::before {
 
 .shell { max-width: 480px; margin: 0 auto; padding: 1.2rem 1rem 6rem; }
 
+/* Navigation constante — Retour collant en haut, Retour fixe en bas à gauche */
+.retour-haut {
+  position: sticky; top: 0; z-index: 30;
+  margin: -1.2rem -1rem 0.6rem; padding: 0.55rem 1rem 0.5rem;
+  background: linear-gradient(var(--fond) 60%, transparent);
+}
+.retour-btn {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  background: transparent; border: none; padding: 0.2rem 0.1rem;
+  color: var(--brume); font-size: 0.85rem; font-style: italic; font-family: var(--serif);
+}
+.retour-btn span { font-style: normal; }
+.retour-btn:hover { color: var(--or-mana); }
+.retour-bas {
+  position: fixed; left: 0.9rem; bottom: 0.9rem; z-index: 60;
+  padding: 0.55rem 1rem; border-radius: 999px;
+  background: var(--cale); border: 1px solid var(--filet);
+  color: var(--etoile); font-style: normal;
+  box-shadow: 0 6px 22px rgba(3, 7, 15, 0.55);
+}
+@media (prefers-color-scheme: light) {
+  .retour-bas { background: #fff; box-shadow: 0 6px 20px rgba(43, 82, 117, 0.18); }
+}
+.retour-bas:hover { border-color: var(--or-mana); color: var(--or-mana); }
+
 /* Le ciel — les titres portent la mémoire, donc le serif */
 .sky { text-align: center; padding: 1.2rem 0 0.6rem; }
 
