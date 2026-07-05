@@ -97,3 +97,6 @@ Cinq familles (dont une aisée, une recomposée). On ne présente pas un produit
 
 * **La physique du système** : *la Présence est le moteur, la Mémoire est le volant d'inertie, l'Amour est la gravité.* Excellente à l'oral, trop dense pour l'écrit.
 * **Le test du dîner** : raconter la Biographie d'un astre à cinq familles et regarder les yeux — l'anecdote fondatrice à raconter le jour où elle aura eu lieu.
+* **Le manifeste du droit à la respiration** (Corvus, nuit du 05/07) — pour une future page manifeste ou une conférence :
+  > Mana Family reconnaît qu'une famille peut traverser des jours, des semaines ou des mois de silence. Le silence n'est ni un oubli, ni un échec. Il est parfois le signe d'une vie pleinement vécue. L'application n'interrompt jamais ce repos. Elle attend. **Comme une maison attend le retour de ceux qui l'habitent.**
+* **L'algorithme de bienveillance** — la formule qui résume tout face à un investisseur : *un algorithme d'engagement cherche à supprimer tous les silences ; un algorithme de bienveillance les protège.* Et sa devise : *une bonne application est une application qu'on peut oublier sans culpabiliser.*
