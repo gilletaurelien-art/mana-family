@@ -32,6 +32,15 @@ function LogoSeuil() {
   )
 }
 
+function ThemeIcon({ jour, nuit }: { jour: string; nuit: string }) {
+  return (
+    <picture>
+      <source media="(prefers-color-scheme: light)" srcSet={jour} />
+      <img src={nuit} alt="" />
+    </picture>
+  )
+}
+
 /** Le tiroir — le vestibule discret de l'univers Mana + l'assistante (silencieuse pour l'instant). */
 function TiroirUnivers({ ouvert, onClose }: { ouvert: boolean; onClose: () => void }) {
   if (!ouvert) return null
@@ -85,6 +94,13 @@ function estAnniversaire(birthDate: string): boolean {
 
 function naissanceEnClair(birthDate: string): string {
   return new Date(birthDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
+function dateIsoDuJour(date = new Date()): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 /* ---------- Les glyphes gravés — line-art, monde céleste & nautique ---------- */
@@ -626,17 +642,17 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
 
       <div className="barre-bas">
         <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-          <span className="geste-rond geste-visage"><img src="/avatar-carnet.png" alt="" /></span>
+          <span className="geste-rond geste-visage"><ThemeIcon jour="/avatar-carnet-jour.png" nuit="/avatar-carnet-nuit.png" /></span>
           <span className="geste-mot">lire</span>
         </button>
 
         <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-          <span className="geste-rond geste-mandala"><img src="/avatar-ecrire.png" alt="" /></span>
+          <span className="geste-rond geste-mandala"><ThemeIcon jour="/avatar-ecrire-jour.png" nuit="/avatar-ecrire-nuit.png" /></span>
           <span className="geste-mot">écrire</span>
         </button>
 
         <button className="geste" onClick={() => setTiroirOuvert(true)} aria-label="L'univers Mana — l'assistante">
-          <span className="geste-rond geste-visage"><img src="/avatar-univers.png" alt="" /></span>
+          <span className="geste-rond geste-visage"><ThemeIcon jour="/avatar-univers-jour.png" nuit="/avatar-univers-nuit.png" /></span>
           <span className="geste-mot">l'assistante</span>
         </button>
       </div>
@@ -924,6 +940,16 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 
 /* ---------- Composer ---------- */
 
+const KIND_GROUPS: { label: string; kinds: TransmissionKind[] }[] = [
+  { label: 'Passé', kinds: ['souvenir'] },
+  { label: 'Présent', kinds: ['sante', 'emotionnel', 'ensemble', 'accompagner'] },
+  { label: 'Futur', kinds: ['organiser'] },
+]
+
+function kindMeta(kind: TransmissionKind) {
+  return KINDS.find((k) => k.kind === kind) ?? { kind, label: kind }
+}
+
 function Composer({ ciel, me, onDone }: {
   ciel: CielData
   me: Astre
@@ -934,7 +960,7 @@ function Composer({ ciel, me, onDone }: {
   const [recipients, setRecipients] = useState<string[]>(others.map((a) => a.id))
   const [aboutId, setAboutId] = useState<string | null>(null)
   const [body, setBody] = useState('')
-  const [quand, setQuand] = useState('')
+  const [quand, setQuand] = useState(() => dateIsoDuJour())
 
   const toggle = (id: string) =>
     setRecipients((r) => (r.includes(id) ? r.filter((x) => x !== id) : [...r, id]))
@@ -947,12 +973,22 @@ function Composer({ ciel, me, onDone }: {
       </header>
 
       <section className="card">
-        <div className="kind-grid">
-          {KINDS.map((k) => (
-            <button key={k.kind} className={`kind ${kind === k.kind ? 'on' : ''}`} onClick={() => setKind(k.kind)}>
-              <span className="kind-glyph"><KindGlyph kind={k.kind} /></span>
-              {k.label}
-            </button>
+        <div className="kind-time-groups">
+          {KIND_GROUPS.map((group) => (
+            <div className="kind-time-group" key={group.label}>
+              <span className="kind-time-label">{group.label}</span>
+              <div className="kind-time-row">
+                {group.kinds.map((kindId) => {
+                  const k = kindMeta(kindId)
+                  return (
+                    <button key={k.kind} className={`kind ${kind === k.kind ? 'on' : ''}`} onClick={() => setKind(k.kind)}>
+                      <span className="kind-glyph"><KindGlyph kind={k.kind} /></span>
+                      {k.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           ))}
         </div>
 
@@ -984,7 +1020,7 @@ function Composer({ ciel, me, onDone }: {
         </div>
 
         <textarea
-          placeholder="Il a eu 39 de fièvre cette nuit — paracétamol à 6h, il dort bien là."
+          placeholder="On a ri tous ensemble après le dîner — un petit bonheur simple qui a rempli la maison."
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={3}
@@ -994,7 +1030,7 @@ function Composer({ ciel, me, onDone }: {
         <div className="row naissance-row">
           <input type="date" value={quand} onChange={(e) => setQuand(e.target.value)} aria-label="Quand" />
           <span className="whisper naissance-note">
-            {kind === 'organiser' ? 'ce qui vient — la date du rendez-vous' : kind === 'souvenir' ? 'le jour du souvenir, s’il a une date' : 'facultatif — pour la place sur le fil du temps'}
+            {kind === 'organiser' ? 'ce qui vient — la date du rendez-vous' : kind === 'souvenir' ? 'le jour du souvenir, modifiable si besoin' : "aujourd'hui par défaut — modifiable si besoin"}
           </span>
         </div>
 

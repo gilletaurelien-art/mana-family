@@ -68,15 +68,14 @@ export interface Constellation {
   transmissions: Transmission[]
 }
 
-// Ordre : du soin d'aujourd'hui vers la mémoire de demain. Register mixte assumé
-// (domaines concrets pour la grand-mère + verbes-gestes qui réchauffent).
+// Ordre temporel : passé → présent → futur.
 export const KINDS: { kind: TransmissionKind; label: string }[] = [
+  { kind: 'souvenir', label: 'Souvenir' },
   { kind: 'sante', label: 'Santé' },
   { kind: 'emotionnel', label: 'Émotion' },
   { kind: 'ensemble', label: 'Ensemble' },
   { kind: 'accompagner', label: 'Accompagner' },
   { kind: 'organiser', label: 'Organiser' },
-  { kind: 'souvenir', label: 'Souvenir' },
 ]
 
 export const ROLES: { role: Role; label: string; circle: 1 | 2 | 3 }[] = [
