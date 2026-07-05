@@ -573,21 +573,21 @@ button:disabled { opacity: 0.35; cursor: default; }
 .geste-visage { background: #f8f9fa; border-color: rgba(43, 82, 117, 0.25); }
 .geste-visage img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* écrire — le cœur doré, plus grand, l'âme du galet en rond (le point qui respire) */
+/* écrire — le cœur doré, plus grand : le médaillon du mandala, qui respire (invitation) */
 .geste-ecrire .geste-rond {
   width: 72px; height: 72px;
-  background: radial-gradient(ellipse at 50% 32%, rgba(234, 230, 223, 0.16), rgba(234, 230, 223, 0.04) 72%);
-  border-color: rgba(229, 184, 66, 0.4);
-  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.3);
+  border-color: rgba(229, 184, 66, 0.45);
+  animation: ecrire-respire 12s ease-in-out infinite;
 }
+.geste-mandala img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .geste-ecrire .geste-mot { color: var(--or-sombre); font-weight: 600; }
-.geste-dot {
-  width: 12px; height: 12px; border-radius: 50%;
-  background: var(--or-mana); box-shadow: 0 0 14px 4px rgba(229, 184, 66, 0.5);
-  animation: respire 12s ease-in-out infinite;
+@keyframes ecrire-respire {
+  0%, 100% { box-shadow: 0 0 12px rgba(229, 184, 66, 0.2); }
+  50%      { box-shadow: 0 0 24px rgba(229, 184, 66, 0.42); }
 }
+.geste-ecrire:active .geste-rond { transform: scale(1.06); }
 @media (prefers-color-scheme: dark) { .geste-ecrire .geste-mot { color: var(--or-mana); } }
-@media (prefers-reduced-motion: reduce) { .geste-dot { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .geste-ecrire .geste-rond { animation: none; } }
 
 /* Le galet — une invitation, pas un ordre. Concave, poli par la mer. */
 .galet {

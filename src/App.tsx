@@ -631,7 +631,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
         </button>
 
         <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-          <span className="geste-rond"><span className="geste-dot" /></span>
+          <span className="geste-rond geste-mandala"><img src="/avatar-ecrire.png" alt="" /></span>
           <span className="geste-mot">écrire</span>
         </button>
 
