@@ -1105,33 +1105,40 @@ function Composer({ ciel, me, onDone }: {
       </header>
 
       <section className="card composer-card">
-        <h2>Pour</h2>
-        <div className="chips">
-          <button
-            className={`chip ${recipients.length === others.length ? 'on' : ''}`}
-            onClick={() => setRecipients(others.map((a) => a.id))}
-          >
-            la famille
-          </button>
-          {others.map((a) => (
-            <button key={a.id} className={`chip ${recipients.includes(a.id) ? 'on' : ''}`} onClick={() => toggle(a.id)}>
-              {nomIntime(a)}
+        {/* 1. Le message */}
+        <div className="message-zone">
+          <textarea
+            placeholder="On a ri tous ensemble après le dîner — un petit bonheur simple qui a rempli la maison."
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={4}
+          />
+          {dicteeDispo && (
+            <button
+              type="button"
+              className={`dictee ${ecoute ? 'on' : ''}`}
+              onClick={dicter}
+              aria-label={ecoute ? 'Arrêter la dictée' : 'Dicter le message'}
+              title={ecoute ? 'Arrêter la dictée' : 'Dicter — la voix devient mémoire'}
+            >
+              <MicGlyph actif={ecoute} />
             </button>
-          ))}
+          )}
         </div>
+        <p className="whisper naissance-note message-aide">
+          {ecoute ? 'Je vous écoute…' : 'Écrivez, ou touchez le micro pour dicter.'}
+        </p>
 
-        <h2>Au sujet de</h2>
-        <div className="chips">
-          <button className={`chip ${aboutId === null ? 'on' : ''}`} onClick={() => setAboutId(null)}>
-            la famille
-          </button>
-          {ciel.astres.map((a) => (
-            <button key={a.id} className={`chip ${aboutId === a.id ? 'on' : ''}`} onClick={() => setAboutId(a.id)}>
-              {nomIntime(a)}
-            </button>
-          ))}
+        {/* 2. Pièce jointe */}
+        <h2>Pièce jointe</h2>
+        <div className="pj-ligne">
+          <span className="pj-option bientot"><PjGlyph type="photo" /> Photo</span>
+          <span className="pj-option bientot"><PjGlyph type="video" /> Vidéo</span>
+          <span className="pj-option bientot"><PjGlyph type="audio" /> Audio</span>
         </div>
+        <p className="whisper naissance-note">en direct ou depuis la galerie — <b>bientôt</b></p>
 
+        {/* 3. Passé · présent · futur */}
         <div className="kind-ligne">
           {KIND_GROUPS.map((group, gi) => (
             <div className={`kind-groupe ${group.kinds.includes(kind as TransmissionKind) ? 'actif' : ''}`} key={group.label}>
@@ -1161,36 +1168,34 @@ function Composer({ ciel, me, onDone }: {
           </div>
         )}
 
-        <div className="message-zone">
-          <textarea
-            placeholder="On a ri tous ensemble après le dîner — un petit bonheur simple qui a rempli la maison."
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            rows={4}
-          />
-          {dicteeDispo && (
-            <button
-              type="button"
-              className={`dictee ${ecoute ? 'on' : ''}`}
-              onClick={dicter}
-              aria-label={ecoute ? 'Arrêter la dictée' : 'Dicter le message'}
-              title={ecoute ? 'Arrêter la dictée' : 'Dicter — la voix devient mémoire'}
-            >
-              <MicGlyph actif={ecoute} />
+        {/* 4. Au sujet de */}
+        <h2>Au sujet de</h2>
+        <div className="chips">
+          <button className={`chip ${aboutId === null ? 'on' : ''}`} onClick={() => setAboutId(null)}>
+            la famille
+          </button>
+          {ciel.astres.map((a) => (
+            <button key={a.id} className={`chip ${aboutId === a.id ? 'on' : ''}`} onClick={() => setAboutId(a.id)}>
+              {nomIntime(a)}
             </button>
-          )}
+          ))}
         </div>
-        <p className="whisper naissance-note message-aide">
-          {ecoute ? 'Je vous écoute…' : 'Écrivez, ou touchez le micro pour dicter.'}
-        </p>
 
-        <h2>Pièce jointe</h2>
-        <div className="pj-ligne">
-          <span className="pj-option bientot"><PjGlyph type="photo" /> Photo</span>
-          <span className="pj-option bientot"><PjGlyph type="video" /> Vidéo</span>
-          <span className="pj-option bientot"><PjGlyph type="audio" /> Audio</span>
+        {/* 5. Pour */}
+        <h2>Pour</h2>
+        <div className="chips">
+          <button
+            className={`chip ${recipients.length === others.length ? 'on' : ''}`}
+            onClick={() => setRecipients(others.map((a) => a.id))}
+          >
+            la famille
+          </button>
+          {others.map((a) => (
+            <button key={a.id} className={`chip ${recipients.includes(a.id) ? 'on' : ''}`} onClick={() => toggle(a.id)}>
+              {nomIntime(a)}
+            </button>
+          ))}
         </div>
-        <p className="whisper naissance-note">en direct ou depuis la galerie — <b>bientôt</b></p>
 
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>
