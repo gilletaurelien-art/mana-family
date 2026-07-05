@@ -23,7 +23,7 @@ type Geste =
   | { geste: 'veiller'; txId: string }
   | { geste: 'portrait'; astreId: string; url: string }
   | { geste: 'naissance'; astreId: string; date: string }
-  | { geste: 'profil'; astreId: string; nom: string; surnom: string; date: string | null; role: Role }
+  | { geste: 'profil'; astreId: string; nom: string; surnom: string; date: string | null; role: Role; pays: string; codePostal: string }
   | { geste: 'calendriers'; astreId: string; calendarIds: CalendarLayerId[] }
 
 function lireOutbox(): Geste[] {
@@ -47,7 +47,7 @@ async function jouer(g: Geste): Promise<void> {
   } else if (g.geste === 'naissance') {
     await rpc('poser_naissance', { p_astre: g.astreId, p_date: g.date })
   } else if (g.geste === 'profil') {
-    await rpc('modifier_profil', { p_astre: g.astreId, p_nom: g.nom, p_surnom: g.surnom, p_date: g.date, p_role: g.role })
+    await rpc('modifier_profil', { p_astre: g.astreId, p_nom: g.nom, p_surnom: g.surnom, p_date: g.date, p_role: g.role, p_pays: g.pays, p_code_postal: g.codePostal })
   } else if (g.geste === 'calendriers') {
     await rpc('modifier_calendriers', { p_astre: g.astreId, p_calendriers: g.calendarIds })
   } else {
@@ -123,7 +123,7 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
     } else if (g.geste === 'naissance') {
       next = { ...next, astres: next.astres.map((a) => (a.id === g.astreId ? { ...a, birthDate: g.date } : a)) }
     } else if (g.geste === 'profil') {
-      next = appliquerProfil(next, g.astreId, g.nom, g.surnom, g.date, g.role)
+      next = appliquerProfil(next, g.astreId, g.nom, g.surnom, g.date, g.role, g.pays, g.codePostal)
     } else if (g.geste === 'calendriers') {
       next = appliquerCalendriers(next, g.astreId, g.calendarIds)
     }
@@ -190,21 +190,21 @@ export function poserNaissance(ciel: Ciel, astreId: string, date: string): Ciel 
   return { ...ciel, astres: ciel.astres.map((a) => (a.id === astreId ? { ...a, birthDate: date } : a)) }
 }
 
-function appliquerProfil(ciel: Ciel, astreId: string, nom: string, surnom: string, date: string | null, role: Role): Ciel {
+function appliquerProfil(ciel: Ciel, astreId: string, nom: string, surnom: string, date: string | null, role: Role, pays: string, codePostal: string): Ciel {
   const circle: 1 | 2 | 3 = role === 'grand_parent' || role === 'soutien' ? 2 : role === 'famille' ? 3 : 1
   return {
     ...ciel,
     astres: ciel.astres.map((a) =>
       a.id === astreId
-        ? { ...a, name: nom, nickname: surnom.trim() || null, birthDate: date ?? a.birthDate, role, circle }
+        ? { ...a, name: nom, nickname: surnom.trim() || null, birthDate: date ?? a.birthDate, role, circle, country: pays.trim() || null, postalCode: codePostal.trim() || null }
         : a,
     ),
   }
 }
 
-export function modifierProfil(ciel: Ciel, astreId: string, nom: string, surnom: string, date: string | null, role: Role): Ciel {
-  enfiler({ geste: 'profil', astreId, nom, surnom, date, role })
-  return appliquerProfil(ciel, astreId, nom, surnom, date, role)
+export function modifierProfil(ciel: Ciel, astreId: string, nom: string, surnom: string, date: string | null, role: Role, pays: string, codePostal: string): Ciel {
+  enfiler({ geste: 'profil', astreId, nom, surnom, date, role, pays, codePostal })
+  return appliquerProfil(ciel, astreId, nom, surnom, date, role, pays, codePostal)
 }
 
 function appliquerCalendriers(ciel: Ciel, astreId: string, calendarIds: CalendarLayerId[]): Ciel {

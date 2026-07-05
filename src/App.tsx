@@ -227,7 +227,7 @@ export default function App() {
         onVeiller={(txId) => setCiel(veiller(ciel, txId))}
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
-        onProfil={(astreId, nom, surnom, date, role) => setCiel(modifierProfil(ciel, astreId, nom, surnom, date, role))}
+        onProfil={(astreId, nom, surnom, date, role, pays, codePostal) => setCiel(modifierProfil(ciel, astreId, nom, surnom, date, role, pays, codePostal))}
       />
     )
   }
@@ -843,12 +843,14 @@ function Composer({ ciel, me, onDone }: {
 
 function ProfilForm({ sujet, onEnregistrer }: {
   sujet: Astre
-  onEnregistrer: (nom: string, surnom: string, date: string | null, role: Role) => void
+  onEnregistrer: (nom: string, surnom: string, date: string | null, role: Role, pays: string, codePostal: string) => void
 }) {
   const [nom, setNom] = useState(sujet.name)
   const [surnom, setSurnom] = useState(sujet.nickname ?? '')
   const [date, setDate] = useState(sujet.birthDate ?? '')
   const [role, setRole] = useState<Role>(sujet.role)
+  const [codePostal, setCodePostal] = useState(sujet.postalCode ?? '')
+  const [pays, setPays] = useState(sujet.country ?? '')
 
   return (
     <section className="card profil-form">
@@ -869,7 +871,12 @@ function ProfilForm({ sujet, onEnregistrer }: {
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Date de naissance" />
         <span className="whisper naissance-note">naissance — facultatif</span>
       </div>
-      <button className="primary" disabled={!nom.trim()} onClick={() => onEnregistrer(nom.trim(), surnom, date || null, role)}>
+      <div className="row">
+        <input value={codePostal} onChange={(e) => setCodePostal(e.target.value)} aria-label="Code postal" placeholder="Code postal" style={{ flex: '0 0 8rem' }} />
+        <input value={pays} onChange={(e) => setPays(e.target.value)} aria-label="Pays" placeholder="Pays" />
+      </div>
+      <p className="whisper naissance-note">où l'on vit — facultatif, pour la proximité et les événements du coin</p>
+      <button className="primary" disabled={!nom.trim()} onClick={() => onEnregistrer(nom.trim(), surnom, date || null, role, pays, codePostal)}>
         Enregistrer
       </button>
     </section>
@@ -886,7 +893,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
   onVeiller: (txId: string) => void
   onPortrait: (astreId: string, dataUrl: string) => void
   onNaissance: (astreId: string, date: string) => void
-  onProfil: (astreId: string, nom: string, surnom: string, date: string | null, role: Role) => void
+  onProfil: (astreId: string, nom: string, surnom: string, date: string | null, role: Role, pays: string, codePostal: string) => void
 }) {
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const [enEdition, setEnEdition] = useState(false)
@@ -930,11 +937,14 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
         {sujet && enEdition && (
           <ProfilForm
             sujet={sujet}
-            onEnregistrer={(nom, surnom, date, role) => {
-              onProfil(sujet.id, nom, surnom, date, role)
+            onEnregistrer={(nom, surnom, date, role, pays, codePostal) => {
+              onProfil(sujet.id, nom, surnom, date, role, pays, codePostal)
               setEnEdition(false)
             }}
           />
+        )}
+        {sujet && !enEdition && (sujet.postalCode || sujet.country) && (
+          <p className="naissance">{[sujet.postalCode, sujet.country].filter(Boolean).join(' · ')}</p>
         )}
         {sujet && !enEdition && (
           sujet.birthDate ? (

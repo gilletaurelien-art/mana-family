@@ -31,6 +31,9 @@ export interface Astre {
   nickname?: string | null
   /** Couches de temps choisies par cet astre. Vide par défaut : MANA n'impose aucune tradition. */
   calendarIds?: CalendarLayerId[]
+  /** Pays et code postal — facultatifs, jamais exigés. Préparent la proximité et les événements de la commune. */
+  country?: string | null
+  postalCode?: string | null
 }
 
 /** La voix du quotidien : le surnom s'il existe, sinon le prénom. */
