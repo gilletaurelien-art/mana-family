@@ -4,7 +4,7 @@
 --
 -- Doctrine embarquée (livre blanc v2.7) :
 --  * le graphe est centré sur les PERSONNES (astres), jamais sur un foyer payeur
---  * un astre peut appartenir à plusieurs constellations (famille recomposée)
+--  * un astre peut appartenir à plusieurs galaxies familiales (famille recomposée)
 --  * la mémoire brute n'est JAMAIS effacée par Mana ; chaque astre reste
 --    souverain de sa propre lumière (voile, retrait, RGPD sur ses données)
 --  * la veille (lueur) est ASYMÉTRIQUE : on enregistre qui a veillé,
@@ -35,9 +35,9 @@ create table constellations (
 );
 
 -- ------------------------------------------------------------
--- MEMBRES — l'appartenance d'un astre à une constellation, par Cercle
+-- MEMBRES — l'appartenance d'un astre à une famille, par Cercle
 -- circle_level : 1 = nucléaire, 2 = élargi, 3 = étendu
--- Un enfant en co-parentalité = memberships dans DEUX constellations niveau 1.
+-- Un enfant en co-parentalité = memberships dans DEUX familles niveau 1.
 -- ------------------------------------------------------------
 create table members (
   id               uuid primary key default gen_random_uuid(),
@@ -53,7 +53,7 @@ create table members (
 -- ------------------------------------------------------------
 -- VOILES — la souveraineté de chaque astre sur sa propre lumière
 -- Un voile actif masque la continuité de l'astre aux autres membres
--- de la constellation visée, SANS rien détruire : l'archive de l'astre
+-- de la famille visée, SANS rien détruire : l'archive de l'astre
 -- reste entière pour lui-même. Lever un voile est toujours possible.
 -- ------------------------------------------------------------
 create table veils (
@@ -96,7 +96,7 @@ comment on column transmission_recipients.veilled_at is
 -- ------------------------------------------------------------
 -- RLS — esquisse (à durcir avec le DPO avant toute bêta)
 --  * un astre lit les transmissions dont il est auteur ou destinataire,
---    dans les constellations où il est membre non voilé
+--    dans les familles où il est membre non voilé
 --  * les données d'un astre mineur ne sont lisibles que par les adultes
 --    guardians de ses cercles
 --  * un voile actif retire la continuité de l'astre des lectures des autres

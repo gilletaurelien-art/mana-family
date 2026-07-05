@@ -8,7 +8,7 @@
 -- ------------------------------------------------------------
 -- 1. LE TEMPS ENTRE DANS LES APPARTENANCES
 -- L'audience d'une transmission se fige au moment où elle est faite ;
--- une scission de constellation ne réécrit jamais l'histoire.
+-- une scission de famille ne réécrit jamais l'histoire.
 -- On ne supprime jamais un membre : on clôt son appartenance.
 -- ------------------------------------------------------------
 alter table members
@@ -23,7 +23,7 @@ comment on column members.ended_at is
 
 -- ------------------------------------------------------------
 -- 2. LA GARDE EST UNE RELATION, PAS UN BOOLÉEN
--- Un adulte n'est pas « gardien de la constellation » : il est gardien
+-- Un adulte n'est pas « gardien de la famille » : il est gardien
 -- d'un enfant précis, sur une période précise, avec un périmètre précis.
 -- (Le défaut à 18 mois identifié par Codex — recomposée oblige.)
 -- ------------------------------------------------------------
@@ -44,7 +44,7 @@ create table guardianships (
 create index guardianships_par_enfant on guardianships(child_astre_id) where ends_at is null;
 
 comment on table guardianships is
-  'Relation personne-personne, temporelle, bornée en périmètre. La RLS des enfants s''appuie ici, jamais sur un flag de constellation.';
+  'Relation personne-personne, temporelle, bornée en périmètre. La RLS des enfants s''appuie ici, jamais sur un flag de famille.';
 
 -- ------------------------------------------------------------
 -- 3. LES INVARIANTS DEVIENNENT DES CONTRAINTES
@@ -56,7 +56,7 @@ create unique index veils_un_seul_actif on veils(astre_id, constellation_id) whe
 alter table veils
   add constraint veils_chronologie check (lifted_at is null or lifted_at >= veiled_at);
 
--- L'auteur d'une transmission est membre de la constellation où il transmet.
+-- L'auteur d'une transmission est membre de la famille où il transmet.
 alter table transmissions
   add constraint transmissions_author_is_member
   foreign key (constellation_id, author_astre_id)

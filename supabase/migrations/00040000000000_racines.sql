@@ -4,6 +4,10 @@
 -- au contrat public : fondation, import, lecture, et pose après coup.
 -- ============================================================
 
+-- Le petit nom de la maison — la couche intime de la Présence.
+-- Le prénom reste la voix de la Mémoire (galaxie, profil) ; le surnom, celle du quotidien.
+alter table astres add column if not exists nickname text;
+
 -- Poser (ou corriger) une date de naissance — même cercle de confiance que le portrait.
 create or replace function poser_naissance(p_astre uuid, p_date date)
 returns jsonb
@@ -13,7 +17,7 @@ begin
   v := mf_lien();
   if v is null then raise exception 'appareil non relié'; end if;
   if not exists (select 1 from members where constellation_id = v.constellation_id and astre_id = p_astre) then
-    raise exception 'astre hors de la constellation';
+    raise exception 'astre hors de la famille';
   end if;
   update astres set birth_date = p_date where id = p_astre;
   return jsonb_build_object('ok', true);
@@ -94,7 +98,7 @@ returns jsonb
 language sql stable security definer set search_path = public, pg_temp as $$
   select coalesce(jsonb_agg(jsonb_build_object(
     'id', a.id, 'name', a.display_name, 'role', m.role, 'circle', m.circle_level,
-    'avatarUrl', a.avatar_url, 'birthDate', a.birth_date
+    'avatarUrl', a.avatar_url, 'birthDate', a.birth_date, 'nickname', a.nickname
   ) order by m.created_at), '[]'::jsonb)
   from constellations c
   join members m on m.constellation_id = c.id and m.ended_at is null
@@ -102,7 +106,7 @@ language sql stable security definer set search_path = public, pg_temp as $$
   where c.invite_code = p_code;
 $$;
 
--- ma_constellation : expose birthDate.
+-- Projection de la famille : expose birthDate.
 create or replace function ma_constellation()
 returns jsonb
 language plpgsql stable security definer set search_path = public, pg_temp as $$
@@ -117,7 +121,7 @@ begin
     'astres', (
       select coalesce(jsonb_agg(jsonb_build_object(
         'id', a.id, 'name', a.display_name, 'role', m.role, 'circle', m.circle_level,
-        'avatarUrl', a.avatar_url, 'birthDate', a.birth_date
+        'avatarUrl', a.avatar_url, 'birthDate', a.birth_date, 'nickname', a.nickname
       ) order by m.created_at), '[]'::jsonb)
       from members m join astres a on a.id = m.astre_id
       where m.constellation_id = c.id and m.ended_at is null
@@ -127,7 +131,7 @@ begin
         select jsonb_build_object(
           'id', t.id, 'authorId', t.author_astre_id, 'aboutId', t.about_astre_id,
           'kind', t.kind, 'body', t.body, 'createdAt', t.created_at,
-          'recipientIds', (select coalesce(jsonb_agg(g.astre_id), '[]'::jsonb) from transmission_grants g where g.transmission_id = t.id),
+          'forMe', exists (select 1 from transmission_grants g where g.transmission_id = t.id and g.astre_id = v.astre_id),
           'veilles', (select coalesce(jsonb_object_agg(l.astre_id, l.veilled_server_at), '{}'::jsonb) from transmission_lueurs l where l.transmission_id = t.id)
         ) as tx
         from transmissions t
@@ -143,9 +147,10 @@ begin
   return r;
 end $$;
 
--- Modifier le profil d'un astre : prénom, naissance, place dans la famille.
--- Même cercle de confiance que le portrait (membre de la constellation).
-create or replace function modifier_profil(p_astre uuid, p_nom text, p_date date, p_role text)
+-- Modifier le profil d'un astre : prénom, surnom (le petit nom, intime),
+-- naissance, place dans la famille. Même cercle de confiance que le portrait.
+drop function if exists modifier_profil(uuid, text, date, text);
+create or replace function modifier_profil(p_astre uuid, p_nom text, p_surnom text, p_date date, p_role text)
 returns jsonb
 language plpgsql security definer set search_path = public, pg_temp as $$
 declare v device_links;
@@ -153,10 +158,13 @@ begin
   v := mf_lien();
   if v is null then raise exception 'appareil non relié'; end if;
   if not exists (select 1 from members where constellation_id = v.constellation_id and astre_id = p_astre) then
-    raise exception 'astre hors de la constellation';
+    raise exception 'astre hors de la famille';
   end if;
   if p_nom is not null and length(trim(p_nom)) > 0 then
     update astres set display_name = trim(p_nom) where id = p_astre;
+  end if;
+  if p_surnom is not null then
+    update astres set nickname = nullif(trim(p_surnom), '') where id = p_astre; -- '' efface le surnom
   end if;
   if p_date is not null then
     update astres set birth_date = p_date where id = p_astre;
@@ -172,5 +180,5 @@ end $$;
 
 revoke execute on function poser_naissance(uuid, date) from public, anon;
 grant execute on function poser_naissance(uuid, date) to authenticated;
-revoke execute on function modifier_profil(uuid, text, date, text) from public, anon;
-grant execute on function modifier_profil(uuid, text, date, text) to authenticated;
+revoke execute on function modifier_profil(uuid, text, text, date, text) from public, anon;
+grant execute on function modifier_profil(uuid, text, text, date, text) to authenticated;

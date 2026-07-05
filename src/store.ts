@@ -1,8 +1,8 @@
 import type { Constellation } from './types'
 
 /**
- * Héritage de l'incrément 1 : la constellation locale d'un seul navigateur.
- * Ce module ne sert plus qu'à la retrouver pour la hisser vers le ciel
+ * Héritage de l'incrément 1 : la famille locale d'un seul navigateur.
+ * Ce module ne sert plus qu'à la retrouver pour l'ouvrir dans la galaxie
  * partagé — puis à l'archiver (on n'efface jamais, on archive).
  */
 

@@ -21,7 +21,7 @@ Les cinq soins sont des variantes **sourdes, jamais saturées** : santé et éco
 
 ## Grammaire visuelle
 
-- **Pas de feed.** L'accueil visé est la **Constellation** : les astres disposés organiquement, halo Or Mana flou autour d'un astre quand quelqu'un a veillé. *(Incrément à venir — rejoint la « carte stellaire » des pistes produit. La v0 affiche le fil de vie, calme, sans scroll infini.)*
+- **Pas de feed.** L'accueil visé est la **galaxie familiale** : les astres disposés organiquement, halo Or Mana flou autour d'un astre quand quelqu'un a veillé. *(Incrément à venir — rejoint la « carte stellaire » des pistes produit. La v0 affiche le fil de vie, calme, sans scroll infini.)*
 - **La Lueur** : jamais de point rouge, jamais de chiffre « 1 ». Une chaleur, pas une alerte. Et toujours asymétrique (livre blanc §6).
 - **Le bouton Transmettre** : pièce de laiton — dégradé or, liseré clair, ombre chaude.
 - **Les séparateurs** : filets **pointillés** (les routes maritimes des cartes anciennes) ou respiration Toile de Lin. Jamais de ligne grise standard.
@@ -31,15 +31,15 @@ Les cinq soins sont des variantes **sourdes, jamais saturées** : santé et éco
 ## Le tangible — packaging des artefacts
 
 - Livres et coffrets : reliure **toile de lin brut** ou **cuir bleu marine mat**, marquage à chaud **or/laiton**.
-- La clé des archives (le Legs) : une vraie clé en **bronze ou laiton lourd**, gravée aux coordonnées de la Constellation, dans son écrin de bois.
+- La clé des archives (le Legs) : une vraie clé en **bronze ou laiton lourd**, gravée aux coordonnées de la galaxie familiale, dans son écrin de bois.
 
 ## L'accueil : le Ciel (corrections Corvus, retaillées par Gemini, codées le 05/07)
 
-Trois zones immuables — identité (20 %), la Constellation (60 %), l'État du Ciel (20 %) — et le galet.
+Trois zones immuables — identité (20 %), la galaxie familiale (60 %), l'État du Ciel (20 %) — et le galet.
 
-- **La constellation respire.** Les astres ne sont pas une grille ni un organigramme : ellipse brisée (l'orbite s'élargit avec le Cercle), dérive lente en `ease-in-out alternate` (9–16 s, déphasés) comme des navires au mouillage. `prefers-reduced-motion` fige le ciel sans rien perdre.
+- **La galaxie familiale respire.** Les astres ne sont pas une grille ni un organigramme : ellipse brisée (l'orbite s'élargit avec le Cercle), dérive lente en `ease-in-out alternate` (9–16 s, déphasés) comme des navires au mouillage. `prefers-reduced-motion` fige le ciel sans rien perdre.
 - **La lueur respire, elle n'appelle pas.** Halo radial Or Mana, opacité 15 % → 35 % sur un cycle de **12 secondes** — le rythme d'un sommeil paisible. Jamais de pulse, jamais de clignotement.
-- **L'État du Ciel** remplace toute timeline : une seule phrase, nue, sans icône — un **bulletin météo affectif**, pas un rapport d'activité. « La constellation veille sur Jules. » / « Un souvenir a été déposé dans le cercle. » / « Douceur sur votre constellation ce soir. » La phrase est aussi la porte du fil de vie.
+- **L'État du Ciel** remplace toute timeline : une seule phrase, nue, sans icône — un **bulletin météo affectif**, pas un rapport d'activité. « La famille veille sur Jules. » / « Un souvenir a été déposé dans le cercle. » / « Douceur sur votre famille ce soir. » La phrase est aussi la porte du fil de vie.
 - **Le galet** remplace le FAB : ellipse concave translucide, ombre intérieure, un point lumineux Or Mana qui respire — un astre en devenir, pas un « + ». À l'appui : dilatation douce (l'onde dans l'eau), pas de vibration sèche. Le mot « Transmettre » reste inscrit en petites capitales : l'invitation doit rester lisible pour des yeux de 78 ans — la poésie ne prime jamais sur la grand-mère.
 - **La mission en 15 secondes** : ouvrir, voir la lueur, lire la phrase, refermer apaisé. Si l'application a rempli sa mission sans qu'aucun bouton ne soit pressé, elle a gagné.
 
@@ -49,7 +49,7 @@ Trois zones immuables — identité (20 %), la Constellation (60 %), l'État du 
 
 En français, **« le ciel » porte la mort** : *« mémé est montée au ciel »*. Dans une application de mémoire familiale — où vivront un jour des astres disparus — ce champ lexical est un codage-mort d'interface, cousin de celui que le §7 du livre blanc avait chassé du récit.
 
-**Règle** : jamais « ciel » pour nommer l'espace partagé, la navigation ou un mouvement de données (*monter, hisser vers le ciel* = interdit absolu). Le lieu s'appelle **l'Univers** ; l'accueil, ce sont **les astres** (« retour aux astres »). Seules les phrases **météo** gardent le mot, car il y est innocent : *« Le ciel est paisible. »*
+**Règle** : jamais « ciel » pour nommer l'espace partagé, la navigation ou un mouvement de données (*monter, hisser vers le ciel* = interdit absolu). Le lieu s'appelle **la galaxie familiale** ; l'accueil, ce sont **les astres** (« retour aux astres »). Seules les phrases **météo** gardent le mot, car il y est innocent : *« Le ciel est paisible. »*
 
 ## Notes d'implémentation
 

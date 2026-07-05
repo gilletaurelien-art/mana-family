@@ -8,7 +8,7 @@ Le système de cercles familiaux vivants. Vision complète : [docs/mana-family-l
 
 **Incrément 1 — la primitive transmission dans un Cercle 1 réel.** Un appareil, une famille, un mois. Si des parents transmettent spontanément au lieu de texter, tout le reste a un sol.
 
-- **Fondation** : nommer la constellation, allumer les astres du Cercle.
+- **Fondation** : nommer la famille, allumer les astres du Cercle.
 - **Transmettre** : deux gestes (type, destinataires) puis les mots. L'épreuve de vérité n°2 (battre WhatsApp en friction) se joue sur cet écran.
 - **Le fil de vie** : les transmissions se contemplent ; la **lueur** ✦ apparaît quand quelqu'un a veillé — et son absence ne se voit jamais (asymétrie, livre blanc §6).
 

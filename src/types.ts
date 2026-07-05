@@ -1,6 +1,22 @@
-export type TransmissionKind = 'sante' | 'ecole' | 'emotionnel' | 'logistique' | 'souvenir'
+export type TransmissionKind = 'sante' | 'emotionnel' | 'ensemble' | 'accompagner' | 'organiser' | 'souvenir'
 
 export type Role = 'parent' | 'enfant' | 'grand_parent' | 'soutien' | 'famille'
+
+export type CalendarLayerId =
+  | 'civil'
+  | 'country_holidays'
+  | 'commune_events'
+  | 'association_events'
+  | 'personal_events'
+  | 'moon_phases'
+  | 'tides'
+  | 'agricultural'
+  | 'celtic'
+  | 'christian'
+  | 'muslim'
+  | 'jewish'
+  | 'buddhist'
+  | 'hindu'
 
 export interface Astre {
   id: string
@@ -11,6 +27,15 @@ export interface Astre {
   avatarUrl?: string
   /** Date de naissance (YYYY-MM-DD) — anniversaires et arbre des générations. Facultative, jamais exigée. */
   birthDate?: string | null
+  /** Le petit nom de la maison — très intime. La Présence le dit ; la Mémoire garde le prénom. */
+  nickname?: string | null
+  /** Couches de temps choisies par cet astre. Vide par défaut : MANA n'impose aucune tradition. */
+  calendarIds?: CalendarLayerId[]
+}
+
+/** La voix du quotidien : le surnom s'il existe, sinon le prénom. */
+export function nomIntime(a: Astre): string {
+  return a.nickname && a.nickname.trim() ? a.nickname : a.name
 }
 
 export interface Transmission {
@@ -19,7 +44,10 @@ export interface Transmission {
   aboutId: string | null
   kind: TransmissionKind
   body: string
-  recipientIds: string[]
+  /** Projection publique : ce que l'appareil doit savoir, pas toute l'audience. */
+  forMe: boolean
+  /** Héritage local uniquement, utilisé pendant le hissage de l'incrément 1. */
+  recipientIds?: string[]
   /** La lueur — astreId → date de veille. Asymétrique : on n'affiche jamais qui n'a PAS veillé. */
   veilles: Record<string, string>
   createdAt: string
@@ -31,12 +59,15 @@ export interface Constellation {
   transmissions: Transmission[]
 }
 
-export const KINDS: { kind: TransmissionKind; label: string; emoji: string }[] = [
-  { kind: 'sante', label: 'Santé', emoji: '🌡️' },
-  { kind: 'ecole', label: 'École', emoji: '🎒' },
-  { kind: 'emotionnel', label: 'Émotion', emoji: '💛' },
-  { kind: 'logistique', label: 'Logistique', emoji: '🧭' },
-  { kind: 'souvenir', label: 'Souvenir', emoji: '✨' },
+// Ordre : du soin d'aujourd'hui vers la mémoire de demain. Register mixte assumé
+// (domaines concrets pour la grand-mère + verbes-gestes qui réchauffent).
+export const KINDS: { kind: TransmissionKind; label: string }[] = [
+  { kind: 'sante', label: 'Santé' },
+  { kind: 'emotionnel', label: 'Émotion' },
+  { kind: 'ensemble', label: 'Ensemble' },
+  { kind: 'accompagner', label: 'Accompagner' },
+  { kind: 'organiser', label: 'Organiser' },
+  { kind: 'souvenir', label: 'Souvenir' },
 ]
 
 export const ROLES: { role: Role; label: string; circle: 1 | 2 | 3 }[] = [
@@ -45,4 +76,21 @@ export const ROLES: { role: Role; label: string; circle: 1 | 2 | 3 }[] = [
   { role: 'grand_parent', label: 'Grand-parent', circle: 2 },
   { role: 'soutien', label: 'Soutien proche', circle: 2 },
   { role: 'famille', label: 'Famille étendue', circle: 3 },
+]
+
+export const CALENDAR_LAYERS: { id: CalendarLayerId; label: string }[] = [
+  { id: 'civil', label: 'Calendrier civil' },
+  { id: 'country_holidays', label: 'Jours fériés du pays' },
+  { id: 'commune_events', label: 'Événements de ma commune' },
+  { id: 'association_events', label: 'Événements de mes associations' },
+  { id: 'personal_events', label: 'Mes événements personnels' },
+  { id: 'moon_phases', label: 'Phases de la Lune' },
+  { id: 'tides', label: 'Grandes marées' },
+  { id: 'agricultural', label: 'Calendrier agricole' },
+  { id: 'celtic', label: 'Calendrier celtique' },
+  { id: 'christian', label: 'Calendrier chrétien' },
+  { id: 'muslim', label: 'Calendrier musulman' },
+  { id: 'jewish', label: 'Calendrier juif' },
+  { id: 'buddhist', label: 'Calendrier bouddhiste' },
+  { id: 'hindu', label: 'Calendrier hindou' },
 ]

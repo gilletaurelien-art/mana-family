@@ -14,6 +14,7 @@
 
   /* Les couleurs de vie — la présence & le soin */
   --or-mana: #e5b842;
+  --or-doux: #d8b354;
   --or-sombre: #c49a30;
   --bleu-horizon: #2b5275;
 
@@ -25,9 +26,10 @@
 
   /* Les cinq soins — sourds, jamais saturés */
   --sante: #7db8d8;
-  --ecole: #5f88ad;
   --emotionnel: #d8a3b5;
-  --logistique: #b9b0a2;
+  --ensemble: #9ec9a6;
+  --accompagner: #5f88ad;
+  --organiser: #b9b0a2;
   --souvenir: #e5b842;
 
   --fond: var(--noir-atlantique);
@@ -118,6 +120,7 @@ input, select, textarea {
 textarea { resize: vertical; margin-top: 0.8rem; line-height: 1.5; }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--or-mana); }
 ::placeholder { color: var(--brume); opacity: 0.7; }
+input[type='checkbox'] { width: auto; accent-color: var(--or-mana); }
 
 button {
   font-family: var(--sans);
@@ -240,12 +243,33 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* Composer */
 .kind-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.45rem; }
 .kind { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.6rem 0.2rem; font-size: 0.72rem; border-radius: 14px; }
-.kind-emoji { font-size: 1.3rem; filter: grayscale(25%) brightness(0.9); } /* fondre le plastique brillant dans la nuit — en attendant les glyphes gravés */
+/* Les glyphes gravés — encre brume au repos, Or Mana quand le soin est choisi */
+.kind-glyph { display: inline-flex; color: var(--brume); }
+.kind.on .kind-glyph { color: var(--or-mana); }
+.tx-glyph { vertical-align: -0.28em; }
+.tx-glyph svg { width: 18px; height: 18px; }
 .kind.on { border-color: var(--or-mana); background: rgba(229, 184, 66, 0.12); }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
 .chip { padding: 0.4rem 0.85rem; border-radius: 999px; font-size: 0.88rem; color: var(--brume); }
 .chip.on { color: #15202e; background: rgba(234, 230, 223, 0.9); border-color: transparent; font-weight: 600; } /* Toile de Lin voilée — jamais de blanc cru la nuit */
+
+.calendar-principle {
+  margin: 0.2rem 0 0.5rem;
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+.calendar-list { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 1rem; }
+.calendar-option {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--filet);
+  border-radius: 14px;
+  background: rgba(234, 230, 223, 0.025);
+  color: var(--encre);
+}
+.calendar-option span { line-height: 1.35; }
 
 /* Le fil de vie — se contemple, ne se scrolle pas frénétiquement */
 .frise { list-style: none; padding: 0; margin: 1.2rem 0 0; display: flex; flex-direction: column; gap: 0.8rem; }
@@ -257,9 +281,10 @@ button:disabled { opacity: 0.35; cursor: default; }
   padding: 0.85rem 1rem;
 }
 .tx.kind-sante { border-left-color: var(--sante); }
-.tx.kind-ecole { border-left-color: var(--ecole); }
 .tx.kind-emotionnel { border-left-color: var(--emotionnel); }
-.tx.kind-logistique { border-left-color: var(--logistique); }
+.tx.kind-ensemble { border-left-color: var(--ensemble); }
+.tx.kind-accompagner { border-left-color: var(--accompagner); }
+.tx.kind-organiser { border-left-color: var(--organiser); }
 .tx.kind-souvenir { border-left-color: var(--souvenir); }
 
 .tx-head { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--brume); }
@@ -291,7 +316,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 .empty { text-align: center; color: var(--brume); font-style: italic; margin-top: 3rem; line-height: 1.7; font-family: var(--serif); }
 
 /* ============================================================
-   LE CIEL — la constellation respire (corrections Corvus + Gemini)
+   LE CIEL — la galaxie familiale respire (corrections Corvus + Gemini)
    Les astres dérivent comme des navires au mouillage ; la lueur
    respire sur un cycle de 12 s, le rythme d'un sommeil paisible.
    ============================================================ */

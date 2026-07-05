@@ -1,8 +1,9 @@
 import { assurerSession, supabase } from './lib/supabase'
-import type { Astre, Constellation, Role, TransmissionKind } from './types'
+import { CALENDAR_LAYERS } from './types'
+import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
 
 /**
- * L'adaptateur du ciel partagé (incrément 2).
+ * L'adaptateur de la galaxie familiale (incrément 2).
  * Serveur canonique + outbox locale idempotente (revue Codex) :
  * chaque geste porte un id client et peut être rejoué sans risque.
  * Le cache local permet d'ouvrir le ciel hors ligne — en lecture,
@@ -22,7 +23,8 @@ type Geste =
   | { geste: 'veiller'; txId: string }
   | { geste: 'portrait'; astreId: string; url: string }
   | { geste: 'naissance'; astreId: string; date: string }
-  | { geste: 'profil'; astreId: string; nom: string; date: string | null; role: Role }
+  | { geste: 'profil'; astreId: string; nom: string; surnom: string; date: string | null; role: Role }
+  | { geste: 'calendriers'; astreId: string; calendarIds: CalendarLayerId[] }
 
 function lireOutbox(): Geste[] {
   try { return JSON.parse(localStorage.getItem(OUTBOX) ?? '[]') } catch { return [] }
@@ -45,7 +47,9 @@ async function jouer(g: Geste): Promise<void> {
   } else if (g.geste === 'naissance') {
     await rpc('poser_naissance', { p_astre: g.astreId, p_date: g.date })
   } else if (g.geste === 'profil') {
-    await rpc('modifier_profil', { p_astre: g.astreId, p_nom: g.nom, p_date: g.date, p_role: g.role })
+    await rpc('modifier_profil', { p_astre: g.astreId, p_nom: g.nom, p_surnom: g.surnom, p_date: g.date, p_role: g.role })
+  } else if (g.geste === 'calendriers') {
+    await rpc('modifier_calendriers', { p_astre: g.astreId, p_calendriers: g.calendarIds })
   } else {
     await rpc('poser_portrait', { p_astre: g.astreId, p_url: g.url })
   }
@@ -75,19 +79,35 @@ interface CielServeur {
   astres: Astre[]
   transmissions: {
     id: string; authorId: string; aboutId: string | null; kind: TransmissionKind
-    body: string; createdAt: string; recipientIds: string[]; veilles: Record<string, string>
+    body: string; createdAt: string; forMe: boolean; veilles: Record<string, string>
   }[]
+}
+
+function normaliserCiel(ciel: Ciel): Ciel {
+  return {
+    ...ciel,
+    astres: ciel.astres.map(normaliserAstre),
+    transmissions: ciel.transmissions.map((t) => ({
+      ...t,
+      forMe: t.forMe ?? Boolean(t.recipientIds?.includes(ciel.meId)),
+    })),
+  }
+}
+
+function normaliserAstre(a: Astre): Astre {
+  const connus = new Set(CALENDAR_LAYERS.map((c) => c.id))
+  return { ...a, calendarIds: (a.calendarIds ?? []).filter((id): id is CalendarLayerId => connus.has(id as CalendarLayerId)) }
 }
 
 function surcoucheOutbox(ciel: Ciel): Ciel {
   // Les gestes en attente restent visibles : l'interface ne « perd » jamais un geste.
-  let next = ciel
+  let next = normaliserCiel(ciel)
   for (const g of lireOutbox()) {
     if (g.geste === 'transmettre' && !next.transmissions.some((t) => t.id === g.id)) {
       next = {
         ...next,
         transmissions: [
-          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, recipientIds: g.recipientIds, veilles: {}, createdAt: new Date().toISOString() },
+          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
           ...next.transmissions,
         ],
       }
@@ -103,7 +123,9 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
     } else if (g.geste === 'naissance') {
       next = { ...next, astres: next.astres.map((a) => (a.id === g.astreId ? { ...a, birthDate: g.date } : a)) }
     } else if (g.geste === 'profil') {
-      next = appliquerProfil(next, g.astreId, g.nom, g.date, g.role)
+      next = appliquerProfil(next, g.astreId, g.nom, g.surnom, g.date, g.role)
+    } else if (g.geste === 'calendriers') {
+      next = appliquerCalendriers(next, g.astreId, g.calendarIds)
     }
   }
   return next
@@ -142,7 +164,7 @@ export function transmettre(
   return {
     ...ciel,
     transmissions: [
-      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, recipientIds: t.recipientIds, veilles: {}, createdAt: new Date().toISOString() },
+      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
       ...ciel.transmissions,
     ],
   }
@@ -168,19 +190,33 @@ export function poserNaissance(ciel: Ciel, astreId: string, date: string): Ciel 
   return { ...ciel, astres: ciel.astres.map((a) => (a.id === astreId ? { ...a, birthDate: date } : a)) }
 }
 
-function appliquerProfil(ciel: Ciel, astreId: string, nom: string, date: string | null, role: Role): Ciel {
+function appliquerProfil(ciel: Ciel, astreId: string, nom: string, surnom: string, date: string | null, role: Role): Ciel {
   const circle: 1 | 2 | 3 = role === 'grand_parent' || role === 'soutien' ? 2 : role === 'famille' ? 3 : 1
   return {
     ...ciel,
     astres: ciel.astres.map((a) =>
-      a.id === astreId ? { ...a, name: nom, birthDate: date ?? a.birthDate, role, circle } : a,
+      a.id === astreId
+        ? { ...a, name: nom, nickname: surnom.trim() || null, birthDate: date ?? a.birthDate, role, circle }
+        : a,
     ),
   }
 }
 
-export function modifierProfil(ciel: Ciel, astreId: string, nom: string, date: string | null, role: Role): Ciel {
-  enfiler({ geste: 'profil', astreId, nom, date, role })
-  return appliquerProfil(ciel, astreId, nom, date, role)
+export function modifierProfil(ciel: Ciel, astreId: string, nom: string, surnom: string, date: string | null, role: Role): Ciel {
+  enfiler({ geste: 'profil', astreId, nom, surnom, date, role })
+  return appliquerProfil(ciel, astreId, nom, surnom, date, role)
+}
+
+function appliquerCalendriers(ciel: Ciel, astreId: string, calendarIds: CalendarLayerId[]): Ciel {
+  return {
+    ...ciel,
+    astres: ciel.astres.map((a) => (a.id === astreId ? { ...a, calendarIds } : a)),
+  }
+}
+
+export function modifierCalendriers(ciel: Ciel, astreId: string, calendarIds: CalendarLayerId[]): Ciel {
+  enfiler({ geste: 'calendriers', astreId, calendarIds })
+  return appliquerCalendriers(ciel, astreId, calendarIds)
 }
 
 /* ---------- Fondation, arrimage, hissage ---------- */
@@ -200,7 +236,7 @@ export async function rejoindre(code: string, astreId: string): Promise<void> {
   await rpc('rejoindre', { p_code: code, p_astre: astreId })
 }
 
-/** Hisser une constellation locale (héritage de l'incrément 1) vers le ciel partagé. */
+/** Ouvrir une famille locale (héritage de l'incrément 1) dans la galaxie familiale. */
 export async function hisser(heritage: Constellation, meId: string): Promise<void> {
   await assurerSession()
   await rpc('importer', {

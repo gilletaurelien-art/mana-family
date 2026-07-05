@@ -8,7 +8,7 @@
 --
 -- Auth : sessions ANONYMES (à activer dans le dashboard :
 -- Authentication → Sign In / Providers → Anonymous). Un appareil =
--- une session invisible, reliée à un astre par la clé de constellation.
+-- une session invisible, reliée à un astre par la clé de famille.
 -- Niveau « mer d'essai » assumé (art. 15) : la clé d'invitation est une
 -- capacité en clair, à durcir avant toute bêta publique.
 -- ============================================================
@@ -46,7 +46,7 @@ language sql stable security definer set search_path = public, pg_temp as $$
   select * from device_links where user_id = auth.uid();
 $$;
 
--- Fonder : crée la constellation et ses astres, relie l'appareil au sien.
+-- Fonder : crée la famille et ses astres, relie l'appareil au sien.
 create or replace function fonder(p_nom text, p_astres jsonb, p_mon_index int)
 returns jsonb
 language plpgsql security definer set search_path = public, pg_temp as $$
@@ -68,7 +68,7 @@ begin
   return jsonb_build_object('invite_code', v_code);
 end $$;
 
--- Hisser : importe une constellation locale complète (fondation + histoire),
+-- Hisser : importe une famille locale complète (fondation + histoire),
 -- en préservant les dates et les lueurs. Idempotence par clés client.
 create or replace function importer(p jsonb)
 returns jsonb
@@ -125,14 +125,14 @@ begin
   select id into v_c from constellations where invite_code = p_code;
   if v_c is null then raise exception 'clé inconnue'; end if;
   if not exists (select 1 from members where constellation_id = v_c and astre_id = p_astre) then
-    raise exception 'cet astre n''appartient pas à cette constellation';
+    raise exception 'cet astre n''appartient pas à cette famille';
   end if;
   insert into device_links(user_id, astre_id, constellation_id) values (auth.uid(), p_astre, v_c)
     on conflict (user_id) do update set astre_id = excluded.astre_id, constellation_id = excluded.constellation_id;
   return jsonb_build_object('ok', true);
 end $$;
 
--- Les astres d'une constellation, AVANT liaison (pour choisir le sien en rejoignant).
+-- Les astres d'une famille, AVANT liaison (pour choisir le sien en rejoignant).
 create or replace function astres_de(p_code text)
 returns jsonb
 language sql stable security definer set search_path = public, pg_temp as $$
@@ -169,7 +169,7 @@ begin
         select jsonb_build_object(
           'id', t.id, 'authorId', t.author_astre_id, 'aboutId', t.about_astre_id,
           'kind', t.kind, 'body', t.body, 'createdAt', t.created_at,
-          'recipientIds', (select coalesce(jsonb_agg(g.astre_id), '[]'::jsonb) from transmission_grants g where g.transmission_id = t.id),
+          'forMe', exists (select 1 from transmission_grants g where g.transmission_id = t.id and g.astre_id = v.astre_id),
           'veilles', (select coalesce(jsonb_object_agg(l.astre_id, l.veilled_server_at), '{}'::jsonb) from transmission_lueurs l where l.transmission_id = t.id)
         ) as tx
         from transmissions t
@@ -218,7 +218,7 @@ begin
   return jsonb_build_object('ok', true);
 end $$;
 
--- Poser un portrait (membre de la même constellation — réalité d'un appareil familial).
+-- Poser un portrait (membre de la même famille — réalité d'un appareil familial).
 create or replace function poser_portrait(p_astre uuid, p_url text)
 returns jsonb
 language plpgsql security definer set search_path = public, pg_temp as $$
@@ -227,7 +227,7 @@ begin
   v := mf_lien();
   if v is null then raise exception 'appareil non relié'; end if;
   if not exists (select 1 from members where constellation_id = v.constellation_id and astre_id = p_astre) then
-    raise exception 'astre hors de la constellation';
+    raise exception 'astre hors de la famille';
   end if;
   update astres set avatar_url = p_url where id = p_astre;
   return jsonb_build_object('ok', true);

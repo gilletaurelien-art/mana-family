@@ -47,7 +47,7 @@ Dans ce système :
 
 * 🌙 les individus sont des **astres**
 * ☀️ leur évolution est leur **rayonnement**
-* ✨ leurs interactions forment des **constellations**
+* ✨ leurs interactions forment des **galaxies familiales**
 * 🏡 la famille est structurée en **Cercles**
 * 🧭 les échanges importants deviennent des **transmissions**
 
@@ -89,7 +89,7 @@ C'est le cercle de la mémoire familiale étendue, des événements de vie, des 
 La réalité moderne — familles recomposées, co-parentalité, multi-foyers — impose un choix d'architecture :
 
 * un enfant est **un astre unique**, membre de plusieurs Cercles 1 si sa vie se déroule dans deux maisons ;
-* une constellation n'a **pas de foyer propriétaire** : elle appartient à ses membres ;
+* une galaxie familiale n'a **pas de foyer propriétaire** : elle appartient à ses membres ;
 * la séparation d'un couple ne crée jamais un conflit de données — chaque parent conserve son Cercle, l'enfant conserve sa continuité entière.
 
 ---
@@ -119,7 +119,9 @@ Principes non négociables :
 
 Les transmissions remplacent les messages désorganisés. Elles structurent la vie familiale autour d'informations essentielles.
 
-**Types :** santé · école · émotionnel · logistique · souvenirs
+**Types :** santé · émotion · ensemble · accompagner · organiser · souvenir
+
+*(Taxonomie affinée par le terrain, juillet 2026 : « accompagner » élargit « école » à l'enfant qui grandit comme à l'aîné qu'on mène au rendez-vous ; « organiser » réchauffe « logistique » ; « ensemble » ajoute la vie partagée au présent, qui manquait.)*
 
 **Principes :**
 
@@ -166,11 +168,11 @@ En lecture produit : la Présence fait venir chaque jour (utilité quotidienne, 
 
 ### 🌫️ Le troisième état — le repos
 
-Une constellation peut être **active**, **présente**, ou **au repos**. Comme une forêt, comme la mer. Une famille silencieuse n'est pas une famille morte : elle peut vivre une semaine magnifique sans rien transmettre — elle vit ses souvenirs au lieu de les produire. **La mémoire n'est pas une performance.**
+Une famille peut être **active**, **présente**, ou **au repos**. Comme une forêt, comme la mer. Une famille silencieuse n'est pas une famille morte : elle peut vivre une semaine magnifique sans rien transmettre — elle vit ses souvenirs au lieu de les produire. **La mémoire n'est pas une performance.**
 
-Toutes les applications du monde sont construites contre le silence — « revenez », « vous avez manqué », « quelqu'un a publié ». Mana Family fait exactement l'inverse : aucun mécanisme, visuel, textuel ou notifié, ne traduira jamais le silence en manque. Quand la constellation se tait, le ciel dit simplement : *« La constellation se repose. »* Il n'y a rien à réparer, rien à relancer, rien à optimiser.
+Toutes les applications du monde sont construites contre le silence — « revenez », « vous avez manqué », « quelqu'un a publié ». Mana Family fait exactement l'inverse : aucun mécanisme, visuel, textuel ou notifié, ne traduira jamais le silence en manque. Quand la famille se tait, le ciel dit simplement : *« La famille se repose. »* Il n'y a rien à réparer, rien à relancer, rien à optimiser.
 
-> **Le silence n'est pas un manque. Le silence est un état légitime d'une constellation.**
+> **Le silence n'est pas un manque. Le silence est un état légitime d'une famille.**
 
 C'est l'épreuve de la confiance : Mana Family fait suffisamment confiance aux familles pour accepter qu'elles ne fassent rien pendant un mois. Cette loi est aussi fondatrice que l'inaliénabilité de la mémoire — elle coûte des métriques d'engagement, et c'est précisément pour cela qu'elle vaut quelque chose.
 
@@ -214,7 +216,7 @@ La v1 de ce document vendait la structure par tranches (les enfants à 9 €, le
 ### 🏡 9 €/mois — LE FOYER
 *« La mémoire devient un récit »*
 
-**Un seul abonnement couvre toute la constellation, quelle que soit sa taille.** Pas de paliers par cercle : une famille qui paie, paie le toit, pas le nombre de pièces.
+**Un seul abonnement couvre toute la famille, quelle que soit sa taille.** Pas de paliers par cercle : une famille qui paie, paie le toit, pas le nombre de pièces.
 
 Le Foyer débloque le tissage :
 
@@ -223,7 +225,7 @@ Le Foyer débloque le tissage :
 * **les rituels** — capsules temporelles (« à ouvrir à ses 18 ans »), messages différés, la lettre programmée pour un anniversaire
 * voix et audio longs, exports complets
 
-**N'importe quel membre de n'importe quel cercle peut porter l'abonnement — ou le co-financer.** Le mécène naturel est le grand-parent : il en a les moyens, et c'est sa transmission qui est en jeu. L'abonnement est attaché à la constellation, pas à un foyer : les deux maisons d'un enfant bénéficient du même Foyer, peu importe qui paie.
+**N'importe quel membre de n'importe quel cercle peut porter l'abonnement — ou le co-financer.** Le mécène naturel est le grand-parent : il en a les moyens, et c'est sa transmission qui est en jeu. L'abonnement est attaché à la famille, pas à un foyer : les deux maisons d'un enfant bénéficient du même Foyer, peu importe qui paie.
 
 **Variante : le Foyer à vie — 690 €, une fois.** Un grand-parent l'offre à la naissance d'un petit-enfant. C'est un cadeau de naissance, pas un abonnement.
 
@@ -232,7 +234,7 @@ Le Foyer débloque le tissage :
 
 Pour les familles nombreuses, multi-branches, patrimoniales :
 
-* **constellations reliées** — les branches des cousins, chacune avec son Cercle 1, tissées en une lignée commune ; l'arbre généalogique vivant qui les traverse
+* **galaxies familiales reliées** — les branches des cousins, chacune avec son Cercle 1, tissées en une lignée commune ; l'arbre généalogique vivant qui les traverse
 * **le Gardien de mémoire** — un rendez-vous trimestriel guidé qui interviewe un aîné : questions préparées, enregistrement, transcription, intégration dans sa frise
 * **archives sans limite** — vidéo en qualité originale, imports massifs, numérisations intégrées
 * **la rétrospective de lignée** — l'année de toutes les branches, tissée en un seul récit
@@ -245,7 +247,7 @@ Des objets et des cérémonies, pas des accès. Par ordre de prix croissant :
 | Artefact | Prix indicatif | Ce que c'est |
 |---|---|---|
 | **Le Coffret de majorité** | 150–300 € | La version objet de la remise des 18 ans : livre relié de sa continuité, lettres des cercles, clé physique de ses archives |
-| **La Fresque de constellation** | 300–800 € | La carte du ciel familial — les astres, leurs liens — gravée ou imprimée en grand format |
+| **La Fresque de galaxie familiale** | 300–800 € | La carte de famille — les astres, leurs liens — gravée ou imprimée en grand format |
 | **La Numérisation du grenier** | 400–900 € | Photos papier, Super 8, VHS, lettres : collectés, numérisés, datés, réintégrés aux bonnes époques |
 | **Le Grand Livre de la Lignée** | 500–1 500 € | Édition d'art reliée : l'arbre, les branches, les récits fondateurs — un exemplaire par foyer |
 | **La Biographie d'un astre** | 900–2 500 € | Le produit signature : entretiens avec un aîné menés par un biographe, livrés en récit audio + livre + frise complète. *Avant qu'il soit trop tard.* |
@@ -307,7 +309,7 @@ Ce dernier garde-fou dépasse le produit. C'est une règle interne, au rang de v
 
 **Le vent démographique.** La génération la plus riche de l'histoire entre dans la décennie où « avant qu'il soit trop tard » devient une urgence physique. Ses enfants (40–55 ans) sont exactement les acheteurs du Foyer. La plus grande transmission de patrimoine de l'histoire est en cours — et personne ne s'occupe de transmettre la mémoire qui va avec.
 
-**Le fossé défensif est émotionnel, pas technique.** Une messagerie se quitte en un clic. Une constellation qui contient dix ans de frises d'enfants et la voix enregistrée d'un grand-père décédé ne se quitte jamais. C'est la rétention la plus profonde qui existe — à condition de ne jamais trahir la confiance.
+**Le fossé défensif est émotionnel, pas technique.** Une messagerie se quitte en un clic. Une famille qui contient dix ans de frises d'enfants et la voix enregistrée d'un grand-père décédé ne se quitte jamais. C'est la rétention la plus profonde qui existe — à condition de ne jamais trahir la confiance.
 
 **Un besoin universel, un produit localisable.** Les rituels changent d'une culture à l'autre ; la structure — cercles, transmissions, continuité — ne change pas.
 

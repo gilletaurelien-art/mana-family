@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Astre, Constellation, Role, TransmissionKind } from './types'
-import { KINDS, ROLES } from './types'
+import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
+import { CALENDAR_LAYERS, KINDS, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import {
-  astresDe, charger, fonder, hisser, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
+  astresDe, charger, fonder, hisser, modifierCalendriers, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
   type Ciel as CielData,
 } from './remote'
 
@@ -42,6 +42,29 @@ function naissanceEnClair(birthDate: string): string {
   return new Date(birthDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+/* ---------- Les glyphes gravés — line-art, monde céleste & nautique ---------- */
+
+function KindGlyph({ kind }: { kind: TransmissionKind }) {
+  const svg = { width: 22, height: 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
+  const dot = (cx: number, cy: number, r = 1.5) => <circle cx={cx} cy={cy} r={r} fill="currentColor" stroke="none" />
+  switch (kind) {
+    case 'sante': // le pouls
+      return <svg {...svg}><path d="M2 12h4l2-6 3 12 2-6h9" /></svg>
+    case 'emotionnel': // le cœur
+      return <svg {...svg}><path d="M12 20C3 13 6 4 12 8.5 18 4 21 13 12 20Z" /></svg>
+    case 'ensemble': // une petite constellation de trois astres
+      return <svg {...svg}><path d="M7 8 17 6.5 12 16 7 8Z" />{dot(7, 8)}{dot(17, 6.5)}{dot(12, 16)}</svg>
+    case 'accompagner': // le chemin, à deux
+      return <svg {...svg}><path d="M4 18C9 18 9 9 14 9 18 9 18 6 20 6" />{dot(4, 18, 1.4)}{dot(20, 6, 1.4)}</svg>
+    case 'organiser': // la boussole
+      return <svg {...svg}><circle cx="12" cy="12" r="9" /><path d="M12 7.5 14 12 12 16.5 10 12Z" />{dot(12, 12, 0.9)}</svg>
+    case 'souvenir': // l'ancre — ce qui nous retient à ce qui compte
+      return <svg {...svg}><circle cx="12" cy="5" r="2" /><path d="M12 7v12" /><path d="M8.5 10.5h7" /><path d="M5 14c0 4 3.5 5.5 7 5.5s7-1.5 7-5.5" /></svg>
+    default:
+      return <svg {...svg}>{dot(12, 12, 2)}</svg>
+  }
+}
+
 type Phase =
   | { ecran: 'chargement' }
   | { ecran: 'porte' }
@@ -52,6 +75,7 @@ type Phase =
   | { ecran: 'ciel' }
   | { ecran: 'galaxie' }
   | { ecran: 'inviter' }
+  | { ecran: 'parametres' }
   | { ecran: 'frise'; aboutId: string | null }
   | { ecran: 'composer' }
 
@@ -73,7 +97,7 @@ export default function App() {
       const msg = e instanceof Error ? e.message : String(e)
       setAvis(
         msg.includes('anonymous') || msg.includes('Anonymous')
-          ? 'L’Univers partagé n’est pas encore ouvert : active « Anonymous sign-ins » dans le dashboard Supabase (Authentication → Sign In / Providers), puis réessaie.'
+          ? 'La galaxie familiale n’est pas encore ouverte : active « Anonymous sign-ins » dans le dashboard Supabase (Authentication → Sign In / Providers), puis réessaie.'
           : `La manœuvre a échoué : ${msg}`,
       )
       setPhase({ ecran: 'porte' })
@@ -202,7 +226,7 @@ export default function App() {
         onVeiller={(txId) => setCiel(veiller(ciel, txId))}
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
-        onProfil={(astreId, nom, date, role) => setCiel(modifierProfil(ciel, astreId, nom, date, role))}
+        onProfil={(astreId, nom, surnom, date, role) => setCiel(modifierProfil(ciel, astreId, nom, surnom, date, role))}
       />
     )
   }
@@ -233,6 +257,16 @@ export default function App() {
     )
   }
 
+  if (phase.ecran === 'parametres') {
+    return (
+      <ParametresVue
+        me={me}
+        onRetour={() => setPhase({ ecran: 'ciel' })}
+        onCalendriers={(calendarIds) => setCiel(modifierCalendriers(ciel, me.id, calendarIds))}
+      />
+    )
+  }
+
   return (
     <CielVue
       ciel={ciel}
@@ -242,6 +276,7 @@ export default function App() {
       onTransmettre={() => setPhase({ ecran: 'composer' })}
       onInviter={() => setPhase({ ecran: 'inviter' })}
       onGalaxie={() => setPhase({ ecran: 'galaxie' })}
+      onParametres={() => setPhase({ ecran: 'parametres' })}
     />
   )
 }
@@ -265,11 +300,11 @@ function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
       <section className="card">
         {heritage && (
           <button className="primary" onClick={onHisser}>
-            Hisser « {heritage.name} » dans l'Univers partagé
+            Ouvrir « {heritage.name} » dans la galaxie familiale
           </button>
         )}
         <button className={heritage ? '' : 'primary'} style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onFonder}>
-          Fonder une constellation
+          Fonder une famille
         </button>
         <button style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onRejoindre}>
           Rejoindre avec une clé
@@ -304,7 +339,7 @@ function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]
       </header>
 
       <section className="card">
-        <h2>Fonder la constellation</h2>
+        <h2>Fonder la famille</h2>
         <input placeholder="Nom de la famille (ex. Les Gillet)" value={name} onChange={(e) => setName(e.target.value)} />
 
         <h2>Les astres du Cercle</h2>
@@ -377,7 +412,7 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
         <p className="whisper"><button className="link" onClick={onRetour}>← retour</button></p>
       </header>
       <section className="card">
-        <h2>La clé de la constellation</h2>
+        <h2>La clé de la famille</h2>
         <div className="row">
           <input placeholder="ex. 3f9a1c2e" value={code} onChange={(e) => setCode(e.target.value.trim().toLowerCase())} />
           <button
@@ -412,7 +447,7 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
   )
 }
 
-/* ---------- Hisser l'héritage local vers le ciel partagé ---------- */
+/* ---------- Ouvrir l'héritage local dans la galaxie familiale ---------- */
 
 function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHisse: (meId: string) => void; onRetour: () => void }) {
   return (
@@ -420,7 +455,7 @@ function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHi
       <header className="sky">
         <h1>Famille {heritage.name}</h1>
         <p className="whisper">
-          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} rejoindr{heritage.transmissions.length > 1 ? 'ont' : 'a'} l'Univers partagé, dates et lueurs préservées.<br />
+          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} rejoindr{heritage.transmissions.length > 1 ? 'ont' : 'a'} la galaxie familiale, dates et lueurs préservées.<br />
           <button className="link" onClick={onRetour}>← retour</button>
         </p>
       </header>
@@ -446,15 +481,15 @@ function etatDuCiel(c: CielData): string {
   const anniv = c.astres.find((a) => a.birthDate && estAnniversaire(a.birthDate))
   if (anniv) {
     const age = ageDe(anniv.birthDate!)
-    return `C'est l'anniversaire de ${anniv.name} — ${age} an${age > 1 ? 's' : ''} aujourd'hui. ✦`
+    return `C'est l'anniversaire de ${nomIntime(anniv)} — ${age} an${age > 1 ? 's' : ''} aujourd'hui. ✦`
   }
   if (c.transmissions.length === 0) return 'L\'Univers attend sa première étoile.'
   const derniere = new Date(c.transmissions[0].createdAt).getTime()
   if (Date.now() - derniere > 72 * 3600 * 1000) return 'La famille se repose.'
   const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
   if (veillee) {
-    const nom = c.astres.find((a) => a.id === veillee.aboutId)?.name
-    if (nom) return `La famille veille sur ${nom}.`
+    const astre = c.astres.find((a) => a.id === veillee.aboutId)
+    if (astre) return `La famille veille sur ${nomIntime(astre)}.`
   }
   if (c.transmissions[0].kind === 'souvenir') return 'Un souvenir a été déposé dans le cercle.'
   const h = new Date().getHours()
@@ -464,7 +499,7 @@ function etatDuCiel(c: CielData): string {
   return 'Douceur sur votre famille ce soir.'
 }
 
-function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie }: {
+function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onParametres }: {
   ciel: CielData
   me: Astre
   horsLigne: boolean
@@ -472,6 +507,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
   onTransmettre: () => void
   onInviter: () => void
   onGalaxie: () => void
+  onParametres: () => void
 }) {
   const n = ciel.astres.length
   const halos = new Set(
@@ -483,7 +519,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
       <header className="sky">
         <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
         <p className="whisper">
-          {me.name} · <button className="link" onClick={onGalaxie}>la galaxie</button> · <button className="link" onClick={onInviter}>inviter</button>
+          {nomIntime(me)} · <button className="link" onClick={onGalaxie}>la galaxie</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
           {horsLigne && <> · en mer, hors réseau — les gestes attendent</>}
         </p>
       </header>
@@ -505,7 +541,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
               <span className="astre-core">
                 {a.avatarUrl ? <img src={a.avatarUrl} alt="" className="astre-photo" /> : <span className="astre-pure-light" />}
               </span>
-              <span className="prenom">{a.name}</span>
+              <span className="prenom">{nomIntime(a)}</span>
             </button>
           )
         })}
@@ -517,6 +553,50 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
         <span className="galet-dot" />
         <span className="galet-mot">Transmettre</span>
       </button>
+    </div>
+  )
+}
+
+/* ---------- Paramètres personnels ---------- */
+
+function ParametresVue({ me, onRetour, onCalendriers }: {
+  me: Astre
+  onRetour: () => void
+  onCalendriers: (calendarIds: CalendarLayerId[]) => void
+}) {
+  const actifs = new Set(me.calendarIds ?? [])
+  const toggle = (id: CalendarLayerId) => {
+    const next = new Set(actifs)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
+    onCalendriers(CALENDAR_LAYERS.filter((c) => next.has(c.id)).map((c) => c.id))
+  }
+
+  return (
+    <div className="shell">
+      <header className="sky">
+        <h1>Paramètres</h1>
+        <p className="whisper"><button className="link" onClick={onRetour}>← retour aux astres</button></p>
+      </header>
+
+      <section className="card">
+        <h2>Mes calendriers</h2>
+        <p className="calendar-principle">Le temps est commun. Les calendriers sont personnels. MANA n’impose aucune tradition.</p>
+        <p className="whisper">Ces calendriers sont des couches personnelles : ils n'activent rien pour la famille et ne changent pas le protocole MANA.</p>
+
+        <div className="calendar-list">
+          {CALENDAR_LAYERS.map((layer) => (
+            <label key={layer.id} className="calendar-option">
+              <input
+                type="checkbox"
+                checked={actifs.has(layer.id)}
+                onChange={() => toggle(layer.id)}
+              />
+              <span>{layer.label}</span>
+            </label>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
@@ -600,11 +680,11 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
         </p>
         <p className="whisper">La clé ne se partage qu'en famille — c'est la porte de votre Univers.</p>
 
-        <h2>Cet appareil est {me.name}</h2>
+        <h2>Cet appareil est {nomIntime(me)}</h2>
         <div className="chips" style={{ justifyContent: 'center' }}>
           {ciel.astres.map((a) => (
             <button key={a.id} className={`chip ${a.id === me.id ? 'on' : ''}`} onClick={() => a.id !== me.id && onChangerAstre(a.id)}>
-              {a.name}
+              {nomIntime(a)}
             </button>
           ))}
         </div>
@@ -640,7 +720,7 @@ function Composer({ ciel, me, onDone }: {
         <div className="kind-grid">
           {KINDS.map((k) => (
             <button key={k.kind} className={`kind ${kind === k.kind ? 'on' : ''}`} onClick={() => setKind(k.kind)}>
-              <span className="kind-emoji">{k.emoji}</span>
+              <span className="kind-glyph"><KindGlyph kind={k.kind} /></span>
               {k.label}
             </button>
           ))}
@@ -656,7 +736,7 @@ function Composer({ ciel, me, onDone }: {
           </button>
           {others.map((a) => (
             <button key={a.id} className={`chip ${recipients.includes(a.id) ? 'on' : ''}`} onClick={() => toggle(a.id)}>
-              {a.name}
+              {nomIntime(a)}
             </button>
           ))}
         </div>
@@ -668,7 +748,7 @@ function Composer({ ciel, me, onDone }: {
           </button>
           {ciel.astres.map((a) => (
             <button key={a.id} className={`chip ${aboutId === a.id ? 'on' : ''}`} onClick={() => setAboutId(a.id)}>
-              {a.name}
+              {nomIntime(a)}
             </button>
           ))}
         </div>
@@ -699,9 +779,10 @@ function Composer({ ciel, me, onDone }: {
 
 function ProfilForm({ sujet, onEnregistrer }: {
   sujet: Astre
-  onEnregistrer: (nom: string, date: string | null, role: Role) => void
+  onEnregistrer: (nom: string, surnom: string, date: string | null, role: Role) => void
 }) {
   const [nom, setNom] = useState(sujet.name)
+  const [surnom, setSurnom] = useState(sujet.nickname ?? '')
   const [date, setDate] = useState(sujet.birthDate ?? '')
   const [role, setRole] = useState<Role>(sujet.role)
 
@@ -716,11 +797,15 @@ function ProfilForm({ sujet, onEnregistrer }: {
           ))}
         </select>
       </div>
+      <div className="row">
+        <input value={surnom} onChange={(e) => setSurnom(e.target.value)} aria-label="Surnom" placeholder="Surnom (ex. Loulou, Mamou…)" />
+      </div>
+      <p className="whisper naissance-note">le petit nom de la maison — très intime, visible seulement de la famille ; le prénom reste dans la galaxie</p>
       <div className="row naissance-row">
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Date de naissance" />
         <span className="whisper naissance-note">naissance — facultatif</span>
       </div>
-      <button className="primary" disabled={!nom.trim()} onClick={() => onEnregistrer(nom.trim(), date || null, role)}>
+      <button className="primary" disabled={!nom.trim()} onClick={() => onEnregistrer(nom.trim(), surnom, date || null, role)}>
         Enregistrer
       </button>
     </section>
@@ -737,11 +822,14 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
   onVeiller: (txId: string) => void
   onPortrait: (astreId: string, dataUrl: string) => void
   onNaissance: (astreId: string, date: string) => void
-  onProfil: (astreId: string, nom: string, date: string | null, role: Role) => void
+  onProfil: (astreId: string, nom: string, surnom: string, date: string | null, role: Role) => void
 }) {
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const [enEdition, setEnEdition] = useState(false)
-  const nameOf = (id: string | null) => ciel.astres.find((a) => a.id === id)?.name ?? null
+  const nameOf = (id: string | null) => {
+    const a = ciel.astres.find((x) => x.id === id)
+    return a ? nomIntime(a) : null
+  }
   const txs = ciel.transmissions.filter(
     (t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId,
   )
@@ -750,7 +838,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
     <div className="shell">
       <header className="sky">
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
-        <h1>{sujet ? sujet.name : 'Le fil de vie'}</h1>
+        <h1>{sujet ? nomIntime(sujet) : 'Le fil de vie'}</h1>
         <p className="whisper">
           <button className="link" onClick={onRetour}>← retour aux astres</button>
           {sujet && (
@@ -778,8 +866,8 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
         {sujet && enEdition && (
           <ProfilForm
             sujet={sujet}
-            onEnregistrer={(nom, date, role) => {
-              onProfil(sujet.id, nom, date, role)
+            onEnregistrer={(nom, surnom, date, role) => {
+              onProfil(sujet.id, nom, surnom, date, role)
               setEnEdition(false)
             }}
           />
@@ -809,16 +897,16 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
       ) : (
         <ul className="frise">
           {txs.map((t) => {
-            const k = KINDS.find((x) => x.kind === t.kind)!
+            const k = KINDS.find((x) => x.kind === t.kind) ?? KINDS[KINDS.length - 1]
             const mine = t.authorId === me.id
-            const forMe = t.recipientIds.includes(me.id)
+            const forMe = t.forMe
             const iVeilled = Boolean(t.veilles[me.id])
             const lueurs = Object.keys(t.veilles).map((id) => nameOf(id)).filter(Boolean) as string[]
 
             return (
               <li key={t.id} className={`tx kind-${t.kind}`}>
                 <div className="tx-head">
-                  <span className="tx-kind">{k.emoji} {k.label}</span>
+                  <span className="tx-kind"><span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}</span>
                   <span className="tx-when">
                     {new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>

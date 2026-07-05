@@ -4,7 +4,7 @@
 
 *Version 1.1 — juillet 2026 — synthèse des rédactions de l'équipage, tranchée par le charpentier.*
 
-*Architecture à deux textes (décision Corvus) : la **Charte de la Haute Mer** est le manifeste de l'écosystème MANA — elle parle notre langue (astres, lueurs, constellations) et n'a pas à s'en excuser. Sa jumelle universelle, la **[Déclaration des droits numériques de la personne](declaration-droits-numeriques.md)**, porte les mêmes principes sans aucun vocabulaire propriétaire, pour pouvoir être adoptée par n'importe qui — un hôpital, une école, un État. La poésie fait vivre la maison ; les principes voyagent nus. Statut : DRAFTS — publication à la décision du capitaine.*
+*Architecture à deux textes (décision Corvus) : la **Charte de la Haute Mer** est le manifeste de l'écosystème MANA — elle parle notre langue (astres, lueurs, galaxies familiales) et n'a pas à s'en excuser. Sa jumelle universelle, la **[Déclaration des droits numériques de la personne](declaration-droits-numeriques.md)**, porte les mêmes principes sans aucun vocabulaire propriétaire, pour pouvoir être adoptée par n'importe qui — un hôpital, une école, un État. La poésie fait vivre la maison ; les principes voyagent nus. Statut : DRAFTS — publication à la décision du capitaine.*
 
 ---
 
