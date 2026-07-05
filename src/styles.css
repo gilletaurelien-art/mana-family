@@ -554,21 +554,40 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .barre-bas > * { pointer-events: auto; }
 
-/* Les satellites — lire (carnet) et l'univers (assistante) autour du galet */
-.barre-bas { align-items: center; gap: 1rem; }
-.satellite {
-  background: none; border: none; padding: 0;
-  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+/* Le trio du bas — lire · écrire · l'assistante (médaillons d'une même famille) */
+.barre-bas { align-items: flex-end; gap: 1.7rem; }
+.geste {
+  background: none; border: none; padding: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
 }
-.satellite-rond {
-  width: 46px; height: 46px; border-radius: 50%;
+.geste-rond {
+  width: 54px; height: 54px; border-radius: 50%;
   border: 1px solid var(--filet); background: var(--carte); color: var(--brume);
   display: flex; align-items: center; justify-content: center;
   backdrop-filter: blur(6px); overflow: hidden;
+  transition: transform 0.3s ease;
 }
-.satellite-visage { background: #f8f9fa; border-color: rgba(43, 82, 117, 0.25); }
-.satellite-visage img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.satellite-mot { font-size: 0.66rem; letter-spacing: 0.08em; color: var(--brume); }
+.geste:active .geste-rond { transform: scale(1.07); }
+.geste-mot { font-size: 0.7rem; letter-spacing: 0.06em; color: var(--brume); }
+
+.geste-visage { background: #f8f9fa; border-color: rgba(43, 82, 117, 0.25); }
+.geste-visage img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* écrire — le cœur doré, plus grand, l'âme du galet en rond (le point qui respire) */
+.geste-ecrire .geste-rond {
+  width: 72px; height: 72px;
+  background: radial-gradient(ellipse at 50% 32%, rgba(234, 230, 223, 0.16), rgba(234, 230, 223, 0.04) 72%);
+  border-color: rgba(229, 184, 66, 0.4);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+.geste-ecrire .geste-mot { color: var(--or-sombre); font-weight: 600; }
+.geste-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--or-mana); box-shadow: 0 0 14px 4px rgba(229, 184, 66, 0.5);
+  animation: respire 12s ease-in-out infinite;
+}
+@media (prefers-color-scheme: dark) { .geste-ecrire .geste-mot { color: var(--or-mana); } }
+@media (prefers-reduced-motion: reduce) { .geste-dot { animation: none; } }
 
 /* Le galet — une invitation, pas un ordre. Concave, poli par la mer. */
 .galet {

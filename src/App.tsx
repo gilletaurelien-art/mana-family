@@ -625,24 +625,24 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
       <button className="etat-ciel" onClick={onChronologie}>{etatDuCiel(ciel)}</button>
 
       <div className="barre-bas">
-        <button className="satellite" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille">
-          <span className="satellite-rond">
-            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
+          <span className="geste-rond">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5V5.5Z" />
               <path d="M20 5.5C20 4.7 19.3 4 18.5 4H13v15h5.5c.8 0 1.5-.7 1.5-1.5V5.5Z" />
             </svg>
           </span>
-          <span className="satellite-mot">carnet</span>
+          <span className="geste-mot">lire</span>
         </button>
 
-        <button className="galet" onClick={onTransmettre} aria-label="Transmettre">
-          <span className="galet-dot" />
-          <span className="galet-mot">Transmettre</span>
+        <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
+          <span className="geste-rond"><span className="geste-dot" /></span>
+          <span className="geste-mot">écrire</span>
         </button>
 
-        <button className="satellite" onClick={() => setTiroirOuvert(true)} aria-label="L'univers Mana">
-          <span className="satellite-rond satellite-visage"><img src="/avatar-univers.png" alt="" /></span>
-          <span className="satellite-mot">l'univers</span>
+        <button className="geste" onClick={() => setTiroirOuvert(true)} aria-label="L'univers Mana — l'assistante">
+          <span className="geste-rond geste-visage"><img src="/avatar-univers.png" alt="" /></span>
+          <span className="geste-mot">l'assistante</span>
         </button>
       </div>
 
