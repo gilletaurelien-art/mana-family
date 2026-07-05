@@ -4,9 +4,15 @@
 -- Aucune tradition n'est activée par défaut, et le protocole reste neutre.
 -- ============================================================
 
+-- Prérequis auto-réparant : cette migration projette le surnom (colonne
+-- nickname de 00040). Si 00040 n'a pas encore tourné, on la crée ici pour
+-- que l'ordre ne piège plus. Idempotent.
+alter table astres add column if not exists nickname text;
+
 alter table astres
   add column if not exists calendar_preferences jsonb not null default '{"enabled":[]}'::jsonb;
 
+alter table astres drop constraint if exists astres_calendar_preferences_object;
 alter table astres
   add constraint astres_calendar_preferences_object
   check (jsonb_typeof(calendar_preferences) = 'object');
