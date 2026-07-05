@@ -66,44 +66,7 @@ language sql stable security definer set search_path = public, pg_temp as $$
   where c.invite_code = p_code;
 $$;
 
-create or replace function ma_constellation()
-returns jsonb
-language plpgsql stable security definer set search_path = public, pg_temp as $$
-declare v device_links; r jsonb;
-begin
-  v := mf_lien();
-  if v is null then return null; end if;
-  select jsonb_build_object(
-    'name', c.name,
-    'inviteCode', c.invite_code,
-    'meId', v.astre_id,
-    'astres', (
-      select coalesce(jsonb_agg(jsonb_build_object(
-        'id', a.id, 'name', a.display_name, 'role', m.role, 'circle', m.circle_level,
-        'avatarUrl', a.avatar_url, 'birthDate', a.birth_date, 'nickname', a.nickname,
-        'calendarIds', coalesce(a.calendar_preferences->'enabled', '[]'::jsonb),
-        'country', a.country, 'postalCode', a.postal_code
-      ) order by m.created_at), '[]'::jsonb)
-      from members m join astres a on a.id = m.astre_id
-      where m.constellation_id = c.id and m.ended_at is null
-    ),
-    'transmissions', (
-      select coalesce(jsonb_agg(tx order by (tx->>'createdAt') desc), '[]'::jsonb) from (
-        select jsonb_build_object(
-          'id', t.id, 'authorId', t.author_astre_id, 'aboutId', t.about_astre_id,
-          'kind', t.kind, 'body', t.body, 'createdAt', t.created_at,
-          'forMe', exists (select 1 from transmission_grants g where g.transmission_id = t.id and g.astre_id = v.astre_id),
-          'veilles', (select coalesce(jsonb_object_agg(l.astre_id, l.veilled_server_at), '{}'::jsonb) from transmission_lueurs l where l.transmission_id = t.id)
-        ) as tx
-        from transmissions t
-        where t.constellation_id = c.id
-          and (t.author_astre_id = v.astre_id
-               or exists (select 1 from transmission_grants g2 where g2.transmission_id = t.id and g2.astre_id = v.astre_id))
-        order by t.created_at desc
-        limit 500
-      ) s
-    )
-  ) into r
-  from constellations c where c.id = v.constellation_id;
-  return r;
-end $$;
+-- NOTE : cette migration ne redéfinit PAS ma_constellation. La colonne
+-- adresse suffit ; ma_constellation la projette déjà (versions 00090+).
+-- Éviter de la redéfinir ici protège le « happens_on » de la chronologie,
+-- dont la version la plus récente vit dans 00090. Ordre neutralisé.
