@@ -194,6 +194,15 @@ function MicGlyph({ actif }: { actif: boolean }) {
   )
 }
 
+/** L'entonnoir — replier/déplier les filtres du carnet. */
+function FiltreGlyph() {
+  return (
+    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M3 5h18l-7 8v6l-4 2v-8Z" />
+    </svg>
+  )
+}
+
 /** Les pièces jointes — appareil, film, onde. */
 function PjGlyph({ type }: { type: 'photo' | 'video' | 'audio' }) {
   const svg = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
@@ -1075,7 +1084,7 @@ function Composer({ ciel, me, onDone }: {
 
   return (
     <div className="shell">
-      <header className="sky assistante-hero carnet-hero">
+      <header className="sky assistante-hero carnet-hero composer-hero">
         <div className="carnet-hero-top">
           <div className="assistante-hero-texte">
             <h1>Transmettre</h1>
@@ -1092,7 +1101,7 @@ function Composer({ ciel, me, onDone }: {
         </div>
       </header>
 
-      <section className="card">
+      <section className="card composer-card">
         <h2>Pour</h2>
         <div className="chips">
           <button
@@ -1257,6 +1266,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
   const [nomDouxEdit, setNomDouxEdit] = useState(false)
   const [nomDouxVal, setNomDouxVal] = useState('')
   const [filtre, setFiltre] = useState<TransmissionKind | 'tous'>('tous')
+  const [filtresOuverts, setFiltresOuverts] = useState(false)
   const nameOf = (id: string | null) => {
     const a = ciel.astres.find((x) => x.id === id)
     return a ? nomIntime(a) : null
@@ -1285,19 +1295,34 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
               <img src="/carnet-hero-jour.png" alt="" className="logo-jour" />
             </div>
           </div>
-          <div className="carnet-filtres">
-            <button className={`chip ${filtre === 'tous' ? 'on' : ''}`} onClick={() => setFiltre('tous')}>Tout</button>
-            {KINDS.map((k) => (
-              <button
-                key={k.kind}
-                className={`chip chip-filtre ${filtre === k.kind ? 'on' : ''}`}
-                style={filtre === k.kind ? undefined : { color: `var(--${k.kind})` }}
-                onClick={() => setFiltre(k.kind)}
-              >
-                <span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}
-              </button>
-            ))}
+          <div className="carnet-filtre-barre">
+            <button
+              className={`carnet-filtre-btn ${filtresOuverts ? 'ouvert' : ''} ${filtre !== 'tous' ? 'actif' : ''}`}
+              onClick={() => setFiltresOuverts((v) => !v)}
+              aria-expanded={filtresOuverts}
+            >
+              <span className="filtre-glyph"><FiltreGlyph /></span>
+              {filtre === 'tous' ? 'Filtrer' : kindMeta(filtre).label}
+            </button>
+            {filtre !== 'tous' && (
+              <button className="link carnet-filtre-clear" onClick={() => { setFiltre('tous'); setFiltresOuverts(false) }}>tout voir</button>
+            )}
           </div>
+          {filtresOuverts && (
+            <div className="carnet-filtres">
+              <button className={`chip ${filtre === 'tous' ? 'on' : ''}`} onClick={() => { setFiltre('tous'); setFiltresOuverts(false) }}>Tout</button>
+              {KINDS.map((k) => (
+                <button
+                  key={k.kind}
+                  className={`chip chip-filtre ${filtre === k.kind ? 'on' : ''}`}
+                  style={filtre === k.kind ? undefined : { color: `var(--${k.kind})` }}
+                  onClick={() => { setFiltre(k.kind); setFiltresOuverts(false) }}
+                >
+                  <span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}
+                </button>
+              ))}
+            </div>
+          )}
         </header>
       ) : (
       <header className="sky">

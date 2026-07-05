@@ -138,6 +138,12 @@ body::before {
 /* La spirale de fond disparaît sur le carnet — l'illustration porte déjà la spirale */
 body:has(.carnet-hero)::before { display: none; }
 
+/* Écrire — hero compact : la spirale à la hauteur du texte, le formulaire juste sous « Retour » */
+.composer-hero { padding-bottom: 0; }
+.composer-hero .carnet-hero-top { align-items: center; }
+.composer-hero .carnet-hero-visage { flex: 0 0 38%; width: 38%; }
+.composer-card { margin-top: 0.5rem; }
+
 .assistante-mot {
   font-family: var(--serif); font-style: italic; color: var(--etoile);
   font-size: 1rem; line-height: 1.5; margin: 0.4rem 0 0.9rem;
@@ -327,8 +333,21 @@ button:disabled { opacity: 0.35; cursor: default; }
 .nom-doux-row { justify-content: center; margin-top: 0.6rem; }
 .nom-doux-row input { max-width: 14rem; }
 
-/* Le carnet — filtres par catégorie (Apple Photos : tout, puis les sortes) */
-.carnet-filtres { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1rem; }
+/* Le carnet — filtres repliés derrière un entonnoir, dépliés à la demande */
+.carnet-filtre-barre { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; }
+.carnet-filtre-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.45rem 0.9rem; border-radius: 999px;
+  color: var(--brume); font-size: 0.88rem;
+}
+.carnet-filtre-btn .filtre-glyph { display: inline-flex; transition: transform 0.2s ease; }
+.carnet-filtre-btn.ouvert { border-color: var(--or-mana); color: var(--etoile); }
+.carnet-filtre-btn.ouvert .filtre-glyph { transform: rotate(180deg); }
+.carnet-filtre-btn.actif { color: var(--noir-atlantique); background: rgba(234, 230, 223, 0.9); border-color: transparent; font-weight: 600; }
+.carnet-filtre-clear { font-size: 0.82rem; }
+
+.carnet-filtres { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.7rem; animation: onde 0.35s ease-out; }
+@media (prefers-reduced-motion: reduce) { .carnet-filtres { animation: none; } }
 .chip-filtre { display: inline-flex; align-items: center; gap: 0.4rem; }
 .chip-filtre .tx-glyph svg { width: 15px; height: 15px; }
 .chip-filtre.on { color: var(--noir-atlantique); }
