@@ -68,6 +68,49 @@ body {
 /* Le ciel — les titres portent la mémoire, donc le serif */
 .sky { text-align: center; padding: 1.2rem 0 0.6rem; }
 
+/* Le tiroir — vestibule discret de l'univers Mana */
+.tiroir-medaillon {
+  position: fixed; top: 0.7rem; left: 0.7rem; z-index: 30;
+  width: 42px; height: 42px; padding: 0; border-radius: 50%;
+  overflow: hidden; border: 1px solid var(--filet); background: var(--noir-atlantique);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.tiroir-medaillon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.tiroir-scrim {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(6, 10, 20, 0.55); backdrop-filter: blur(2px);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.tiroir-panneau {
+  width: 100%; max-width: 480px;
+  background: var(--carte); border: 1px solid var(--filet);
+  border-radius: 22px 22px 0 0; padding: 1.4rem 1.3rem 1.8rem;
+  backdrop-filter: blur(10px);
+  animation: tiroir-monte 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes tiroir-monte { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .tiroir-panneau { animation: none; } }
+
+.tiroir-assistante { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.6rem; }
+.tiroir-visage { width: 52px; height: auto; flex: 0 0 auto; }
+.tiroir-mot { font-family: var(--serif); font-style: italic; color: var(--lin); font-size: 0.92rem; line-height: 1.4; margin: 0; }
+.tiroir-panneau h2 { border-bottom: 1px dotted var(--filet); padding-bottom: 0.4rem; }
+
+.tiroir-portes { list-style: none; padding: 0; margin: 0.6rem 0 1rem; }
+.tiroir-portes li { border-bottom: 1px dotted var(--filet); }
+.tiroir-portes a, .tiroir-portes li > .porte-nom {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+  padding: 0.75rem 0.2rem; text-decoration: none; color: var(--encre);
+}
+.tiroir-portes li { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0.75rem 0.2rem; }
+.tiroir-portes a { padding: 0; width: 100%; }
+.porte-nom { font-family: var(--serif); font-size: 1.05rem; color: var(--etoile); }
+.porte-mot { font-size: 0.8rem; color: var(--brume); white-space: nowrap; }
+.tiroir-portes .ici .porte-mot { color: var(--or-mana); }
+.tiroir-portes .bientot { opacity: 0.5; }
+.tiroir-fermer { display: block; margin: 0.4rem auto 0; }
+
 /* Le visage aux seuils — doré la nuit, marine le jour */
 .logo-seuil-wrap { text-align: center; margin: 0.4rem 0 0.2rem; }
 .logo-seuil { width: 118px; height: auto; display: inline-block; }

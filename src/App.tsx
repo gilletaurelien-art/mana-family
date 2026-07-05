@@ -32,6 +32,48 @@ function LogoSeuil() {
   )
 }
 
+/** Le tiroir — le vestibule discret de l'univers Mana + l'assistante (silencieuse pour l'instant). */
+function TiroirUnivers() {
+  const [ouvert, setOuvert] = useState(false)
+  return (
+    <>
+      <button className="tiroir-medaillon" onClick={() => setOuvert(true)} aria-label="L'univers Mana">
+        <img src="/icon-192.png" alt="" />
+      </button>
+      {ouvert && (
+        <div className="tiroir-scrim" onClick={() => setOuvert(false)}>
+          <section className="tiroir-panneau" onClick={(e) => e.stopPropagation()}>
+            <div className="tiroir-assistante">
+              <img src="/logo-nuit.png" alt="" className="tiroir-visage logo-nuit" />
+              <img src="/logo-jour.png" alt="" className="tiroir-visage logo-jour" />
+              <p className="tiroir-mot">Bienvenue chez vous. Voici les portes de la maison Mana — je vous les montre quand vous voulez.</p>
+            </div>
+
+            <h2>L'univers Mana</h2>
+            <ul className="tiroir-portes">
+              <li className="ici"><span className="porte-nom">Mana Family</span><span className="porte-mot">vous y êtes</span></li>
+              <li>
+                <a href="https://gilletaurelien-art.github.io/family/" target="_blank" rel="noopener">
+                  <span className="porte-nom">Le site</span><span className="porte-mot">découvrir Mana Family →</span>
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/gilletaurelien-art/Digital-Constitution" target="_blank" rel="noopener">
+                  <span className="porte-nom">La Constitution numérique</span><span className="porte-mot">nos engagements →</span>
+                </a>
+              </li>
+              <li className="bientot"><span className="porte-nom">Mana citoyen</span><span className="porte-mot">bientôt</span></li>
+              <li className="bientot"><span className="porte-nom">TempoSystem</span><span className="porte-mot">bientôt</span></li>
+            </ul>
+
+            <button className="link tiroir-fermer" onClick={() => setOuvert(false)}>fermer</button>
+          </section>
+        </div>
+      )}
+    </>
+  )
+}
+
 /* ---------- Le temps des astres ---------- */
 
 function ageDe(birthDate: string): number {
@@ -555,6 +597,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
 
   return (
     <div className="shell">
+      <TiroirUnivers />
       <header className="sky">
         <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
         <p className="whisper">
