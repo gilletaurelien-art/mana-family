@@ -575,10 +575,19 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
 
       <button className="etat-ciel" onClick={onChronologie}>{etatDuCiel(ciel)}</button>
 
-      <button className="galet" onClick={onTransmettre} aria-label="Transmettre">
-        <span className="galet-dot" />
-        <span className="galet-mot">Transmettre</span>
-      </button>
+      <div className="barre-bas">
+        <button className="carnet-bouton" onClick={() => onOuvrirFrise(null)}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5V5.5Z" />
+            <path d="M20 5.5C20 4.7 19.3 4 18.5 4H13v15h5.5c.8 0 1.5-.7 1.5-1.5V5.5Z" />
+          </svg>
+          <span className="carnet-mot">Le carnet</span>
+        </button>
+        <button className="galet" onClick={onTransmettre} aria-label="Transmettre">
+          <span className="galet-dot" />
+          <span className="galet-mot">Transmettre</span>
+        </button>
+      </div>
     </div>
   )
 }
@@ -1008,19 +1017,20 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
 }) {
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const [enEdition, setEnEdition] = useState(false)
+  const [filtre, setFiltre] = useState<TransmissionKind | 'tous'>('tous')
   const nameOf = (id: string | null) => {
     const a = ciel.astres.find((x) => x.id === id)
     return a ? nomIntime(a) : null
   }
-  const txs = ciel.transmissions.filter(
-    (t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId,
-  )
+  const txs = ciel.transmissions
+    .filter((t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId)
+    .filter((t) => filtre === 'tous' || t.kind === filtre)
 
   return (
     <div className="shell">
       <header className="sky">
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
-        <h1>{sujet ? nomIntime(sujet) : 'Le fil de vie'}</h1>
+        <h1>{sujet ? nomIntime(sujet) : 'Le carnet de bord'}</h1>
         <p className="whisper">
           <button className="link" onClick={onRetour}>← retour aux astres</button>
           {sujet && (
@@ -1077,8 +1087,24 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
         )}
       </header>
 
+      {!sujet && (
+        <div className="carnet-filtres">
+          <button className={`chip ${filtre === 'tous' ? 'on' : ''}`} onClick={() => setFiltre('tous')}>Tout</button>
+          {KINDS.map((k) => (
+            <button
+              key={k.kind}
+              className={`chip chip-filtre ${filtre === k.kind ? 'on' : ''}`}
+              style={filtre === k.kind ? undefined : { color: `var(--${k.kind})` }}
+              onClick={() => setFiltre(k.kind)}
+            >
+              <span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {txs.length === 0 ? (
-        <p className="empty">Le ciel est calme. La première transmission allumera la première étoile.</p>
+        <p className="empty">{filtre === 'tous' ? 'Le carnet est encore vierge. La première transmission y écrira sa première page.' : 'Aucune page de cette sorte, pour l’instant.'}</p>
       ) : (
         <ul className="frise">
           {txs.map((t) => {

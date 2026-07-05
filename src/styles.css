@@ -210,6 +210,12 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .astre-fixe .naissance { line-height: 1.35; }
 
+/* Le carnet — filtres par catégorie (Apple Photos : tout, puis les sortes) */
+.carnet-filtres { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1rem; }
+.chip-filtre { display: inline-flex; align-items: center; gap: 0.4rem; }
+.chip-filtre .tx-glyph svg { width: 15px; height: 15px; }
+.chip-filtre.on { color: var(--noir-atlantique); }
+
 /* La chronologie — le fil du temps, horizon nautique */
 .chrono-scroll { overflow-x: auto; overflow-y: hidden; height: 440px; margin-top: 1rem; -webkit-overflow-scrolling: touch; }
 .chrono-inner { position: relative; height: 100%; min-width: 100%; }
@@ -485,12 +491,34 @@ button:disabled { opacity: 0.35; cursor: default; }
   line-height: 1.5;
 }
 
-/* Le galet — une invitation, pas un ordre. Concave, poli par la mer. */
-.galet {
+/* La barre du bas — lire (le carnet) et écrire (le galet) */
+.barre-bas {
   position: fixed;
   bottom: 1.2rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.7rem;
+  pointer-events: none;
+}
+.barre-bas > * { pointer-events: auto; }
+
+.carnet-bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--filet);
+  background: var(--carte);
+  color: var(--brume);
+  backdrop-filter: blur(6px);
+}
+.carnet-mot { font-size: 0.82rem; letter-spacing: 0.03em; }
+
+/* Le galet — une invitation, pas un ordre. Concave, poli par la mer. */
+.galet {
   width: 160px;
   min-height: 64px;
   border-radius: 50% / 46%;
@@ -507,7 +535,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 /* La marée montante — jamais d'ombre portée : le halo interne se dilate */
 .galet:active {
-  transform: translateX(-50%) scale(1.07);
+  transform: scale(1.07);
   background: radial-gradient(ellipse at 50% 28%, rgba(234, 230, 223, 0.22), rgba(234, 230, 223, 0.08) 72%);
 }
 .galet:active .galet-dot {
