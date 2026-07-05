@@ -38,7 +38,26 @@ export default function App() {
   const [ciel, setCiel] = useState<CielData | null>(null)
   const [horsLigne, setHorsLigne] = useState(false)
   const [phase, setPhase] = useState<Phase>({ ecran: 'chargement' })
+  const [avis, setAvis] = useState<string | null>(null)
   const heritage = useRef<Constellation | null>(chargerHeritage())
+
+  // Un échec se dit avec des mots, jamais par un retour muet au port.
+  const tenter = async (geste: () => Promise<void>) => {
+    setAvis(null)
+    setPhase({ ecran: 'chargement' })
+    try {
+      await geste()
+      await rafraichir()
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      setAvis(
+        msg.includes('anonymous') || msg.includes('Anonymous')
+          ? 'Le ciel partagé n’est pas encore ouvert : active « Anonymous sign-ins » dans le dashboard Supabase (Authentication → Sign In / Providers), puis réessaie.'
+          : `La manœuvre a échoué : ${msg}`,
+      )
+      setPhase({ ecran: 'porte' })
+    }
+  }
 
   const rafraichir = async () => {
     const r = await charger()
@@ -79,6 +98,7 @@ export default function App() {
     return (
       <Porte
         heritage={heritage.current}
+        avis={avis}
         onFonder={() => setPhase({ ecran: 'fondation' })}
         onRejoindre={() => setPhase({ ecran: 'rejoindre' })}
         onHisser={() => setPhase({ ecran: 'hisser' })}
@@ -95,11 +115,7 @@ export default function App() {
       <ChoisirMoi
         nom={phase.nom}
         brouillon={phase.brouillon}
-        onChoisi={async (index) => {
-          setPhase({ ecran: 'chargement' })
-          await fonder(phase.nom, phase.brouillon, index)
-          await rafraichir()
-        }}
+        onChoisi={(index) => tenter(() => fonder(phase.nom, phase.brouillon, index))}
       />
     )
   }
@@ -107,11 +123,7 @@ export default function App() {
   if (phase.ecran === 'rejoindre') {
     return (
       <Rejoindre
-        onArrime={async (code, astreId) => {
-          setPhase({ ecran: 'chargement' })
-          await rejoindre(code, astreId)
-          await rafraichir()
-        }}
+        onArrime={(code, astreId) => tenter(() => rejoindre(code, astreId))}
         onRetour={() => setPhase({ ecran: 'porte' })}
       />
     )
@@ -121,13 +133,13 @@ export default function App() {
     return (
       <Hisser
         heritage={heritage.current}
-        onHisse={async (meId) => {
-          setPhase({ ecran: 'chargement' })
-          await hisser(heritage.current!, meId)
-          archiverHeritage()
-          heritage.current = null
-          await rafraichir()
-        }}
+        onHisse={(meId) =>
+          tenter(async () => {
+            await hisser(heritage.current!, meId)
+            archiverHeritage()
+            heritage.current = null
+          })
+        }
         onRetour={() => setPhase({ ecran: 'porte' })}
       />
     )
@@ -202,8 +214,9 @@ export default function App() {
 
 /* ---------- La porte — fonder, rejoindre, ou hisser l'héritage ---------- */
 
-function Porte({ heritage, onFonder, onRejoindre, onHisser }: {
+function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
   heritage: Constellation | null
+  avis: string | null
   onFonder: () => void
   onRejoindre: () => void
   onHisser: () => void
@@ -214,6 +227,7 @@ function Porte({ heritage, onFonder, onRejoindre, onHisser }: {
         <h1>Mana Family</h1>
         <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
+      {avis && <section className="card"><p className="whisper" style={{ margin: 0 }}>{avis}</p></section>}
       <section className="card">
         {heritage && (
           <button className="primary" onClick={onHisser}>
