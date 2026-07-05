@@ -33,44 +33,37 @@ function LogoSeuil() {
 }
 
 /** Le tiroir — le vestibule discret de l'univers Mana + l'assistante (silencieuse pour l'instant). */
-function TiroirUnivers() {
-  const [ouvert, setOuvert] = useState(false)
+function TiroirUnivers({ ouvert, onClose }: { ouvert: boolean; onClose: () => void }) {
+  if (!ouvert) return null
   return (
-    <>
-      <button className="tiroir-medaillon" onClick={() => setOuvert(true)} aria-label="L'univers Mana">
-        <img src="/icon-192.png" alt="" />
-      </button>
-      {ouvert && (
-        <div className="tiroir-scrim" onClick={() => setOuvert(false)}>
-          <section className="tiroir-panneau" onClick={(e) => e.stopPropagation()}>
-            <div className="tiroir-assistante">
-              <img src="/logo-nuit.png" alt="" className="tiroir-visage logo-nuit" />
-              <img src="/logo-jour.png" alt="" className="tiroir-visage logo-jour" />
-              <p className="tiroir-mot">Bienvenue chez vous. Voici les portes de la maison Mana — je vous les montre quand vous voulez.</p>
-            </div>
-
-            <h2>L'univers Mana</h2>
-            <ul className="tiroir-portes">
-              <li className="ici"><span className="porte-nom">Mana Family</span><span className="porte-mot">vous y êtes</span></li>
-              <li>
-                <a href="https://gilletaurelien-art.github.io/family/" target="_blank" rel="noopener">
-                  <span className="porte-nom">Le site</span><span className="porte-mot">découvrir Mana Family →</span>
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/gilletaurelien-art/Digital-Constitution" target="_blank" rel="noopener">
-                  <span className="porte-nom">La Constitution numérique</span><span className="porte-mot">nos engagements →</span>
-                </a>
-              </li>
-              <li className="bientot"><span className="porte-nom">Mana citoyen</span><span className="porte-mot">bientôt</span></li>
-              <li className="bientot"><span className="porte-nom">TempoSystem</span><span className="porte-mot">bientôt</span></li>
-            </ul>
-
-            <button className="link tiroir-fermer" onClick={() => setOuvert(false)}>fermer</button>
-          </section>
+    <div className="tiroir-scrim" onClick={onClose}>
+      <section className="tiroir-panneau" onClick={(e) => e.stopPropagation()}>
+        <div className="tiroir-assistante">
+          <img src="/logo-nuit.png" alt="" className="tiroir-visage logo-nuit" />
+          <img src="/logo-jour.png" alt="" className="tiroir-visage logo-jour" />
+          <p className="tiroir-mot">Bienvenue chez vous. Voici les portes de la maison Mana — je vous les montre quand vous voulez.</p>
         </div>
-      )}
-    </>
+
+        <h2>L'univers Mana</h2>
+        <ul className="tiroir-portes">
+          <li className="ici"><span className="porte-nom">Mana Family</span><span className="porte-mot">vous y êtes</span></li>
+          <li>
+            <a href="https://gilletaurelien-art.github.io/family/" target="_blank" rel="noopener">
+              <span className="porte-nom">Le site</span><span className="porte-mot">découvrir Mana Family →</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/gilletaurelien-art/Digital-Constitution" target="_blank" rel="noopener">
+              <span className="porte-nom">La Constitution numérique</span><span className="porte-mot">nos engagements →</span>
+            </a>
+          </li>
+          <li className="bientot"><span className="porte-nom">Mana citoyen</span><span className="porte-mot">bientôt</span></li>
+          <li className="bientot"><span className="porte-nom">TempoSystem</span><span className="porte-mot">bientôt</span></li>
+        </ul>
+
+        <button className="link tiroir-fermer" onClick={onClose}>fermer</button>
+      </section>
+    </div>
   )
 }
 
@@ -591,13 +584,13 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
   onParametres: () => void
 }) {
   const n = ciel.astres.length
+  const [tiroirOuvert, setTiroirOuvert] = useState(false)
   const halos = new Set(
     ciel.transmissions.filter((t) => t.aboutId && Object.keys(t.veilles).length > 0).map((t) => t.aboutId as string),
   )
 
   return (
     <div className="shell">
-      <TiroirUnivers />
       <header className="sky">
         <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
         <p className="whisper">
@@ -632,18 +625,28 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
       <button className="etat-ciel" onClick={onChronologie}>{etatDuCiel(ciel)}</button>
 
       <div className="barre-bas">
-        <button className="carnet-bouton" onClick={() => onOuvrirFrise(null)}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5V5.5Z" />
-            <path d="M20 5.5C20 4.7 19.3 4 18.5 4H13v15h5.5c.8 0 1.5-.7 1.5-1.5V5.5Z" />
-          </svg>
-          <span className="carnet-mot">Le carnet</span>
+        <button className="satellite" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille">
+          <span className="satellite-rond">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5V5.5Z" />
+              <path d="M20 5.5C20 4.7 19.3 4 18.5 4H13v15h5.5c.8 0 1.5-.7 1.5-1.5V5.5Z" />
+            </svg>
+          </span>
+          <span className="satellite-mot">carnet</span>
         </button>
+
         <button className="galet" onClick={onTransmettre} aria-label="Transmettre">
           <span className="galet-dot" />
           <span className="galet-mot">Transmettre</span>
         </button>
+
+        <button className="satellite" onClick={() => setTiroirOuvert(true)} aria-label="L'univers Mana">
+          <span className="satellite-rond satellite-visage"><img src="/icon-192.png" alt="" /></span>
+          <span className="satellite-mot">l'univers</span>
+        </button>
       </div>
+
+      <TiroirUnivers ouvert={tiroirOuvert} onClose={() => setTiroirOuvert(false)} />
     </div>
   )
 }

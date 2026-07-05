@@ -69,13 +69,6 @@ body {
 .sky { text-align: center; padding: 1.2rem 0 0.6rem; }
 
 /* Le tiroir — vestibule discret de l'univers Mana */
-.tiroir-medaillon {
-  position: fixed; top: 0.7rem; left: 0.7rem; z-index: 30;
-  width: 42px; height: 42px; padding: 0; border-radius: 50%;
-  overflow: hidden; border: 1px solid var(--filet); background: var(--noir-atlantique);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-}
-.tiroir-medaillon img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .tiroir-scrim {
   position: fixed; inset: 0; z-index: 40;
@@ -561,18 +554,21 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .barre-bas > * { pointer-events: auto; }
 
-.carnet-bouton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.1rem;
-  border-radius: 999px;
-  border: 1px solid var(--filet);
-  background: var(--carte);
-  color: var(--brume);
-  backdrop-filter: blur(6px);
+/* Les satellites — lire (carnet) et l'univers (assistante) autour du galet */
+.barre-bas { align-items: center; gap: 1rem; }
+.satellite {
+  background: none; border: none; padding: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
 }
-.carnet-mot { font-size: 0.82rem; letter-spacing: 0.03em; }
+.satellite-rond {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid var(--filet); background: var(--carte); color: var(--brume);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px); overflow: hidden;
+}
+.satellite-visage { background: var(--noir-atlantique); border-color: rgba(229,184,66,0.3); }
+.satellite-visage img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.satellite-mot { font-size: 0.66rem; letter-spacing: 0.08em; color: var(--brume); }
 
 /* Le galet — une invitation, pas un ordre. Concave, poli par la mer. */
 .galet {
