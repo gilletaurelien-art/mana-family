@@ -626,12 +626,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
 
       <div className="barre-bas">
         <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-          <span className="geste-rond">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5V5.5Z" />
-              <path d="M20 5.5C20 4.7 19.3 4 18.5 4H13v15h5.5c.8 0 1.5-.7 1.5-1.5V5.5Z" />
-            </svg>
-          </span>
+          <span className="geste-rond geste-visage"><img src="/avatar-carnet.png" alt="" /></span>
           <span className="geste-mot">lire</span>
         </button>
 
