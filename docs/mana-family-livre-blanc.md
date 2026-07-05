@@ -164,6 +164,16 @@ Chaque membre possède une continuité :
 
 En lecture produit : la Présence fait venir chaque jour (utilité quotidienne, gratuite), la Mémoire fait rester et soutient le modèle (le tissage, les rituels, les artefacts).
 
+### 🌫️ Le troisième état — le repos
+
+Une constellation peut être **active**, **présente**, ou **au repos**. Comme une forêt, comme la mer. Une famille silencieuse n'est pas une famille morte : elle peut vivre une semaine magnifique sans rien transmettre — elle vit ses souvenirs au lieu de les produire. **La mémoire n'est pas une performance.**
+
+Toutes les applications du monde sont construites contre le silence — « revenez », « vous avez manqué », « quelqu'un a publié ». Mana Family fait exactement l'inverse : aucun mécanisme, visuel, textuel ou notifié, ne traduira jamais le silence en manque. Quand la constellation se tait, le ciel dit simplement : *« La constellation se repose. »* Il n'y a rien à réparer, rien à relancer, rien à optimiser.
+
+> **Le silence n'est pas un manque. Le silence est un état légitime d'une constellation.**
+
+C'est l'épreuve de la confiance : Mana Family fait suffisamment confiance aux familles pour accepter qu'elles ne fassent rien pendant un mois. Cette loi est aussi fondatrice que l'inaliénabilité de la mémoire — elle coûte des métriques d'engagement, et c'est précisément pour cela qu'elle vaut quelque chose.
+
 Et cette mémoire a deux états :
 
 * **la mémoire brute** — le fil chronologique complet de tout ce qui a été transmis. Elle est gratuite, complète, et **jamais effacée**. C'est la ligne rouge du produit : aucune famille ne lira jamais « vos souvenirs seront supprimés ».
@@ -289,6 +299,7 @@ Ce dernier garde-fou dépasse le produit. C'est une règle interne, au rang de v
 * ✅ structure temporelle
 * ✅ mémoire partagée
 * ✅ transmissions contextualisées
+* ✅ le silence est un état légitime — jamais interprété, jamais sanctionné, jamais « relancé »
 
 ---
 

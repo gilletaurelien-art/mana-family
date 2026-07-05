@@ -89,13 +89,17 @@ export default function App() {
 
 function etatDuCiel(c: Constellation): string {
   if (c.transmissions.length === 0) return 'Le ciel attend sa première étoile.'
+  // Le troisième état (livre blanc §6) : après trois jours sans transmission,
+  // la constellation SE REPOSE — un état légitime, jamais un manque à combler.
+  const derniere = new Date(c.transmissions[0].createdAt).getTime()
+  if (Date.now() - derniere > 72 * 3600 * 1000) return 'La constellation se repose.'
   const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
   if (veillee) {
     const nom = c.astres.find((a) => a.id === veillee.aboutId)?.name
     if (nom) return `La constellation veille sur ${nom}.`
   }
   if (c.transmissions[0].kind === 'souvenir') return 'Un souvenir a été déposé dans le cercle.'
-  // Le silence suit la lumière du jour — jamais le temps écoulé. Aucune phrase ne dit « manque ».
+  // Sinon, le silence suit la lumière du jour — jamais le temps écoulé.
   const h = new Date().getHours()
   if (h < 6) return 'La nuit veille avec vous.'
   if (h < 12) return 'Le jour se lève sur votre constellation.'
