@@ -67,6 +67,15 @@ body {
 
 /* Le ciel — les titres portent la mémoire, donc le serif */
 .sky { text-align: center; padding: 1.2rem 0 0.6rem; }
+
+/* Le visage aux seuils — doré la nuit, marine le jour */
+.logo-seuil-wrap { text-align: center; margin: 0.4rem 0 0.2rem; }
+.logo-seuil { width: 118px; height: auto; display: inline-block; }
+.logo-jour { display: none; }
+@media (prefers-color-scheme: light) {
+  .logo-nuit { display: none; }
+  .logo-jour { display: inline-block; }
+}
 .sky h1 {
   margin: 0;
   font-family: var(--serif);

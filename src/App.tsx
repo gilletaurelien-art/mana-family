@@ -22,6 +22,16 @@ async function preparerPortrait(file: File): Promise<string> {
 
 interface AstreDraft { name: string; role: Role; circle: 1 | 2 | 3; birthDate: string | null }
 
+/** Le visage — logo & future assistante. Uniquement aux seuils, jamais dans la vie de famille. */
+function LogoSeuil() {
+  return (
+    <div className="logo-seuil-wrap">
+      <img src="/logo-nuit.png" alt="" className="logo-seuil logo-nuit" />
+      <img src="/logo-jour.png" alt="" className="logo-seuil logo-jour" />
+    </div>
+  )
+}
+
 /* ---------- Le temps des astres ---------- */
 
 function ageDe(birthDate: string): number {
@@ -136,7 +146,7 @@ export default function App() {
   if (phase.ecran === 'chargement') {
     return (
       <div className="shell">
-        <header className="sky"><h1>Mana Family</h1><p className="whisper">La famille s'ouvre…</p></header>
+        <header className="sky"><LogoSeuil /><h1>Mana Family</h1><p className="whisper">La famille s'ouvre…</p></header>
       </div>
     )
   }
@@ -318,6 +328,7 @@ function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
   return (
     <div className="shell">
       <header className="sky">
+        <LogoSeuil />
         <h1>Mana Family</h1>
         <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
@@ -359,6 +370,7 @@ function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]
   return (
     <div className="shell">
       <header className="sky">
+        <LogoSeuil />
         <h1>Mana Family</h1>
         <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
