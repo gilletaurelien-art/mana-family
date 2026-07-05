@@ -45,6 +45,12 @@ Trois zones immuables — identité (20 %), la Constellation (60 %), l'État du 
 
 **L'épreuve d'apaisement** (Corvus) : la vraie mesure du premier contact n'est pas « est-ce que ça marche » mais **« est-ce que ça apaise »**. Mana Family n'est pas une interface, c'est un rythme.
 
+## Lexique — le mot interdit (trouvaille du capitaine, 06/07)
+
+En français, **« le ciel » porte la mort** : *« mémé est montée au ciel »*. Dans une application de mémoire familiale — où vivront un jour des astres disparus — ce champ lexical est un codage-mort d'interface, cousin de celui que le §7 du livre blanc avait chassé du récit.
+
+**Règle** : jamais « ciel » pour nommer l'espace partagé, la navigation ou un mouvement de données (*monter, hisser vers le ciel* = interdit absolu). Le lieu s'appelle **l'Univers** ; l'accueil, ce sont **les astres** (« retour aux astres »). Seules les phrases **météo** gardent le mot, car il y est innocent : *« Le ciel est paisible. »*
+
 ## Notes d'implémentation
 
 - Mode nuit par défaut, mode jour via `prefers-color-scheme` — le jour servira de base à l'interface **Veilleuse** (grands-parents).

@@ -52,7 +52,7 @@ export default function App() {
       const msg = e instanceof Error ? e.message : String(e)
       setAvis(
         msg.includes('anonymous') || msg.includes('Anonymous')
-          ? 'Le ciel partagé n’est pas encore ouvert : active « Anonymous sign-ins » dans le dashboard Supabase (Authentication → Sign In / Providers), puis réessaie.'
+          ? 'L’Univers partagé n’est pas encore ouvert : active « Anonymous sign-ins » dans le dashboard Supabase (Authentication → Sign In / Providers), puis réessaie.'
           : `La manœuvre a échoué : ${msg}`,
       )
       setPhase({ ecran: 'porte' })
@@ -89,7 +89,7 @@ export default function App() {
   if (phase.ecran === 'chargement') {
     return (
       <div className="shell">
-        <header className="sky"><h1>Mana Family</h1><p className="whisper">Le ciel s'ouvre…</p></header>
+        <header className="sky"><h1>Mana Family</h1><p className="whisper">L'Univers s'ouvre…</p></header>
       </div>
     )
   }
@@ -150,7 +150,7 @@ export default function App() {
       <div className="shell">
         <header className="sky">
           <h1>Mana Family</h1>
-          <p className="whisper">La mer est coupée et aucun ciel n'est en cache sur cet appareil.</p>
+          <p className="whisper">La mer est coupée et aucun Univers n'est en mémoire sur cet appareil.</p>
         </header>
       </div>
     )
@@ -231,7 +231,7 @@ function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
       <section className="card">
         {heritage && (
           <button className="primary" onClick={onHisser}>
-            Hisser « {heritage.name} » vers le ciel partagé
+            Hisser « {heritage.name} » dans l'Univers partagé
           </button>
         )}
         <button className={heritage ? '' : 'primary'} style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onFonder}>
@@ -379,7 +379,7 @@ function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHi
       <header className="sky">
         <h1>{heritage.name}</h1>
         <p className="whisper">
-          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} montera{heritage.transmissions.length > 1 ? 'ont' : ''} au ciel partagé, dates et lueurs préservées.<br />
+          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} rejoindr{heritage.transmissions.length > 1 ? 'ont' : 'a'} l'Univers partagé, dates et lueurs préservées.<br />
           <button className="link" onClick={onRetour}>← retour</button>
         </p>
       </header>
@@ -401,7 +401,7 @@ function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHi
 /* ---------- Le Ciel ---------- */
 
 function etatDuCiel(c: CielData): string {
-  if (c.transmissions.length === 0) return 'Le ciel attend sa première étoile.'
+  if (c.transmissions.length === 0) return 'L\'Univers attend sa première étoile.'
   const derniere = new Date(c.transmissions[0].createdAt).getTime()
   if (Date.now() - derniere > 72 * 3600 * 1000) return 'La constellation se repose.'
   const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
@@ -485,14 +485,14 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
     <div className="shell">
       <header className="sky">
         <h1>La clé de la maison</h1>
-        <p className="whisper"><button className="link" onClick={onRetour}>← retour au ciel</button></p>
+        <p className="whisper"><button className="link" onClick={onRetour}>← retour aux astres</button></p>
       </header>
       <section className="card" style={{ textAlign: 'center' }}>
         <p>Chaque proche ouvre l'application sur son appareil, choisit « Rejoindre avec une clé », et entre :</p>
         <p style={{ fontFamily: 'var(--serif)', fontSize: '2rem', letterSpacing: '0.2em', color: 'var(--or-mana)' }}>
           {ciel.inviteCode}
         </p>
-        <p className="whisper">La clé ne se partage qu'en famille — c'est la porte de votre ciel.</p>
+        <p className="whisper">La clé ne se partage qu'en famille — c'est la porte de votre Univers.</p>
 
         <h2>Cet appareil est {me.name}</h2>
         <div className="chips" style={{ justifyContent: 'center' }}>
@@ -611,7 +611,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait }: {
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
         <h1>{sujet ? sujet.name : 'Le fil de vie'}</h1>
         <p className="whisper">
-          <button className="link" onClick={onRetour}>← retour au ciel</button>
+          <button className="link" onClick={onRetour}>← retour aux astres</button>
           {sujet && (
             <>
               {' · '}
