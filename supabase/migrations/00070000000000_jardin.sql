@@ -7,6 +7,11 @@
 -- galaxie active à la fois. Re-jouable.
 -- ============================================================
 
+-- 0. Prérequis auto-réparant : si une migration antérieure a été éditée
+--    après avoir été jouée, la colonne du surnom peut manquer. mes_galaxies
+--    en a besoin. Idempotent.
+alter table astres add column if not exists nickname text;
+
 -- 1. Un appareil peut être relié à plusieurs galaxies (une ligne par galaxie).
 alter table device_links drop constraint if exists device_links_pkey;
 alter table device_links add primary key (user_id, constellation_id);
