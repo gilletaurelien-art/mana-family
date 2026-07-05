@@ -21,6 +21,7 @@ type Geste =
   | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[] }
   | { geste: 'veiller'; txId: string }
   | { geste: 'portrait'; astreId: string; url: string }
+  | { geste: 'naissance'; astreId: string; date: string }
 
 function lireOutbox(): Geste[] {
   try { return JSON.parse(localStorage.getItem(OUTBOX) ?? '[]') } catch { return [] }
@@ -40,6 +41,8 @@ async function jouer(g: Geste): Promise<void> {
     await rpc('transmettre', { p_id: g.id, p_kind: g.kind, p_body: g.body, p_about: g.aboutId, p_recipients: g.recipientIds })
   } else if (g.geste === 'veiller') {
     await rpc('veiller', { p_tx: g.txId })
+  } else if (g.geste === 'naissance') {
+    await rpc('poser_naissance', { p_astre: g.astreId, p_date: g.date })
   } else {
     await rpc('poser_portrait', { p_astre: g.astreId, p_url: g.url })
   }
@@ -94,6 +97,8 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
       }
     } else if (g.geste === 'portrait') {
       next = { ...next, astres: next.astres.map((a) => (a.id === g.astreId ? { ...a, avatarUrl: g.url } : a)) }
+    } else if (g.geste === 'naissance') {
+      next = { ...next, astres: next.astres.map((a) => (a.id === g.astreId ? { ...a, birthDate: g.date } : a)) }
     }
   }
   return next
@@ -153,9 +158,14 @@ export function poserPortrait(ciel: Ciel, astreId: string, url: string): Ciel {
   return { ...ciel, astres: ciel.astres.map((a) => (a.id === astreId ? { ...a, avatarUrl: url } : a)) }
 }
 
+export function poserNaissance(ciel: Ciel, astreId: string, date: string): Ciel {
+  enfiler({ geste: 'naissance', astreId, date })
+  return { ...ciel, astres: ciel.astres.map((a) => (a.id === astreId ? { ...a, birthDate: date } : a)) }
+}
+
 /* ---------- Fondation, arrimage, hissage ---------- */
 
-export async function fonder(nom: string, astres: { name: string; role: Role; circle: 1 | 2 | 3 }[], monIndex: number): Promise<void> {
+export async function fonder(nom: string, astres: { name: string; role: Role; circle: 1 | 2 | 3; birthDate?: string | null }[], monIndex: number): Promise<void> {
   await assurerSession()
   await rpc('fonder', { p_nom: nom, p_astres: astres, p_mon_index: monIndex })
 }

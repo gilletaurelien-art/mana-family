@@ -178,6 +178,35 @@ button:disabled { opacity: 0.35; cursor: default; }
 .row input { flex: 1; }
 .row select { width: auto; }
 
+/* Le titre est aussi une porte — vers la galaxie */
+.titre-lien {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: inherit; color: inherit; letter-spacing: inherit;
+}
+
+/* Les dates des astres — discrètes, jamais exigées */
+.naissance { font-size: 0.78rem; color: var(--brume); margin: 0.3rem 0 0; }
+.naissance-input {
+  width: auto; padding: 0.3rem 0.5rem; font-size: 0.82rem;
+  background: var(--champ); border: 1px dotted var(--filet); border-radius: 8px; color: var(--brume);
+}
+.naissance-row input[type='date'] { flex: 0 0 11rem; }
+.naissance-note { font-size: 0.72rem; font-style: italic; }
+
+/* La galaxie — les générations, des aînés aux enfants */
+.galaxie-etage { border-top: 1px dotted var(--filet); padding: 1.4rem 0 0.6rem; margin-top: 1rem; }
+.etage-nom {
+  display: block; font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--or-doux); margin-bottom: 0.9rem; font-weight: 500;
+}
+.galaxie-rang { display: flex; flex-wrap: wrap; gap: 1.1rem 1.4rem; }
+.astre-fixe {
+  background: none; border: none; padding: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  width: 96px; text-align: center; cursor: pointer;
+}
+.astre-fixe .naissance { line-height: 1.35; }
+
 /* Le compagnon du champ — un astre en devenir, pas un « + » industriel */
 .ajout-astre {
   color: var(--or-mana);

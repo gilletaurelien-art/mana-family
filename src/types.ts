@@ -9,6 +9,8 @@ export interface Astre {
   circle: 1 | 2 | 3
   /** Portrait argentique (dataURL 128px). Sans lui, l'astre est une lumière pure. */
   avatarUrl?: string
+  /** Date de naissance (YYYY-MM-DD) — anniversaires et arbre des générations. Facultative, jamais exigée. */
+  birthDate?: string | null
 }
 
 export interface Transmission {

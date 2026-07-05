@@ -3,7 +3,7 @@ import type { Astre, Constellation, Role, TransmissionKind } from './types'
 import { KINDS, ROLES } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import {
-  astresDe, charger, fonder, hisser, poserPortrait, rejoindre, transmettre, veiller,
+  astresDe, charger, fonder, hisser, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
   type Ciel as CielData,
 } from './remote'
 
@@ -20,7 +20,27 @@ async function preparerPortrait(file: File): Promise<string> {
   return canvas.toDataURL('image/jpeg', 0.82)
 }
 
-interface AstreDraft { name: string; role: Role; circle: 1 | 2 | 3 }
+interface AstreDraft { name: string; role: Role; circle: 1 | 2 | 3; birthDate: string | null }
+
+/* ---------- Le temps des astres ---------- */
+
+function ageDe(birthDate: string): number {
+  const n = new Date(birthDate)
+  const now = new Date()
+  let age = now.getFullYear() - n.getFullYear()
+  if (now.getMonth() < n.getMonth() || (now.getMonth() === n.getMonth() && now.getDate() < n.getDate())) age--
+  return age
+}
+
+function estAnniversaire(birthDate: string): boolean {
+  const n = new Date(birthDate)
+  const now = new Date()
+  return n.getDate() === now.getDate() && n.getMonth() === now.getMonth()
+}
+
+function naissanceEnClair(birthDate: string): string {
+  return new Date(birthDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+}
 
 type Phase =
   | { ecran: 'chargement' }
@@ -30,6 +50,7 @@ type Phase =
   | { ecran: 'rejoindre' }
   | { ecran: 'hisser' }
   | { ecran: 'ciel' }
+  | { ecran: 'galaxie' }
   | { ecran: 'inviter' }
   | { ecran: 'frise'; aboutId: string | null }
   | { ecran: 'composer' }
@@ -180,6 +201,17 @@ export default function App() {
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onVeiller={(txId) => setCiel(veiller(ciel, txId))}
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
+        onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
+      />
+    )
+  }
+
+  if (phase.ecran === 'galaxie') {
+    return (
+      <GalaxieVue
+        ciel={ciel}
+        onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
+        onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
   }
@@ -208,6 +240,7 @@ export default function App() {
       onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
       onTransmettre={() => setPhase({ ecran: 'composer' })}
       onInviter={() => setPhase({ ecran: 'inviter' })}
+      onGalaxie={() => setPhase({ ecran: 'galaxie' })}
     />
   )
 }
@@ -252,12 +285,14 @@ function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]
   const [astres, setAstres] = useState<AstreDraft[]>([])
   const [draft, setDraft] = useState('')
   const [role, setRole] = useState<Role>('parent')
+  const [naissance, setNaissance] = useState('')
 
   const add = () => {
     if (!draft.trim()) return
     const meta = ROLES.find((r) => r.role === role)!
-    setAstres([...astres, { name: draft.trim(), role, circle: meta.circle }])
+    setAstres([...astres, { name: draft.trim(), role, circle: meta.circle, birthDate: naissance || null }])
     setDraft('')
+    setNaissance('')
   }
 
   return (
@@ -286,11 +321,16 @@ function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]
           </select>
           <button onClick={add} aria-label="Ajouter cet astre" className="ajout-astre">✦</button>
         </div>
+        <div className="row naissance-row">
+          <input type="date" value={naissance} onChange={(e) => setNaissance(e.target.value)} aria-label="Date de naissance" />
+          <span className="whisper naissance-note">naissance — pour les anniversaires et l'arbre, facultatif</span>
+        </div>
 
         <ul className="astre-list">
           {astres.map((a, i) => (
             <li key={i}>
-              <span className="astre-dot" /> {a.name} <em>· {ROLES.find((r) => r.role === a.role)?.label} · Cercle {a.circle}</em>
+              <span className="astre-dot" /> {a.name}{' '}
+              <em>· {ROLES.find((r) => r.role === a.role)?.label} · Cercle {a.circle}{a.birthDate ? ` · ${naissanceEnClair(a.birthDate)}` : ''}</em>
             </li>
           ))}
         </ul>
@@ -401,6 +441,12 @@ function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHi
 /* ---------- Le Ciel ---------- */
 
 function etatDuCiel(c: CielData): string {
+  // L'anniversaire passe avant tout — c'est un fait du calendrier, jamais une relance.
+  const anniv = c.astres.find((a) => a.birthDate && estAnniversaire(a.birthDate))
+  if (anniv) {
+    const age = ageDe(anniv.birthDate!)
+    return `C'est l'anniversaire de ${anniv.name} — ${age} an${age > 1 ? 's' : ''} aujourd'hui. ✦`
+  }
   if (c.transmissions.length === 0) return 'L\'Univers attend sa première étoile.'
   const derniere = new Date(c.transmissions[0].createdAt).getTime()
   if (Date.now() - derniere > 72 * 3600 * 1000) return 'La famille se repose.'
@@ -417,13 +463,14 @@ function etatDuCiel(c: CielData): string {
   return 'Douceur sur votre famille ce soir.'
 }
 
-function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter }: {
+function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie }: {
   ciel: CielData
   me: Astre
   horsLigne: boolean
   onOuvrirFrise: (aboutId: string | null) => void
   onTransmettre: () => void
   onInviter: () => void
+  onGalaxie: () => void
 }) {
   const n = ciel.astres.length
   const halos = new Set(
@@ -433,9 +480,9 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter 
   return (
     <div className="shell">
       <header className="sky">
-        <h1>Famille {ciel.name}</h1>
+        <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
         <p className="whisper">
-          {me.name} · <button className="link" onClick={onInviter}>inviter</button>
+          {me.name} · <button className="link" onClick={onGalaxie}>la galaxie</button> · <button className="link" onClick={onInviter}>inviter</button>
           {horsLigne && <> · en mer, hors réseau — les gestes attendent</>}
         </p>
       </header>
@@ -469,6 +516,64 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter 
         <span className="galet-dot" />
         <span className="galet-mot">Transmettre</span>
       </button>
+    </div>
+  )
+}
+
+/* ---------- La galaxie — les générations de la famille ---------- */
+
+const GENERATIONS: { nom: string; roles: Role[] }[] = [
+  { nom: 'Les aînés', roles: ['grand_parent'] },
+  { nom: 'Les parents', roles: ['parent', 'soutien'] },
+  { nom: 'Les enfants', roles: ['enfant'] },
+  { nom: 'La famille étendue', roles: ['famille'] },
+]
+
+function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
+  ciel: CielData
+  onOuvrirFrise: (aboutId: string) => void
+  onRetour: () => void
+}) {
+  const parDate = (a: Astre, b: Astre) => {
+    if (a.birthDate && b.birthDate) return a.birthDate.localeCompare(b.birthDate)
+    if (a.birthDate) return -1
+    if (b.birthDate) return 1
+    return a.name.localeCompare(b.name)
+  }
+
+  return (
+    <div className="shell">
+      <header className="sky">
+        <h1>La galaxie {ciel.name}</h1>
+        <p className="whisper">
+          les générations, des aînés aux enfants · <button className="link" onClick={onRetour}>← retour aux astres</button>
+        </p>
+      </header>
+
+      {GENERATIONS.map((g) => {
+        const rang = ciel.astres.filter((a) => g.roles.includes(a.role)).sort(parDate)
+        if (rang.length === 0) return null
+        return (
+          <section className="galaxie-etage" key={g.nom}>
+            <span className="etage-nom">{g.nom}</span>
+            <div className="galaxie-rang">
+              {rang.map((a) => (
+                <button key={a.id} className="astre-fixe" onClick={() => onOuvrirFrise(a.id)}>
+                  <span className="astre-core">
+                    {a.avatarUrl ? <img src={a.avatarUrl} alt="" className="astre-photo" /> : <span className="astre-pure-light" />}
+                  </span>
+                  <span className="prenom">{a.name}</span>
+                  <span className="naissance">
+                    {a.birthDate
+                      ? `${naissanceEnClair(a.birthDate)} · ${ageDe(a.birthDate)} an${ageDe(a.birthDate) > 1 ? 's' : ''}${estAnniversaire(a.birthDate) ? ' ✦' : ''}`
+                      : '—'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )
+      })}
     </div>
   )
 }
@@ -591,13 +696,14 @@ function Composer({ ciel, me, onDone }: {
 
 /* ---------- Le fil de vie ---------- */
 
-function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait }: {
+function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissance }: {
   ciel: CielData
   me: Astre
   aboutId: string | null
   onRetour: () => void
   onVeiller: (txId: string) => void
   onPortrait: (astreId: string, dataUrl: string) => void
+  onNaissance: (astreId: string, date: string) => void
 }) {
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const nameOf = (id: string | null) => ciel.astres.find((a) => a.id === id)?.name ?? null
@@ -630,6 +736,24 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait }: {
             </>
           )}
         </p>
+        {sujet && (
+          sujet.birthDate ? (
+            <p className="naissance">
+              {naissanceEnClair(sujet.birthDate)} · {ageDe(sujet.birthDate)} an{ageDe(sujet.birthDate) > 1 ? 's' : ''}
+              {estAnniversaire(sujet.birthDate) ? ' — bon anniversaire ✦' : ''}
+            </p>
+          ) : (
+            <p className="naissance">
+              <input
+                type="date"
+                aria-label={`Date de naissance de ${sujet.name}`}
+                className="naissance-input"
+                onChange={(e) => { if (e.target.value) onNaissance(sujet.id, e.target.value) }}
+              />
+              <span className="whisper naissance-note"> poser la date de naissance</span>
+            </p>
+          )
+        )}
       </header>
 
       {txs.length === 0 ? (
