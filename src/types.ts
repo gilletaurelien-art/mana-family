@@ -74,8 +74,12 @@ export const KINDS: { kind: TransmissionKind; label: string }[] = [
   { kind: 'sante', label: 'Santé' },
   { kind: 'emotionnel', label: 'Émotion' },
   { kind: 'ensemble', label: 'Ensemble' },
-  { kind: 'accompagner', label: 'Accompagner' },
   { kind: 'organiser', label: 'Organiser' },
+]
+
+/** Sortes retirées des choix mais jamais de la mémoire — les anciennes pages gardent leur nom. */
+export const KINDS_RETIRES: { kind: TransmissionKind; label: string }[] = [
+  { kind: 'accompagner', label: 'Accompagner' },
 ]
 
 export const ROLES: { role: Role; label: string; circle: 1 | 2 | 3 }[] = [

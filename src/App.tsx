@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
-import { CALENDAR_LAYERS, KINDS, ROLES, nomIntime } from './types'
+import { CALENDAR_LAYERS, KINDS, KINDS_RETIRES, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import {
   activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
@@ -180,6 +180,28 @@ function KindGlyph({ kind }: { kind: TransmissionKind }) {
     default:
       return <svg {...svg}>{dot(12, 12, 2)}</svg>
   }
+}
+
+/** Le micro de la dictée — s'éveille quand il écoute. */
+function MicGlyph({ actif }: { actif: boolean }) {
+  return (
+    <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="9" y="3" width="6" height="11" rx="3" fill={actif ? 'currentColor' : 'none'} />
+      <path d="M6 11a6 6 0 0 0 12 0" />
+      <path d="M12 17v4" />
+      <path d="M9 21h6" />
+    </svg>
+  )
+}
+
+/** Les pièces jointes — appareil, film, onde. */
+function PjGlyph({ type }: { type: 'photo' | 'video' | 'audio' }) {
+  const svg = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
+  if (type === 'photo')
+    return <svg {...svg}><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2l1.2-1.8h6.6L15.5 7h2A1.5 1.5 0 0 1 19 8.5v9A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5Z" /><circle cx="11" cy="12.5" r="3" /></svg>
+  if (type === 'video')
+    return <svg {...svg}><rect x="3" y="6" width="12" height="12" rx="2" /><path d="M15 10.5 21 7v10l-6-3.5Z" /></svg>
+  return <svg {...svg}><path d="M4 12h2l2-5 3 12 2.5-9 1.5 4H20" /></svg>
 }
 
 type Phase =
@@ -1002,12 +1024,12 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 
 const KIND_GROUPS: { label: string; kinds: TransmissionKind[] }[] = [
   { label: 'Passé', kinds: ['souvenir'] },
-  { label: 'Présent', kinds: ['sante', 'emotionnel', 'ensemble', 'accompagner'] },
+  { label: 'Présent', kinds: ['sante', 'emotionnel', 'ensemble'] },
   { label: 'Futur', kinds: ['organiser'] },
 ]
 
 function kindMeta(kind: TransmissionKind) {
-  return KINDS.find((k) => k.kind === kind) ?? { kind, label: kind }
+  return KINDS.find((k) => k.kind === kind) ?? KINDS_RETIRES.find((k) => k.kind === kind) ?? { kind, label: kind }
 }
 
 function Composer({ ciel, me, onDone }: {
@@ -1022,43 +1044,62 @@ function Composer({ ciel, me, onDone }: {
   const [body, setBody] = useState('')
   const [quand, setQuand] = useState(() => dateIsoDuJour())
 
+  const [ecoute, setEcoute] = useState(false)
+  const recognitionRef = useRef<any>(null)
+
   const toggle = (id: string) =>
     setRecipients((r) => (r.includes(id) ? r.filter((x) => x !== id) : [...r, id]))
 
+  // La dictée — la voix devient mémoire (reconnaissance du navigateur, hors ligne quand dispo)
+  const dicter = () => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) return
+    if (ecoute) { recognitionRef.current?.stop(); return }
+    const rec = new SR()
+    rec.lang = 'fr-FR'
+    rec.interimResults = true
+    rec.continuous = true
+    const base = body ? body.trimEnd() + ' ' : ''
+    rec.onresult = (e: any) => {
+      let txt = ''
+      for (let i = e.resultIndex; i < e.results.length; i++) txt += e.results[i][0].transcript
+      setBody(base + txt)
+    }
+    rec.onend = () => setEcoute(false)
+    rec.onerror = () => setEcoute(false)
+    recognitionRef.current = rec
+    rec.start()
+    setEcoute(true)
+  }
+  const dicteeDispo = typeof window !== 'undefined' && ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
+
   return (
     <div className="shell">
-      <header className="sky">
-        <h1>Transmettre</h1>
-        <p className="whisper">Un acte de soin aujourd'hui, un acte de mémoire demain.</p>
+      <header className="sky assistante-hero carnet-hero">
+        <div className="carnet-hero-top">
+          <div className="assistante-hero-texte">
+            <h1>Transmettre</h1>
+            <p className="assistante-mot">
+              Un acte de soin aujourd'hui,<br />
+              un acte de mémoire demain.
+            </p>
+            <p className="whisper"><button className="link" onClick={() => onDone(null)}>← Retour</button></p>
+          </div>
+          <div className="assistante-hero-visage carnet-hero-visage" aria-hidden="true">
+            <img src="/ecrire-hero-nuit.png" alt="" className="logo-nuit" />
+            <img src="/ecrire-hero-jour.png" alt="" className="logo-jour" />
+          </div>
+        </div>
       </header>
 
       <section className="card">
-        <div className="kind-time-groups">
-          {KIND_GROUPS.map((group) => (
-            <div className="kind-time-group" key={group.label}>
-              <span className="kind-time-label">{group.label}</span>
-              <div className="kind-time-row">
-                {group.kinds.map((kindId) => {
-                  const k = kindMeta(kindId)
-                  return (
-                    <button key={k.kind} className={`kind ${kind === k.kind ? 'on' : ''}`} onClick={() => setKind(k.kind)}>
-                      <span className="kind-glyph"><KindGlyph kind={k.kind} /></span>
-                      {k.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-
         <h2>Pour</h2>
         <div className="chips">
           <button
             className={`chip ${recipients.length === others.length ? 'on' : ''}`}
             onClick={() => setRecipients(others.map((a) => a.id))}
           >
-            Toute la famille
+            la famille
           </button>
           {others.map((a) => (
             <button key={a.id} className={`chip ${recipients.includes(a.id) ? 'on' : ''}`} onClick={() => toggle(a.id)}>
@@ -1070,7 +1111,7 @@ function Composer({ ciel, me, onDone }: {
         <h2>Au sujet de</h2>
         <div className="chips">
           <button className={`chip ${aboutId === null ? 'on' : ''}`} onClick={() => setAboutId(null)}>
-            Toute la famille
+            la famille
           </button>
           {ciel.astres.map((a) => (
             <button key={a.id} className={`chip ${aboutId === a.id ? 'on' : ''}`} onClick={() => setAboutId(a.id)}>
@@ -1079,20 +1120,65 @@ function Composer({ ciel, me, onDone }: {
           ))}
         </div>
 
-        <textarea
-          placeholder="On a ri tous ensemble après le dîner — un petit bonheur simple qui a rempli la maison."
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          rows={3}
-        />
-
-        <h2>Quand ?</h2>
-        <div className="row naissance-row">
-          <input type="date" value={quand} onChange={(e) => setQuand(e.target.value)} aria-label="Quand" />
-          <span className="whisper naissance-note">
-            {kind === 'organiser' ? 'ce qui vient — la date du rendez-vous' : kind === 'souvenir' ? 'le jour du souvenir, modifiable si besoin' : "aujourd'hui par défaut — modifiable si besoin"}
-          </span>
+        <div className="kind-ligne">
+          {KIND_GROUPS.map((group, gi) => (
+            <div className={`kind-groupe ${group.kinds.includes(kind as TransmissionKind) ? 'actif' : ''}`} key={group.label}>
+              <span className="kind-time-label">{group.label}</span>
+              <div className="kind-groupe-rangee">
+                {group.kinds.map((kindId) => {
+                  const k = kindMeta(kindId)
+                  return (
+                    <button key={k.kind} className={`kind kind-${k.kind} ${kind === k.kind ? 'on' : ''}`} onClick={() => setKind(k.kind)}>
+                      <span className="kind-glyph"><KindGlyph kind={k.kind} /></span>
+                      <span className="kind-nom">{k.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+              {gi < KIND_GROUPS.length - 1 && <span className="kind-sep" aria-hidden="true" />}
+            </div>
+          ))}
         </div>
+
+        {(kind === 'organiser' || kind === 'souvenir') && (
+          <div className="row naissance-row quand-row">
+            <input type="date" value={quand} onChange={(e) => setQuand(e.target.value)} aria-label="Quand" />
+            <span className="whisper naissance-note">
+              {kind === 'organiser' ? 'ce qui vient — la date du rendez-vous' : 'le jour du souvenir, modifiable si besoin'}
+            </span>
+          </div>
+        )}
+
+        <div className="message-zone">
+          <textarea
+            placeholder="On a ri tous ensemble après le dîner — un petit bonheur simple qui a rempli la maison."
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={4}
+          />
+          {dicteeDispo && (
+            <button
+              type="button"
+              className={`dictee ${ecoute ? 'on' : ''}`}
+              onClick={dicter}
+              aria-label={ecoute ? 'Arrêter la dictée' : 'Dicter le message'}
+              title={ecoute ? 'Arrêter la dictée' : 'Dicter — la voix devient mémoire'}
+            >
+              <MicGlyph actif={ecoute} />
+            </button>
+          )}
+        </div>
+        <p className="whisper naissance-note message-aide">
+          {ecoute ? 'Je vous écoute…' : 'Écrivez, ou touchez le micro pour dicter.'}
+        </p>
+
+        <h2>Pièce jointe</h2>
+        <div className="pj-ligne">
+          <span className="pj-option bientot"><PjGlyph type="photo" /> Photo</span>
+          <span className="pj-option bientot"><PjGlyph type="video" /> Vidéo</span>
+          <span className="pj-option bientot"><PjGlyph type="audio" /> Audio</span>
+        </div>
+        <p className="whisper naissance-note">en direct ou depuis la galerie — <b>bientôt</b></p>
 
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>
@@ -1301,7 +1387,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
       ) : (
         <ul className="frise">
           {txs.map((t) => {
-            const k = KINDS.find((x) => x.kind === t.kind) ?? KINDS[KINDS.length - 1]
+            const k = kindMeta(t.kind)
             const mine = t.authorId === me.id
             const forMe = t.forMe
             const iVeilled = Boolean(t.veilles[me.id])
