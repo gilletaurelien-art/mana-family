@@ -95,6 +95,11 @@ function etatDuCiel(c: Constellation): string {
     if (nom) return `La constellation veille sur ${nom}.`
   }
   if (c.transmissions[0].kind === 'souvenir') return 'Un souvenir a été déposé dans le cercle.'
+  // Le silence suit la lumière du jour — jamais le temps écoulé. Aucune phrase ne dit « manque ».
+  const h = new Date().getHours()
+  if (h < 6) return 'La nuit veille avec vous.'
+  if (h < 12) return 'Le jour se lève sur votre constellation.'
+  if (h < 18) return 'Le ciel est paisible.'
   return 'Douceur sur votre constellation ce soir.'
 }
 
