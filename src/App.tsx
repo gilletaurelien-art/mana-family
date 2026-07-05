@@ -1,9 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Astre, Constellation, Role, TransmissionKind } from './types'
 import { KINDS, ROLES } from './types'
-import { found, load, setAvatar, transmit, veiller } from './store'
+import { archiverHeritage, chargerHeritage } from './store'
+import {
+  astresDe, charger, fonder, hisser, poserPortrait, rejoindre, transmettre, veiller,
+  type Ciel as CielData,
+} from './remote'
 
-/** Portrait : recadré carré, réduit à 128px — jamais l'original dans la mémoire locale. */
+/** Portrait : recadré carré, réduit à 128px — jamais l'original dans la mémoire. */
 async function preparerPortrait(file: File): Promise<string> {
   const img = await createImageBitmap(file)
   const size = 128
@@ -16,187 +20,229 @@ async function preparerPortrait(file: File): Promise<string> {
   return canvas.toDataURL('image/jpeg', 0.82)
 }
 
-type Vue = { ecran: 'ciel' } | { ecran: 'frise'; aboutId: string | null } | { ecran: 'composer' }
+interface AstreDraft { name: string; role: Role; circle: 1 | 2 | 3 }
+
+type Phase =
+  | { ecran: 'chargement' }
+  | { ecran: 'porte' }
+  | { ecran: 'fondation' }
+  | { ecran: 'choisir-moi'; nom: string; brouillon: AstreDraft[] }
+  | { ecran: 'rejoindre' }
+  | { ecran: 'hisser' }
+  | { ecran: 'ciel' }
+  | { ecran: 'inviter' }
+  | { ecran: 'frise'; aboutId: string | null }
+  | { ecran: 'composer' }
 
 export default function App() {
-  const [constellation, setConstellation] = useState<Constellation | null>(() => load())
-  const [meId, setMeId] = useState<string | null>(null)
-  const [vue, setVue] = useState<Vue>({ ecran: 'ciel' })
+  const [ciel, setCiel] = useState<CielData | null>(null)
+  const [horsLigne, setHorsLigne] = useState(false)
+  const [phase, setPhase] = useState<Phase>({ ecran: 'chargement' })
+  const heritage = useRef<Constellation | null>(chargerHeritage())
 
-  if (!constellation) {
-    return <Fondation onFound={(c) => setConstellation(c)} />
+  const rafraichir = async () => {
+    const r = await charger()
+    setHorsLigne(r.horsLigne)
+    if (r.ciel) {
+      setCiel(r.ciel)
+      setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'porte' ? { ecran: 'ciel' } : p))
+    } else if (!r.horsLigne) {
+      setPhase((p) => (p.ecran === 'chargement' ? { ecran: 'porte' } : p))
+    } else {
+      setPhase((p) => (p.ecran === 'chargement' ? { ecran: 'porte' } : p))
+    }
   }
 
-  const me = constellation.astres.find((a) => a.id === meId) ?? null
+  useEffect(() => {
+    rafraichir()
+    const iv = setInterval(rafraichir, 30000) // marée calme : pas de temps réel frénétique
+    const onVis = () => { if (document.visibilityState === 'visible') rafraichir() }
+    document.addEventListener('visibilitychange', onVis)
+    window.addEventListener('online', rafraichir)
+    return () => {
+      clearInterval(iv)
+      document.removeEventListener('visibilitychange', onVis)
+      window.removeEventListener('online', rafraichir)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  if (!me) {
+  if (phase.ecran === 'chargement') {
     return (
       <div className="shell">
-        <header className="sky">
-          <h1>{constellation.name}</h1>
-          <p className="whisper">Qui veille en ce moment ?</p>
-        </header>
-        <div className="astre-grid">
-          {constellation.astres.map((a) => (
-            <button key={a.id} className="astre-pick" onClick={() => setMeId(a.id)}>
-              <span className="astre-dot" />
-              {a.name}
-            </button>
-          ))}
-        </div>
+        <header className="sky"><h1>Mana Family</h1><p className="whisper">Le ciel s'ouvre…</p></header>
       </div>
     )
   }
 
-  if (vue.ecran === 'composer') {
+  if (phase.ecran === 'porte') {
     return (
-      <Composer
-        constellation={constellation}
-        me={me}
-        onDone={(next) => {
-          if (next) setConstellation(next)
-          setVue({ ecran: 'ciel' })
+      <Porte
+        heritage={heritage.current}
+        onFonder={() => setPhase({ ecran: 'fondation' })}
+        onRejoindre={() => setPhase({ ecran: 'rejoindre' })}
+        onHisser={() => setPhase({ ecran: 'hisser' })}
+      />
+    )
+  }
+
+  if (phase.ecran === 'fondation') {
+    return <Fondation onPrete={(nom, brouillon) => setPhase({ ecran: 'choisir-moi', nom, brouillon })} />
+  }
+
+  if (phase.ecran === 'choisir-moi') {
+    return (
+      <ChoisirMoi
+        nom={phase.nom}
+        brouillon={phase.brouillon}
+        onChoisi={async (index) => {
+          setPhase({ ecran: 'chargement' })
+          await fonder(phase.nom, phase.brouillon, index)
+          await rafraichir()
         }}
       />
     )
   }
 
-  if (vue.ecran === 'frise') {
+  if (phase.ecran === 'rejoindre') {
+    return (
+      <Rejoindre
+        onArrime={async (code, astreId) => {
+          setPhase({ ecran: 'chargement' })
+          await rejoindre(code, astreId)
+          await rafraichir()
+        }}
+        onRetour={() => setPhase({ ecran: 'porte' })}
+      />
+    )
+  }
+
+  if (phase.ecran === 'hisser' && heritage.current) {
+    return (
+      <Hisser
+        heritage={heritage.current}
+        onHisse={async (meId) => {
+          setPhase({ ecran: 'chargement' })
+          await hisser(heritage.current!, meId)
+          archiverHeritage()
+          heritage.current = null
+          await rafraichir()
+        }}
+        onRetour={() => setPhase({ ecran: 'porte' })}
+      />
+    )
+  }
+
+  if (!ciel) {
+    return (
+      <div className="shell">
+        <header className="sky">
+          <h1>Mana Family</h1>
+          <p className="whisper">La mer est coupée et aucun ciel n'est en cache sur cet appareil.</p>
+        </header>
+      </div>
+    )
+  }
+
+  const me = ciel.astres.find((a) => a.id === ciel.meId)!
+
+  if (phase.ecran === 'composer') {
+    return (
+      <Composer
+        ciel={ciel}
+        me={me}
+        onDone={(t) => {
+          if (t) setCiel(transmettre(ciel, t))
+          setPhase({ ecran: 'ciel' })
+        }}
+      />
+    )
+  }
+
+  if (phase.ecran === 'frise') {
     return (
       <FriseVue
-        constellation={constellation}
+        ciel={ciel}
         me={me}
-        aboutId={vue.aboutId}
-        onRetour={() => setVue({ ecran: 'ciel' })}
-        onVeiller={(txId) => setConstellation(veiller(constellation, txId, me.id))}
-        onPortrait={(astreId, dataUrl) => setConstellation(setAvatar(constellation, astreId, dataUrl))}
+        aboutId={phase.aboutId}
+        onRetour={() => setPhase({ ecran: 'ciel' })}
+        onVeiller={(txId) => setCiel(veiller(ciel, txId))}
+        onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
+      />
+    )
+  }
+
+  if (phase.ecran === 'inviter') {
+    return (
+      <Inviter
+        ciel={ciel}
+        me={me}
+        onChangerAstre={async (astreId) => {
+          setPhase({ ecran: 'chargement' })
+          await rejoindre(ciel.inviteCode, astreId)
+          await rafraichir()
+          setPhase({ ecran: 'ciel' })
+        }}
+        onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
   }
 
   return (
-    <Ciel
-      constellation={constellation}
+    <CielVue
+      ciel={ciel}
       me={me}
-      onChanger={() => setMeId(null)}
-      onOuvrirFrise={(aboutId) => setVue({ ecran: 'frise', aboutId })}
-      onTransmettre={() => setVue({ ecran: 'composer' })}
+      horsLigne={horsLigne}
+      onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
+      onTransmettre={() => setPhase({ ecran: 'composer' })}
+      onInviter={() => setPhase({ ecran: 'inviter' })}
     />
   )
 }
 
-/* ---------- Le Ciel — la constellation respire, l'État du Ciel murmure ---------- */
+/* ---------- La porte — fonder, rejoindre, ou hisser l'héritage ---------- */
 
-function etatDuCiel(c: Constellation): string {
-  if (c.transmissions.length === 0) return 'Le ciel attend sa première étoile.'
-  // Le troisième état (livre blanc §6) : après trois jours sans transmission,
-  // la constellation SE REPOSE — un état légitime, jamais un manque à combler.
-  const derniere = new Date(c.transmissions[0].createdAt).getTime()
-  if (Date.now() - derniere > 72 * 3600 * 1000) return 'La constellation se repose.'
-  const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
-  if (veillee) {
-    const nom = c.astres.find((a) => a.id === veillee.aboutId)?.name
-    if (nom) return `La constellation veille sur ${nom}.`
-  }
-  if (c.transmissions[0].kind === 'souvenir') return 'Un souvenir a été déposé dans le cercle.'
-  // Sinon, le silence suit la lumière du jour — jamais le temps écoulé.
-  const h = new Date().getHours()
-  if (h < 6) return 'La nuit veille avec vous.'
-  if (h < 12) return 'Le jour se lève sur votre constellation.'
-  if (h < 18) return 'Le ciel est paisible.'
-  return 'Douceur sur votre constellation ce soir.'
-}
-
-function Ciel({
-  constellation,
-  me,
-  onChanger,
-  onOuvrirFrise,
-  onTransmettre,
-}: {
-  constellation: Constellation
-  me: Astre
-  onChanger: () => void
-  onOuvrirFrise: (aboutId: string | null) => void
-  onTransmettre: () => void
+function Porte({ heritage, onFonder, onRejoindre, onHisser }: {
+  heritage: Constellation | null
+  onFonder: () => void
+  onRejoindre: () => void
+  onHisser: () => void
 }) {
-  const n = constellation.astres.length
-  // Un astre a sa lueur si une transmission à son sujet a été veillée.
-  const halos = new Set(
-    constellation.transmissions
-      .filter((t) => t.aboutId && Object.keys(t.veilles).length > 0)
-      .map((t) => t.aboutId as string),
-  )
-
   return (
     <div className="shell">
       <header className="sky">
-        <h1>{constellation.name}</h1>
-        <p className="whisper">
-          {me.name} · <button className="link" onClick={onChanger}>changer</button>
-        </p>
+        <h1>Mana Family</h1>
+        <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
-
-      <div className="ciel">
-        {constellation.astres.map((a, i) => {
-          // Ellipse brisée, jamais une grille : l'orbite s'élargit avec le Cercle,
-          // et chaque astre porte un écart propre, semé par son nom — un ciel n'a pas d'angles droits.
-          const graine = [...a.id].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) % 9973, 7)
-          const angle = (i / n) * 2 * Math.PI - Math.PI / 2 + ((graine % 100) / 100 - 0.5) * 0.9
-          const r = 24 + (a.circle - 1) * 10 + (graine % 7)
-          const left = 50 + r * Math.cos(angle) + ((graine % 11) - 5) * 0.8
-          const top = 48 + r * 0.8 * Math.sin(angle) + ((graine % 13) - 6) * 0.7
-          return (
-            <button
-              key={a.id}
-              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''}`}
-              style={{
-                left: `${left}%`,
-                top: `${top}%`,
-                animationDuration: `${9 + (i % 5) * 1.7}s`,
-                animationDelay: `${-(i * 2.3)}s`,
-              }}
-              onClick={() => onOuvrirFrise(a.id)}
-            >
-              <span className="astre-core">
-                {a.avatarUrl ? (
-                  <img src={a.avatarUrl} alt="" className="astre-photo" />
-                ) : (
-                  <span className="astre-pure-light" />
-                )}
-              </span>
-              <span className="prenom">{a.name}</span>
-            </button>
-          )
-        })}
-      </div>
-
-      {/* L'État du Ciel — un bulletin météo affectif, jamais un journal de logs */}
-      <button className="etat-ciel" onClick={() => onOuvrirFrise(null)}>
-        {etatDuCiel(constellation)}
-      </button>
-
-      {/* Le galet — une invitation, pas un ordre. Pas de « + ». */}
-      <button className="galet" onClick={onTransmettre} aria-label="Transmettre">
-        <span className="galet-dot" />
-        <span className="galet-mot">Transmettre</span>
-      </button>
+      <section className="card">
+        {heritage && (
+          <button className="primary" onClick={onHisser}>
+            Hisser « {heritage.name} » vers le ciel partagé
+          </button>
+        )}
+        <button className={heritage ? '' : 'primary'} style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onFonder}>
+          Fonder une constellation
+        </button>
+        <button style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onRejoindre}>
+          Rejoindre avec une clé
+        </button>
+      </section>
     </div>
   )
 }
 
-/* ---------- Fondation du Cercle 1 ---------- */
+/* ---------- Fondation du Cercle ---------- */
 
-function Fondation({ onFound }: { onFound: (c: Constellation) => void }) {
+function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]) => void }) {
   const [name, setName] = useState('')
-  const [astres, setAstres] = useState<Astre[]>([])
+  const [astres, setAstres] = useState<AstreDraft[]>([])
   const [draft, setDraft] = useState('')
   const [role, setRole] = useState<Role>('parent')
 
   const add = () => {
     if (!draft.trim()) return
     const meta = ROLES.find((r) => r.role === role)!
-    setAstres([...astres, { id: crypto.randomUUID(), name: draft.trim(), role, circle: meta.circle }])
+    setAstres([...astres, { name: draft.trim(), role, circle: meta.circle }])
     setDraft('')
   }
 
@@ -221,27 +267,21 @@ function Fondation({ onFound }: { onFound: (c: Constellation) => void }) {
           />
           <select value={role} onChange={(e) => setRole(e.target.value as Role)}>
             {ROLES.map((r) => (
-              <option key={r.role} value={r.role}>
-                {r.label}
-              </option>
+              <option key={r.role} value={r.role}>{r.label}</option>
             ))}
           </select>
           <button onClick={add} aria-label="Ajouter cet astre" className="ajout-astre">✦</button>
         </div>
 
         <ul className="astre-list">
-          {astres.map((a) => (
-            <li key={a.id}>
+          {astres.map((a, i) => (
+            <li key={i}>
               <span className="astre-dot" /> {a.name} <em>· {ROLES.find((r) => r.role === a.role)?.label} · Cercle {a.circle}</em>
             </li>
           ))}
         </ul>
 
-        <button
-          className="primary"
-          disabled={!name.trim() || astres.length < 2}
-          onClick={() => onFound(found(name.trim(), astres))}
-        >
+        <button className="primary" disabled={!name.trim() || astres.length < 2} onClick={() => onPrete(name.trim(), astres)}>
           Allumer les astres
         </button>
       </section>
@@ -249,18 +289,218 @@ function Fondation({ onFound }: { onFound: (c: Constellation) => void }) {
   )
 }
 
-/* ---------- Composer une transmission : deux gestes, puis les mots ---------- */
+function ChoisirMoi({ nom, brouillon, onChoisi }: { nom: string; brouillon: AstreDraft[]; onChoisi: (index: number) => void }) {
+  return (
+    <div className="shell">
+      <header className="sky">
+        <h1>{nom}</h1>
+        <p className="whisper">Et toi, quel astre es-tu ?</p>
+      </header>
+      <div className="astre-grid">
+        {brouillon.map((a, i) => (
+          <button key={i} className="astre-pick" onClick={() => onChoisi(i)}>
+            <span className="astre-dot" />
+            {a.name}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-function Composer({
-  constellation,
-  me,
-  onDone,
-}: {
-  constellation: Constellation
+/* ---------- Rejoindre avec la clé de la maison ---------- */
+
+function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: string) => void; onRetour: () => void }) {
+  const [code, setCode] = useState('')
+  const [astres, setAstres] = useState<Astre[] | null>(null)
+  const [erreur, setErreur] = useState('')
+
+  return (
+    <div className="shell">
+      <header className="sky">
+        <h1>Rejoindre</h1>
+        <p className="whisper"><button className="link" onClick={onRetour}>← retour</button></p>
+      </header>
+      <section className="card">
+        <h2>La clé de la constellation</h2>
+        <div className="row">
+          <input placeholder="ex. 3f9a1c2e" value={code} onChange={(e) => setCode(e.target.value.trim().toLowerCase())} />
+          <button
+            onClick={async () => {
+              setErreur('')
+              try {
+                const a = await astresDe(code)
+                if (a.length === 0) setErreur('Clé inconnue — vérifie auprès de la famille.')
+                else setAstres(a)
+              } catch {
+                setErreur('La mer est agitée — réessaie dans un instant.')
+              }
+            }}
+          >Ouvrir</button>
+        </div>
+        {erreur && <p className="whisper">{erreur}</p>}
+        {astres && (
+          <>
+            <h2>Quel astre es-tu ?</h2>
+            <div className="astre-grid">
+              {astres.map((a) => (
+                <button key={a.id} className="astre-pick" onClick={() => onArrime(code, a.id)}>
+                  <span className="astre-dot" />
+                  {a.name}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </section>
+    </div>
+  )
+}
+
+/* ---------- Hisser l'héritage local vers le ciel partagé ---------- */
+
+function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHisse: (meId: string) => void; onRetour: () => void }) {
+  return (
+    <div className="shell">
+      <header className="sky">
+        <h1>{heritage.name}</h1>
+        <p className="whisper">
+          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} montera{heritage.transmissions.length > 1 ? 'ont' : ''} au ciel partagé, dates et lueurs préservées.<br />
+          <button className="link" onClick={onRetour}>← retour</button>
+        </p>
+      </header>
+      <section className="card">
+        <h2>Et toi, quel astre es-tu ?</h2>
+        <div className="astre-grid">
+          {heritage.astres.map((a) => (
+            <button key={a.id} className="astre-pick" onClick={() => onHisse(a.id)}>
+              <span className="astre-dot" />
+              {a.name}
+            </button>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+/* ---------- Le Ciel ---------- */
+
+function etatDuCiel(c: CielData): string {
+  if (c.transmissions.length === 0) return 'Le ciel attend sa première étoile.'
+  const derniere = new Date(c.transmissions[0].createdAt).getTime()
+  if (Date.now() - derniere > 72 * 3600 * 1000) return 'La constellation se repose.'
+  const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
+  if (veillee) {
+    const nom = c.astres.find((a) => a.id === veillee.aboutId)?.name
+    if (nom) return `La constellation veille sur ${nom}.`
+  }
+  if (c.transmissions[0].kind === 'souvenir') return 'Un souvenir a été déposé dans le cercle.'
+  const h = new Date().getHours()
+  if (h < 6) return 'La nuit veille avec vous.'
+  if (h < 12) return 'Le jour se lève sur votre constellation.'
+  if (h < 18) return 'Le ciel est paisible.'
+  return 'Douceur sur votre constellation ce soir.'
+}
+
+function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter }: {
+  ciel: CielData
   me: Astre
-  onDone: (next: Constellation | null) => void
+  horsLigne: boolean
+  onOuvrirFrise: (aboutId: string | null) => void
+  onTransmettre: () => void
+  onInviter: () => void
 }) {
-  const others = constellation.astres.filter((a) => a.id !== me.id)
+  const n = ciel.astres.length
+  const halos = new Set(
+    ciel.transmissions.filter((t) => t.aboutId && Object.keys(t.veilles).length > 0).map((t) => t.aboutId as string),
+  )
+
+  return (
+    <div className="shell">
+      <header className="sky">
+        <h1>{ciel.name}</h1>
+        <p className="whisper">
+          {me.name} · <button className="link" onClick={onInviter}>inviter</button>
+          {horsLigne && <> · en mer, hors réseau — les gestes attendent</>}
+        </p>
+      </header>
+
+      <div className="ciel">
+        {ciel.astres.map((a, i) => {
+          const graine = [...a.id].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) % 9973, 7)
+          const angle = (i / n) * 2 * Math.PI - Math.PI / 2 + ((graine % 100) / 100 - 0.5) * 0.9
+          const r = 24 + (a.circle - 1) * 10 + (graine % 7)
+          const left = 50 + r * Math.cos(angle) + ((graine % 11) - 5) * 0.8
+          const top = 48 + r * 0.8 * Math.sin(angle) + ((graine % 13) - 6) * 0.7
+          return (
+            <button
+              key={a.id}
+              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''}`}
+              style={{ left: `${left}%`, top: `${top}%`, animationDuration: `${9 + (i % 5) * 1.7}s`, animationDelay: `${-(i * 2.3)}s` }}
+              onClick={() => onOuvrirFrise(a.id)}
+            >
+              <span className="astre-core">
+                {a.avatarUrl ? <img src={a.avatarUrl} alt="" className="astre-photo" /> : <span className="astre-pure-light" />}
+              </span>
+              <span className="prenom">{a.name}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      <button className="etat-ciel" onClick={() => onOuvrirFrise(null)}>{etatDuCiel(ciel)}</button>
+
+      <button className="galet" onClick={onTransmettre} aria-label="Transmettre">
+        <span className="galet-dot" />
+        <span className="galet-mot">Transmettre</span>
+      </button>
+    </div>
+  )
+}
+
+/* ---------- Inviter — la clé de la maison ---------- */
+
+function Inviter({ ciel, me, onChangerAstre, onRetour }: {
+  ciel: CielData
+  me: Astre
+  onChangerAstre: (astreId: string) => void
+  onRetour: () => void
+}) {
+  return (
+    <div className="shell">
+      <header className="sky">
+        <h1>La clé de la maison</h1>
+        <p className="whisper"><button className="link" onClick={onRetour}>← retour au ciel</button></p>
+      </header>
+      <section className="card" style={{ textAlign: 'center' }}>
+        <p>Chaque proche ouvre l'application sur son appareil, choisit « Rejoindre avec une clé », et entre :</p>
+        <p style={{ fontFamily: 'var(--serif)', fontSize: '2rem', letterSpacing: '0.2em', color: 'var(--or-mana)' }}>
+          {ciel.inviteCode}
+        </p>
+        <p className="whisper">La clé ne se partage qu'en famille — c'est la porte de votre ciel.</p>
+
+        <h2>Cet appareil est {me.name}</h2>
+        <div className="chips" style={{ justifyContent: 'center' }}>
+          {ciel.astres.map((a) => (
+            <button key={a.id} className={`chip ${a.id === me.id ? 'on' : ''}`} onClick={() => a.id !== me.id && onChangerAstre(a.id)}>
+              {a.name}
+            </button>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+/* ---------- Composer ---------- */
+
+function Composer({ ciel, me, onDone }: {
+  ciel: CielData
+  me: Astre
+  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[] } | null) => void
+}) {
+  const others = ciel.astres.filter((a) => a.id !== me.id)
   const [kind, setKind] = useState<TransmissionKind | null>(null)
   const [recipients, setRecipients] = useState<string[]>(others.map((a) => a.id))
   const [aboutId, setAboutId] = useState<string | null>(null)
@@ -279,11 +519,7 @@ function Composer({
       <section className="card">
         <div className="kind-grid">
           {KINDS.map((k) => (
-            <button
-              key={k.kind}
-              className={`kind ${kind === k.kind ? 'on' : ''}`}
-              onClick={() => setKind(k.kind)}
-            >
+            <button key={k.kind} className={`kind ${kind === k.kind ? 'on' : ''}`} onClick={() => setKind(k.kind)}>
               <span className="kind-emoji">{k.emoji}</span>
               {k.label}
             </button>
@@ -304,7 +540,7 @@ function Composer({
           <button className={`chip ${aboutId === null ? 'on' : ''}`} onClick={() => setAboutId(null)}>
             Toute la famille
           </button>
-          {constellation.astres.map((a) => (
+          {ciel.astres.map((a) => (
             <button key={a.id} className={`chip ${aboutId === a.id ? 'on' : ''}`} onClick={() => setAboutId(a.id)}>
               {a.name}
             </button>
@@ -323,17 +559,7 @@ function Composer({
           <button
             className="primary"
             disabled={!kind || !body.trim() || recipients.length === 0}
-            onClick={() =>
-              onDone(
-                transmit(constellation, {
-                  authorId: me.id,
-                  aboutId,
-                  kind: kind!,
-                  body: body.trim(),
-                  recipientIds: recipients,
-                }),
-              )
-            }
+            onClick={() => onDone({ kind: kind!, body: body.trim(), aboutId, recipientIds: recipients })}
           >
             Transmettre
           </button>
@@ -343,26 +569,19 @@ function Composer({
   )
 }
 
-/* ---------- Le fil de vie — se contemple, ne se scrolle pas frénétiquement ---------- */
+/* ---------- Le fil de vie ---------- */
 
-function FriseVue({
-  constellation,
-  me,
-  aboutId,
-  onRetour,
-  onVeiller,
-  onPortrait,
-}: {
-  constellation: Constellation
+function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait }: {
+  ciel: CielData
   me: Astre
   aboutId: string | null
   onRetour: () => void
   onVeiller: (txId: string) => void
   onPortrait: (astreId: string, dataUrl: string) => void
 }) {
-  const sujet = aboutId ? constellation.astres.find((a) => a.id === aboutId) : null
-  const nameOf = (id: string | null) => constellation.astres.find((a) => a.id === id)?.name ?? null
-  const txs = constellation.transmissions.filter(
+  const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
+  const nameOf = (id: string | null) => ciel.astres.find((a) => a.id === id)?.name ?? null
+  const txs = ciel.transmissions.filter(
     (t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId,
   )
 
@@ -407,9 +626,7 @@ function FriseVue({
             return (
               <li key={t.id} className={`tx kind-${t.kind}`}>
                 <div className="tx-head">
-                  <span className="tx-kind">
-                    {k.emoji} {k.label}
-                  </span>
+                  <span className="tx-kind">{k.emoji} {k.label}</span>
                   <span className="tx-when">
                     {new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>

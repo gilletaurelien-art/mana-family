@@ -1,61 +1,22 @@
-import type { Astre, Constellation, Transmission, TransmissionKind } from './types'
+import type { Constellation } from './types'
 
 /**
- * Mémoire locale de la quille (incrément 1 : un appareil, un Cercle 1 réel).
- * L'incrément 2 remplacera ce module par l'adaptateur Supabase — même interface,
- * pour que le pont ne bouge pas quand la coque change.
- * Règle de la maison : on n'efface jamais une transmission. Pas de delete ici.
+ * Héritage de l'incrément 1 : la constellation locale d'un seul navigateur.
+ * Ce module ne sert plus qu'à la retrouver pour la hisser vers le ciel
+ * partagé — puis à l'archiver (on n'efface jamais, on archive).
  */
 
 const KEY = 'mana-family-quille'
 
-export function load(): Constellation | null {
+export function chargerHeritage(): Constellation | null {
   const raw = localStorage.getItem(KEY)
   return raw ? (JSON.parse(raw) as Constellation) : null
 }
 
-function save(c: Constellation) {
-  localStorage.setItem(KEY, JSON.stringify(c))
-}
-
-export function found(name: string, astres: Astre[]): Constellation {
-  const c: Constellation = { name, astres, transmissions: [] }
-  save(c)
-  return c
-}
-
-export function transmit(
-  c: Constellation,
-  t: { authorId: string; aboutId: string | null; kind: TransmissionKind; body: string; recipientIds: string[] },
-): Constellation {
-  const tx: Transmission = {
-    id: crypto.randomUUID(),
-    ...t,
-    veilles: {},
-    createdAt: new Date().toISOString(),
+export function archiverHeritage(): void {
+  const raw = localStorage.getItem(KEY)
+  if (raw) {
+    localStorage.setItem(`${KEY}-hissee`, raw)
+    localStorage.removeItem(KEY)
   }
-  const next = { ...c, transmissions: [tx, ...c.transmissions] }
-  save(next)
-  return next
-}
-
-/** Poser un portrait sur un astre (dataURL déjà réduit — jamais l'original). */
-export function setAvatar(c: Constellation, astreId: string, avatarUrl: string): Constellation {
-  const next = { ...c, astres: c.astres.map((a) => (a.id === astreId ? { ...a, avatarUrl } : a)) }
-  save(next)
-  return next
-}
-
-/** Veiller : allume la lueur pour ce couple (transmission, astre). Jamais l'inverse. */
-export function veiller(c: Constellation, transmissionId: string, astreId: string): Constellation {
-  const next = {
-    ...c,
-    transmissions: c.transmissions.map((t) =>
-      t.id === transmissionId && !t.veilles[astreId]
-        ? { ...t, veilles: { ...t.veilles, [astreId]: new Date().toISOString() } }
-        : t,
-    ),
-  }
-  save(next)
-  return next
 }
