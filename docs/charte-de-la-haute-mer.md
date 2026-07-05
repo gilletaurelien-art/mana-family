@@ -2,13 +2,17 @@
 
 **Pour des technologies qui prennent soin**
 
-*Version 1.0 — juillet 2026 — synthèse des quatre rédactions de l'équipage (Mistral, ChatGPT, Codex, Gemini), tranchée par le charpentier. Statut : DRAFT — publication sur la vitrine à la décision du capitaine.*
+*Version 1.1 — juillet 2026 — synthèse des rédactions de l'équipage, tranchée par le charpentier.*
+
+*Architecture à deux textes (décision Corvus) : la **Charte de la Haute Mer** est le manifeste de l'écosystème MANA — elle parle notre langue (astres, lueurs, constellations) et n'a pas à s'en excuser. Sa jumelle universelle, la **[Déclaration des droits numériques de la personne](declaration-droits-numeriques.md)**, porte les mêmes principes sans aucun vocabulaire propriétaire, pour pouvoir être adoptée par n'importe qui — un hôpital, une école, un État. La poésie fait vivre la maison ; les principes voyagent nus. Statut : DRAFTS — publication à la décision du capitaine.*
 
 ---
 
 ## Préambule
 
 Un produit numérique n'est jamais neutre. Il organise l'attention, influence les comportements, façonne les relations et laisse des traces dans la mémoire des personnes. Derrière chaque donnée se trouve un être humain — et aucun modèle économique ne devrait jamais le faire oublier.
+
+Un produit humain ne se définit pas par son apparence bienveillante, mais par **les contraintes qu'il impose à sa propre puissance** : ne pas capter inutilement, ne pas transformer l'absence en dette, ne pas exploiter les émotions, ne pas confondre mémoire et possession.
 
 Nous affirmons qu'une économie numérique peut prospérer sans transformer l'intimité humaine en marchandise, l'attention en ressource, le regret en levier. Cette charte est le sol sur lequel reposent nos architectures. Elle naît d'un produit précis — un système de cercles familiaux vivants — mais elle s'adresse à quiconque construit des outils qui touchent à la vie des gens.
 
@@ -32,7 +36,7 @@ Sa racine tient en une phrase :
 
 **Article 5 — L'attention respectée.** L'attention humaine n'est pas une matière première. Notifications, recommandations et relances servent un besoin réel de la personne, jamais l'obsession du retour, du clic ou du temps passé. Une bonne technologie maximise la valeur du temps choisi, pas la durée du temps capté.
 
-**Article 6 — Le droit au silence et au repos.** L'absence d'activité est un état légitime — le troisième état, après l'activité et la présence. Aucun système ne traduira jamais le silence en manque, en dette ou en problème à corriger. Quand une communauté se tait, le système ralentit son propre rythme et l'accueille par des mots de paix. Toute personne possède le droit d'être absente.
+**Article 6 — Le droit au silence et au repos.** L'absence d'activité est un état légitime — le troisième état, après l'activité et la présence. Aucun système ne traduira jamais le silence en manque, en dette ou en problème à corriger. Quand une communauté se tait, le système ralentit son propre rythme et l'accueille par des mots de paix. Toute personne possède le droit d'être absente. **Un produit humain ne panique pas devant le silence de ses utilisateurs.**
 
 **Article 7 — L'asymétrie du soin.** L'attention portée à autrui peut être matérialisée par un signal doux — une lueur, un état. L'absence de ce signal ne doit jamais être visible, quantifiée ni traquée : on peut savoir que quelqu'un a veillé ; on ne doit jamais pouvoir désigner qui n'a pas veillé. La présence est un cadeau, jamais une dette.
 
@@ -40,7 +44,7 @@ Sa racine tient en une phrase :
 
 ## Troisième partie — La matière
 
-**Article 9 — La mémoire inaliénable.** Ce qu'une personne confie au temps n'expire jamais : aucune suppression punitive, aucune archive prise en otage, aucun « vos souvenirs seront supprimés dans 30 jours ». On peut vendre de l'espace pour l'avenir ; on ne menace jamais la survie du passé.
+**Article 9 — La mémoire inaliénable.** Ce qu'une personne confie au temps n'expire jamais : aucune suppression punitive, aucune archive prise en otage, aucun « vos souvenirs seront supprimés dans 30 jours ». On peut vendre de l'espace pour l'avenir ; on ne menace jamais la survie du passé. **Le brut reste protégé. Le beau peut être vendu. Le lien ne se rançonne jamais.**
 
 **Article 10 — Les données minimales, jamais marchandes.** Le service collecte le minimum nécessaire, conserve avec raison et explique ses durées. Les données personnelles ne sont ni vendues, ni louées, ni partagées à des fins publicitaires. Les histoires humaines n'entraînent aucun modèle d'intelligence artificielle sans autorisation explicite et révocable : l'IA assiste, elle ne possède jamais les histoires des gens.
 
