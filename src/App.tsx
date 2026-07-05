@@ -403,18 +403,18 @@ function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHi
 function etatDuCiel(c: CielData): string {
   if (c.transmissions.length === 0) return 'L\'Univers attend sa première étoile.'
   const derniere = new Date(c.transmissions[0].createdAt).getTime()
-  if (Date.now() - derniere > 72 * 3600 * 1000) return 'La constellation se repose.'
+  if (Date.now() - derniere > 72 * 3600 * 1000) return 'La famille se repose.'
   const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
   if (veillee) {
     const nom = c.astres.find((a) => a.id === veillee.aboutId)?.name
-    if (nom) return `La constellation veille sur ${nom}.`
+    if (nom) return `La famille veille sur ${nom}.`
   }
   if (c.transmissions[0].kind === 'souvenir') return 'Un souvenir a été déposé dans le cercle.'
   const h = new Date().getHours()
   if (h < 6) return 'La nuit veille avec vous.'
-  if (h < 12) return 'Le jour se lève sur votre constellation.'
+  if (h < 12) return 'Le jour se lève sur votre famille.'
   if (h < 18) return 'Le ciel est paisible.'
-  return 'Douceur sur votre constellation ce soir.'
+  return 'Douceur sur votre famille ce soir.'
 }
 
 function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter }: {
