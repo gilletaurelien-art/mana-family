@@ -542,6 +542,12 @@ function Composer({ ciel, me, onDone }: {
 
         <h2>Pour</h2>
         <div className="chips">
+          <button
+            className={`chip ${recipients.length === others.length ? 'on' : ''}`}
+            onClick={() => setRecipients(others.map((a) => a.id))}
+          >
+            Toute la famille
+          </button>
           {others.map((a) => (
             <button key={a.id} className={`chip ${recipients.includes(a.id) ? 'on' : ''}`} onClick={() => toggle(a.id)}>
               {a.name}
