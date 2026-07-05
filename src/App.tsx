@@ -1234,7 +1234,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
                 <div className="tx-head">
                   <span className="tx-kind"><span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}</span>
                   <span className="tx-when">
-                    {t.happensOn
+                    {t.happensOn && new Date(t.happensOn).toDateString() !== new Date(t.createdAt).toDateString()
                       ? `pour le ${new Date(t.happensOn).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
                       : new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>
