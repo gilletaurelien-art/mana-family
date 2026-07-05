@@ -99,7 +99,7 @@ export default function App() {
       const msg = e instanceof Error ? e.message : String(e)
       setAvis(
         msg.includes('anonymous') || msg.includes('Anonymous')
-          ? 'La galaxie familiale n’est pas encore ouverte : active « Anonymous sign-ins » dans le dashboard Supabase (Authentication → Sign In / Providers), puis réessaie.'
+          ? 'La famille n’est pas encore ouverte : active « Anonymous sign-ins » dans le dashboard Supabase (Authentication → Sign In / Providers), puis réessaie.'
           : `La manœuvre a échoué : ${msg}`,
       )
       setPhase({ ecran: 'porte' })
@@ -136,7 +136,7 @@ export default function App() {
   if (phase.ecran === 'chargement') {
     return (
       <div className="shell">
-        <header className="sky"><h1>Mana Family</h1><p className="whisper">L'Univers s'ouvre…</p></header>
+        <header className="sky"><h1>Mana Family</h1><p className="whisper">La famille s'ouvre…</p></header>
       </div>
     )
   }
@@ -197,7 +197,7 @@ export default function App() {
       <div className="shell">
         <header className="sky">
           <h1>Mana Family</h1>
-          <p className="whisper">La mer est coupée et aucun Univers n'est en mémoire sur cet appareil.</p>
+          <p className="whisper">Pas de réseau, et aucune famille n'est en mémoire sur cet appareil.</p>
         </header>
       </div>
     )
@@ -324,7 +324,7 @@ function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
       <section className="card">
         {heritage && (
           <button className="primary" onClick={onHisser}>
-            Ouvrir « {heritage.name} » dans la galaxie familiale
+            Ouvrir « {heritage.name} » dans la famille
           </button>
         )}
         <button className={heritage ? '' : 'primary'} style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onFonder}>
@@ -366,7 +366,7 @@ function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]
         <h2>Fonder la famille</h2>
         <input placeholder="Nom de la famille (ex. Les Gillet)" value={name} onChange={(e) => setName(e.target.value)} />
 
-        <h2>Les astres du Cercle</h2>
+        <h2>Les membres de la famille</h2>
         <div className="row">
           <input
             placeholder="Prénom"
@@ -396,7 +396,7 @@ function Fondation({ onPrete }: { onPrete: (nom: string, brouillon: AstreDraft[]
         </ul>
 
         <button className="primary" disabled={!name.trim() || astres.length < 2} onClick={() => onPrete(name.trim(), astres)}>
-          Allumer les astres
+          Créer la famille
         </button>
       </section>
     </div>
@@ -408,7 +408,7 @@ function ChoisirMoi({ nom, brouillon, onChoisi }: { nom: string; brouillon: Astr
     <div className="shell">
       <header className="sky">
         <h1>Famille {nom}</h1>
-        <p className="whisper">Et toi, quel astre es-tu ?</p>
+        <p className="whisper">Et toi, qui es-tu dans la famille ?</p>
       </header>
       <div className="astre-grid">
         {brouillon.map((a, i) => (
@@ -447,7 +447,7 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
                 if (a.length === 0) setErreur('Clé inconnue — vérifie auprès de la famille.')
                 else setAstres(a)
               } catch {
-                setErreur('La mer est agitée — réessaie dans un instant.')
+                setErreur('Le réseau est agité — réessaie dans un instant.')
               }
             }}
           >Ouvrir</button>
@@ -455,7 +455,7 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
         {erreur && <p className="whisper">{erreur}</p>}
         {astres && (
           <>
-            <h2>Quel astre es-tu ?</h2>
+            <h2>Qui es-tu dans la famille ?</h2>
             <div className="astre-grid">
               {astres.map((a) => (
                 <button key={a.id} className="astre-pick" onClick={() => onArrime(code, a.id)}>
@@ -471,7 +471,7 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
   )
 }
 
-/* ---------- Ouvrir l'héritage local dans la galaxie familiale ---------- */
+/* ---------- Ouvrir l'héritage local dans la famille ---------- */
 
 function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHisse: (meId: string) => void; onRetour: () => void }) {
   return (
@@ -479,12 +479,12 @@ function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHi
       <header className="sky">
         <h1>Famille {heritage.name}</h1>
         <p className="whisper">
-          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} rejoindr{heritage.transmissions.length > 1 ? 'ont' : 'a'} la galaxie familiale, dates et lueurs préservées.<br />
+          {heritage.transmissions.length} transmission{heritage.transmissions.length > 1 ? 's' : ''} rejoindr{heritage.transmissions.length > 1 ? 'ont' : 'a'} la famille, dates et lueurs préservées.<br />
           <button className="link" onClick={onRetour}>← retour</button>
         </p>
       </header>
       <section className="card">
-        <h2>Et toi, quel astre es-tu ?</h2>
+        <h2>Et toi, qui es-tu dans la famille ?</h2>
         <div className="astre-grid">
           {heritage.astres.map((a) => (
             <button key={a.id} className="astre-pick" onClick={() => onHisse(a.id)}>
@@ -507,7 +507,7 @@ function etatDuCiel(c: CielData): string {
     const age = ageDe(anniv.birthDate!)
     return `C'est l'anniversaire de ${nomIntime(anniv)} — ${age} an${age > 1 ? 's' : ''} aujourd'hui. ✦`
   }
-  if (c.transmissions.length === 0) return 'L\'Univers attend sa première étoile.'
+  if (c.transmissions.length === 0) return 'Votre famille attend sa première page.'
   const derniere = new Date(c.transmissions[0].createdAt).getTime()
   if (Date.now() - derniere > 72 * 3600 * 1000) return 'La famille se repose.'
   const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
@@ -519,7 +519,7 @@ function etatDuCiel(c: CielData): string {
   const h = new Date().getHours()
   if (h < 6) return 'La nuit veille avec vous.'
   if (h < 12) return 'Le jour se lève sur votre famille.'
-  if (h < 18) return 'Le ciel est paisible.'
+  if (h < 18) return 'Tout est paisible à la maison.'
   return 'Douceur sur votre famille ce soir.'
 }
 
@@ -546,7 +546,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
         <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
         <p className="whisper">
           {nomIntime(me)} · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
-          {horsLigne && <> · en mer, hors réseau — les gestes attendent</>}
+          {horsLigne && <> · hors réseau — les gestes attendent</>}
         </p>
       </header>
 
@@ -611,7 +611,7 @@ function ParametresVue({ me, onRetour, onCalendriers }: {
     <div className="shell">
       <header className="sky">
         <h1>Paramètres</h1>
-        <p className="whisper"><button className="link" onClick={onRetour}>← retour aux astres</button></p>
+        <p className="whisper"><button className="link" onClick={onRetour}>← Retour</button></p>
       </header>
 
       <section className="card">
@@ -660,9 +660,9 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
   return (
     <div className="shell">
       <header className="sky">
-        <h1>La galaxie {ciel.name}</h1>
+        <h1>Les générations</h1>
         <p className="whisper">
-          les générations, des aînés aux enfants · <button className="link" onClick={onRetour}>← retour aux astres</button>
+          les générations, des aînés aux enfants · <button className="link" onClick={onRetour}>← Retour</button>
         </p>
       </header>
 
@@ -743,7 +743,7 @@ function ChronologieVue({ ciel, onOuvrirFrise, onRetour }: {
       <header className="sky">
         <h1>Le fil du temps</h1>
         <p className="whisper">
-          souvenirs ← · aujourd'hui · → ce qui vient &nbsp;·&nbsp; <button className="link" onClick={onRetour}>← retour aux astres</button>
+          souvenirs ← · aujourd'hui · → ce qui vient &nbsp;·&nbsp; <button className="link" onClick={onRetour}>← Retour</button>
         </p>
       </header>
 
@@ -800,7 +800,7 @@ function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
       <header className="sky">
         <h1>Le jardin</h1>
         <p className="whisper">
-          Les galaxies où vous veillez · <button className="link" onClick={onRetour}>← retour aux astres</button>
+          Les familles où vous comptez · <button className="link" onClick={onRetour}>← Retour</button>
         </p>
       </header>
 
@@ -823,10 +823,10 @@ function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
               </li>
             ))}
           </ul>
-          <button className="primary" onClick={onRejoindreAutre}>Rejoindre une autre galaxie</button>
+          <button className="primary" onClick={onRejoindreAutre}>Rejoindre une autre famille</button>
           <p className="whisper naissance-note">
-            Une même personne peut appartenir à plusieurs galaxies — deux maisons, la famille de cœur, la lignée.
-            Chacune garde sa propre lumière.
+            Une même personne peut appartenir à plusieurs familles — deux maisons, la famille de cœur, la lignée.
+            Chacune reste elle-même.
           </p>
         </section>
       )}
@@ -846,14 +846,14 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
     <div className="shell">
       <header className="sky">
         <h1>La clé de la maison</h1>
-        <p className="whisper"><button className="link" onClick={onRetour}>← retour aux astres</button></p>
+        <p className="whisper"><button className="link" onClick={onRetour}>← Retour</button></p>
       </header>
       <section className="card" style={{ textAlign: 'center' }}>
         <p>Chaque proche ouvre l'application sur son appareil, choisit « Rejoindre avec une clé », et entre :</p>
         <p style={{ fontFamily: 'var(--serif)', fontSize: '2rem', letterSpacing: '0.2em', color: 'var(--or-mana)' }}>
           {ciel.inviteCode}
         </p>
-        <p className="whisper">La clé ne se partage qu'en famille — c'est la porte de votre Univers.</p>
+        <p className="whisper">La clé ne se partage qu'en famille — c'est la porte de votre maison.</p>
 
         <h2>Cet appareil est {nomIntime(me)}</h2>
         <div className="chips" style={{ justifyContent: 'center' }}>
@@ -986,7 +986,7 @@ function ProfilForm({ sujet, onEnregistrer }: {
       <div className="row">
         <input value={surnom} onChange={(e) => setSurnom(e.target.value)} aria-label="Surnom" placeholder="Surnom (ex. Loulou, Mamou…)" />
       </div>
-      <p className="whisper naissance-note">le petit nom de la maison — très intime, visible seulement de la famille ; le prénom reste dans la galaxie</p>
+      <p className="whisper naissance-note">le petit nom tendre — très intime, visible seulement de la famille ; le prénom reste l'identité</p>
       <div className="row naissance-row">
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="Date de naissance" />
         <span className="whisper naissance-note">naissance — facultatif</span>
@@ -1030,9 +1030,9 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
     <div className="shell">
       <header className="sky">
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
-        <h1>{sujet ? nomIntime(sujet) : 'Le carnet de bord'}</h1>
+        <h1>{sujet ? nomIntime(sujet) : 'Le carnet de famille'}</h1>
         <p className="whisper">
-          <button className="link" onClick={onRetour}>← retour aux astres</button>
+          <button className="link" onClick={onRetour}>← Retour</button>
           {sujet && (
             <>
               {' · '}
