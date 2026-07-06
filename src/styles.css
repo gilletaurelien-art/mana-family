@@ -168,6 +168,27 @@ body::before {
 /* La spirale de fond disparaît sur le carnet — l'illustration porte déjà la spirale */
 body:has(.carnet-hero)::before { display: none; }
 
+/* Écrire — l'arbre de volutes en fond : enraciné tout en bas, il monte vers le haut de l'écran */
+.composer-fond {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  display: flex; align-items: flex-end; justify-content: center;
+  overflow: hidden;
+}
+.composer-fond img {
+  height: 100vh; width: auto; display: block;
+  margin-bottom: -2vh; /* les racines plongent sous le bord */
+  opacity: 0.15;
+  -webkit-mask-image: linear-gradient(to top, #000 72%, transparent 98%);
+          mask-image: linear-gradient(to top, #000 72%, transparent 98%);
+}
+@media (prefers-color-scheme: light) { .composer-fond img { opacity: 0.12; } }
+.composer-fond .logo-jour { display: none; }
+.composer-fond .logo-nuit { display: block; }
+@media (prefers-color-scheme: light) {
+  .composer-fond .logo-nuit { display: none; }
+  .composer-fond .logo-jour { display: block; }
+}
+
 /* Écrire — hero compact : la spirale à la hauteur du texte, le formulaire juste sous « Retour » */
 .composer-hero { padding-bottom: 0; }
 .composer-hero .carnet-hero-top { align-items: center; }

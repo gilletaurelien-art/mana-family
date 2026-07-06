@@ -1195,6 +1195,10 @@ function Composer({ ciel, me, onDone }: {
 
   return (
     <div className="shell">
+      <div className="composer-fond" aria-hidden="true">
+        <img src="/ecrire-arbre-nuit.png" alt="" className="logo-nuit" />
+        <img src="/ecrire-arbre-jour.png" alt="" className="logo-jour" />
+      </div>
       <RetourNav onRetour={() => onDone(null)} />
       <header className="sky assistante-hero carnet-hero composer-hero">
         <div className="carnet-hero-top">
