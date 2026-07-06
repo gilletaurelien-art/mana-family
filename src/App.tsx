@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
 import { CALENDAR_LAYERS, KINDS, KINDS_RETIRES, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
+import { envoyerCode, monEmail, seDeconnecter, sessionCertifiee, verifierCode } from './lib/supabase'
 import {
   activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
   type Ciel as CielData, type Galaxie,
@@ -227,6 +228,7 @@ function PjGlyph({ type }: { type: 'photo' | 'video' | 'audio' }) {
 
 type Phase =
   | { ecran: 'chargement' }
+  | { ecran: 'compte' }
   | { ecran: 'porte' }
   | { ecran: 'fondation' }
   | { ecran: 'choisir-moi'; nom: string; brouillon: AstreDraft[] }
@@ -258,16 +260,17 @@ export default function App() {
       await rafraichir()
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
-      setAvis(
-        msg.includes('anonymous') || msg.includes('Anonymous')
-          ? 'La famille n’est pas encore ouverte : active « Anonymous sign-ins » dans le dashboard Supabase (Authentication → Sign In / Providers), puis réessaie.'
-          : `La manœuvre a échoué : ${msg}`,
-      )
+      setAvis(`La manœuvre a échoué : ${msg}`)
       setPhase({ ecran: 'porte' })
     }
   }
 
   const rafraichir = async () => {
+    if (!(await sessionCertifiee())) {
+      setCiel(null)
+      setPhase((p) => (p.ecran === 'compte' ? p : { ecran: 'compte' }))
+      return
+    }
     const r = await charger()
     setHorsLigne(r.horsLigne)
     if (r.ciel) {
@@ -300,6 +303,10 @@ export default function App() {
         <header className="sky"><LogoSeuil /><h1>Mana Family</h1><p className="whisper">La famille s'ouvre…</p></header>
       </div>
     )
+  }
+
+  if (phase.ecran === 'compte') {
+    return <CompteVue onEntre={() => { setPhase({ ecran: 'chargement' }); rafraichir() }} />
   }
 
   if (phase.ecran === 'porte') {
@@ -453,6 +460,7 @@ export default function App() {
         me={me}
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onCalendriers={(calendarIds) => setCiel(modifierCalendriers(ciel, me.id, calendarIds))}
+        onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'compte' }) }}
       />
     )
   }
@@ -475,6 +483,101 @@ export default function App() {
       onParametres={() => setPhase({ ecran: 'parametres' })}
       onAssistante={() => setPhase({ ecran: 'assistante' })}
     />
+  )
+}
+
+/* ---------- Le compte — e-mail certifié par code, identité durable ---------- */
+
+function CompteVue({ onEntre }: { onEntre: () => void }) {
+  const [etape, setEtape] = useState<'email' | 'code'>('email')
+  const [email, setEmail] = useState('')
+  const [code, setCode] = useState('')
+  const [erreur, setErreur] = useState<string | null>(null)
+  const [occupe, setOccupe] = useState(false)
+
+  const emailValide = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())
+
+  const demander = async () => {
+    setErreur(null); setOccupe(true)
+    try {
+      await envoyerCode(email)
+      setEtape('code')
+    } catch (e) {
+      setErreur(e instanceof Error ? e.message : String(e))
+    } finally { setOccupe(false) }
+  }
+
+  const verifier = async () => {
+    setErreur(null); setOccupe(true)
+    try {
+      await verifierCode(email, code)
+      onEntre()
+    } catch {
+      setErreur('Ce code ne correspond pas, ou il a expiré. Redemandez-en un.')
+      setOccupe(false)
+    }
+  }
+
+  return (
+    <div className="shell">
+      <header className="sky porte-sky">
+        <div className="porte-deesse">
+          <img src="/logo-nuit.png" alt="" className="logo-nuit" />
+          <img src="/logo-jour.png" alt="" className="logo-jour" />
+        </div>
+        <h1>Mana Family</h1>
+        <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
+      </header>
+
+      <section className="card">
+        {etape === 'email' ? (
+          <>
+            <h2>Entrer dans la maison</h2>
+            <p className="whisper compte-mot">Votre e-mail — pour créer votre accès, ou vous reconnecter. Nous vous envoyons un code à six chiffres.</p>
+            <input
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoFocus
+              placeholder="votre@email.fr"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && emailValide && !occupe) demander() }}
+              aria-label="Votre e-mail"
+            />
+            <button className="primary" disabled={!emailValide || occupe} onClick={demander}>
+              {occupe ? 'Envoi…' : 'Recevoir mon code'}
+            </button>
+          </>
+        ) : (
+          <>
+            <h2>Le code reçu</h2>
+            <p className="whisper compte-mot">Un code à six chiffres est parti vers <b>{email}</b>. Entrez-le ici. (Regardez aussi les indésirables.)</p>
+            <input
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              autoFocus
+              maxLength={6}
+              placeholder="••••••"
+              className="compte-code"
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              onKeyDown={(e) => { if (e.key === 'Enter' && code.length === 6 && !occupe) verifier() }}
+              aria-label="Code à six chiffres"
+            />
+            <button className="primary" disabled={code.length < 6 || occupe} onClick={verifier}>
+              {occupe ? 'Vérification…' : 'Entrer'}
+            </button>
+            <p className="whisper" style={{ textAlign: 'center', marginTop: '0.7rem' }}>
+              <button className="link" onClick={() => { setEtape('email'); setCode(''); setErreur(null) }}>changer d'e-mail</button>
+              {' · '}
+              <button className="link" onClick={demander} disabled={occupe}>renvoyer le code</button>
+            </p>
+          </>
+        )}
+        {erreur && <p className="whisper compte-erreur">{erreur}</p>}
+      </section>
+    </div>
   )
 }
 
@@ -778,12 +881,15 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
 
 /* ---------- Paramètres personnels ---------- */
 
-function ParametresVue({ me, onRetour, onCalendriers }: {
+function ParametresVue({ me, onRetour, onCalendriers, onDeconnexion }: {
   me: Astre
   onRetour: () => void
   onCalendriers: (calendarIds: CalendarLayerId[]) => void
+  onDeconnexion: () => void
 }) {
   const actifs = new Set(me.calendarIds ?? [])
+  const [email, setEmail] = useState<string | null>(null)
+  useEffect(() => { monEmail().then(setEmail) }, [])
   const toggle = (id: CalendarLayerId) => {
     const next = new Set(actifs)
     if (next.has(id)) next.delete(id)
@@ -797,6 +903,12 @@ function ParametresVue({ me, onRetour, onCalendriers }: {
       <header className="sky">
         <h1>Paramètres</h1>
       </header>
+
+      <section className="card">
+        <h2>Mon compte</h2>
+        <p className="whisper">Connecté{email ? <> en tant que <b>{email}</b></> : ''} — votre accès à la famille vous suit d'un appareil à l'autre.</p>
+        <button onClick={onDeconnexion} style={{ marginTop: '0.6rem' }}>Se déconnecter</button>
+      </section>
 
       <section className="card">
         <h2>Mes calendriers</h2>
