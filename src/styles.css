@@ -764,43 +764,44 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .barre-bas > * { pointer-events: auto; }
 
-/* Le trio du bas — lire · écrire · l'assistante (médaillons d'une même famille) */
-.barre-bas { align-items: flex-end; gap: 1.7rem; }
+/* Le trio du bas — lire · écrire · l'assistante : grandes tuiles carrées, pleine largeur */
+.barre-bas {
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0 0.8rem;
+  bottom: 0.9rem;
+  max-width: 480px; margin: 0 auto;
+}
 .geste {
+  flex: 1 1 0; max-width: 138px;
   background: none; border: none; padding: 0; cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
 }
 .geste-rond {
-  width: 54px; height: 54px; border-radius: 50%;
-  border: 1px solid var(--filet); background: var(--carte); color: var(--brume);
-  display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(6px); overflow: hidden;
-  transition: transform 0.3s ease;
+  width: 100%; aspect-ratio: 1; border-radius: 26px;
+  border: 1px solid var(--filet); overflow: hidden; display: block;
+  background: var(--carte);
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
 }
-.geste:active .geste-rond { transform: scale(1.07); }
-.geste-mot { font-size: 0.7rem; letter-spacing: 0.06em; color: var(--brume); }
-
-.geste-visage { background: #060d18; border-color: rgba(234, 230, 223, 0.16); }
+.geste:active .geste-rond { transform: scale(0.96); }
 .geste-rond picture,
 .geste-rond img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.geste-mot {
+  font-size: 0.76rem; letter-spacing: 0.05em; color: var(--brume);
+  font-family: var(--serif);
+}
 
-/* écrire — le cœur doré, plus grand : le médaillon du mandala, qui respire (invitation) */
+/* écrire — le geste central, mis en avant par une lueur dorée qui respire */
 .geste-ecrire .geste-rond {
-  width: 72px; height: 72px;
-  border-color: rgba(229, 184, 66, 0.45);
+  border-color: rgba(229, 184, 66, 0.5);
   animation: ecrire-respire 12s ease-in-out infinite;
 }
-.geste-mandala { background: #060d18; }
 .geste-ecrire .geste-mot { color: var(--or-sombre); font-weight: 600; }
-@keyframes ecrire-respire {
-  0%, 100% { box-shadow: 0 0 12px rgba(229, 184, 66, 0.2); }
-  50%      { box-shadow: 0 0 24px rgba(229, 184, 66, 0.42); }
-}
-.geste-ecrire:active .geste-rond { transform: scale(1.06); }
 @media (prefers-color-scheme: dark) { .geste-ecrire .geste-mot { color: var(--or-mana); } }
-@media (prefers-color-scheme: light) {
-  .geste-visage { background: #f8f9fa; border-color: rgba(43, 82, 117, 0.25); }
-  .geste-mandala { background: #f8f9fa; }
+@keyframes ecrire-respire {
+  0%, 100% { box-shadow: 0 0 14px rgba(229, 184, 66, 0.18); }
+  50%      { box-shadow: 0 0 30px rgba(229, 184, 66, 0.42); }
 }
 @media (prefers-reduced-motion: reduce) { .geste-ecrire .geste-rond { animation: none; } }
 
