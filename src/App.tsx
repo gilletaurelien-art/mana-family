@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
 import { CALENDAR_LAYERS, KINDS, KINDS_RETIRES, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
-import { envoyerCode, monEmail, seDeconnecter, sessionCertifiee, verifierCode } from './lib/supabase'
+import { envoyerLien, monEmail, seDeconnecter, sessionCertifiee, supabase } from './lib/supabase'
 import {
   activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
   type Ciel as CielData, type Galaxie,
@@ -289,10 +289,15 @@ export default function App() {
     const onVis = () => { if (document.visibilityState === 'visible') rafraichir() }
     document.addEventListener('visibilitychange', onVis)
     window.addEventListener('online', rafraichir)
+    // Le retour du lien magique : dès que la session apparaît, on ouvre la maison.
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') rafraichir()
+    })
     return () => {
       clearInterval(iv)
       document.removeEventListener('visibilitychange', onVis)
       window.removeEventListener('online', rafraichir)
+      sub.subscription.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -306,7 +311,7 @@ export default function App() {
   }
 
   if (phase.ecran === 'compte') {
-    return <CompteVue onEntre={() => { setPhase({ ecran: 'chargement' }); rafraichir() }} />
+    return <CompteVue />
   }
 
   if (phase.ecran === 'porte') {
@@ -488,10 +493,9 @@ export default function App() {
 
 /* ---------- Le compte — e-mail certifié par code, identité durable ---------- */
 
-function CompteVue({ onEntre }: { onEntre: () => void }) {
-  const [etape, setEtape] = useState<'email' | 'code'>('email')
+function CompteVue() {
+  const [etape, setEtape] = useState<'email' | 'envoye'>('email')
   const [email, setEmail] = useState('')
-  const [code, setCode] = useState('')
   const [erreur, setErreur] = useState<string | null>(null)
   const [occupe, setOccupe] = useState(false)
 
@@ -500,22 +504,11 @@ function CompteVue({ onEntre }: { onEntre: () => void }) {
   const demander = async () => {
     setErreur(null); setOccupe(true)
     try {
-      await envoyerCode(email)
-      setEtape('code')
+      await envoyerLien(email)
+      setEtape('envoye')
     } catch (e) {
       setErreur(e instanceof Error ? e.message : String(e))
     } finally { setOccupe(false) }
-  }
-
-  const verifier = async () => {
-    setErreur(null); setOccupe(true)
-    try {
-      await verifierCode(email, code)
-      onEntre()
-    } catch {
-      setErreur('Ce code ne correspond pas, ou il a expiré. Redemandez-en un.')
-      setOccupe(false)
-    }
   }
 
   return (
@@ -533,7 +526,7 @@ function CompteVue({ onEntre }: { onEntre: () => void }) {
         {etape === 'email' ? (
           <>
             <h2>Entrer dans la maison</h2>
-            <p className="whisper compte-mot">Votre e-mail — pour créer votre accès, ou vous reconnecter. Nous vous envoyons un code à six chiffres.</p>
+            <p className="whisper compte-mot">Votre e-mail — pour créer votre accès, ou vous reconnecter. Nous vous envoyons un lien : un clic, et vous êtes chez vous.</p>
             <input
               type="email"
               inputMode="email"
@@ -546,32 +539,17 @@ function CompteVue({ onEntre }: { onEntre: () => void }) {
               aria-label="Votre e-mail"
             />
             <button className="primary" disabled={!emailValide || occupe} onClick={demander}>
-              {occupe ? 'Envoi…' : 'Recevoir mon code'}
+              {occupe ? 'Envoi…' : 'Recevoir mon lien'}
             </button>
           </>
         ) : (
           <>
-            <h2>Le code reçu</h2>
-            <p className="whisper compte-mot">Un code à six chiffres est parti vers <b>{email}</b>. Entrez-le ici. (Regardez aussi les indésirables.)</p>
-            <input
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              autoFocus
-              maxLength={6}
-              placeholder="••••••"
-              className="compte-code"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              onKeyDown={(e) => { if (e.key === 'Enter' && code.length === 6 && !occupe) verifier() }}
-              aria-label="Code à six chiffres"
-            />
-            <button className="primary" disabled={code.length < 6 || occupe} onClick={verifier}>
-              {occupe ? 'Vérification…' : 'Entrer'}
-            </button>
-            <p className="whisper" style={{ textAlign: 'center', marginTop: '0.7rem' }}>
-              <button className="link" onClick={() => { setEtape('email'); setCode(''); setErreur(null) }}>changer d'e-mail</button>
+            <h2>Regardez vos e-mails</h2>
+            <p className="whisper compte-mot">Un lien est parti vers <b>{email}</b>. Ouvrez votre boîte, cliquez le lien — vous reviendrez ici, connecté. (Pensez aux indésirables.)</p>
+            <p className="whisper" style={{ textAlign: 'center', marginTop: '0.4rem' }}>
+              <button className="link" onClick={() => { setEtape('email'); setErreur(null) }}>changer d'e-mail</button>
               {' · '}
-              <button className="link" onClick={demander} disabled={occupe}>renvoyer le code</button>
+              <button className="link" onClick={demander} disabled={occupe}>{occupe ? 'envoi…' : 'renvoyer le lien'}</button>
             </p>
           </>
         )}

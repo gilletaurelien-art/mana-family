@@ -223,12 +223,8 @@ body:has(.carnet-hero)::before { display: none; }
   .porte-deesse .logo-jour { display: inline; }
 }
 
-/* L'écran du compte — e-mail certifié par code */
+/* L'écran du compte — e-mail certifié par lien magique */
 .compte-mot { margin: 0.2rem 0 0.9rem; line-height: 1.5; }
-.compte-code {
-  text-align: center; font-family: var(--serif);
-  font-size: 1.8rem; letter-spacing: 0.5em; padding-left: 0.5em;
-}
 .compte-erreur { color: var(--emotionnel); margin-top: 0.8rem; font-style: normal; }
 
 /* Le visage aux seuils — doré la nuit, marine le jour */

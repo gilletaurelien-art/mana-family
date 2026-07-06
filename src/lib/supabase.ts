@@ -26,24 +26,18 @@ export async function monEmail(): Promise<string | null> {
   return data.user?.email ?? null
 }
 
-/** Envoie le code à 6 chiffres — inscription ou reconnexion, le même geste. */
-export async function envoyerCode(email: string): Promise<void> {
+/**
+ * Envoie le lien magique — inscription ou reconnexion, le même geste.
+ * Le clic sur le lien certifie l'e-mail et ouvre la session durable ;
+ * l'utilisateur revient ici, connecté (detectSessionInUrl de supabase-js).
+ */
+export async function envoyerLien(email: string): Promise<void> {
   // On repart propre : toute vieille session anonyme est refermée.
   const { data } = await supabase.auth.getUser()
   if (data.user?.is_anonymous) await supabase.auth.signOut()
   const { error } = await supabase.auth.signInWithOtp({
     email: email.trim().toLowerCase(),
-    options: { shouldCreateUser: true },
-  })
-  if (error) throw error
-}
-
-/** Vérifie le code : certifie l'e-mail et ouvre la session durable. */
-export async function verifierCode(email: string, code: string): Promise<void> {
-  const { error } = await supabase.auth.verifyOtp({
-    email: email.trim().toLowerCase(),
-    token: code.trim(),
-    type: 'email',
+    options: { shouldCreateUser: true, emailRedirectTo: window.location.origin },
   })
   if (error) throw error
 }
