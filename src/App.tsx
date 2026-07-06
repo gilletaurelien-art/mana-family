@@ -72,7 +72,7 @@ const FAQ: { q: string; r: string }[] = [
 const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boolean; bientot?: boolean }[] = [
   { nom: 'Mana Family', etat: 'vous y êtes', mot: 'La maison de votre famille : partager un moment, veiller sur les autres, garder la mémoire vivante.', ici: true },
   { nom: 'Mana Home', etat: 'le site', mot: 'La porte publique de la maison. Pour découvrir ce qu’est Mana Family et le faire connaître autour de vous.', href: 'https://manahome.org' },
-  { nom: 'La Constitution numérique', etat: 'nos engagements', mot: 'Ce que nous refuserons toujours de faire : capter votre attention, vous culpabiliser, vendre vos données, effacer votre mémoire.', href: 'https://github.com/gilletaurelien-art/Digital-Constitution' },
+  { nom: 'La Constitution numérique', etat: 'nos engagements', mot: 'Ce que nous refuserons toujours de faire : capter votre attention, vous culpabiliser, vendre vos données, effacer votre mémoire.', href: 'https://constitution.manahome.org' },
   { nom: 'Mana France', etat: 'l’association', mot: 'L’association qui porte la maison Mana en France — qui nous sommes, ce que nous construisons.', href: 'https://www.manafrance.org' },
   { nom: 'Mana citoyen', etat: 'bientôt', mot: 'L’entraide entre voisins d’un même territoire — se rendre service, reconnaître le temps donné.', bientot: true },
   { nom: 'TempoSystem', etat: 'bientôt', mot: 'La comptabilité discrète du temps que les êtres humains se consacrent. Elle travaille en coulisse ; vous ne la voyez jamais.', bientot: true },

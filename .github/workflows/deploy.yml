@@ -1,4 +1,4 @@
-name: Déploiement app.manahome.org
+name: Déploiement manafamily.org
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
       - name: Publier sur gh-pages (domaine + sans Jekyll)
         run: |
           cd dist
-          echo "app.manahome.org" > CNAME
+          echo "manafamily.org" > CNAME
           touch .nojekyll
           git init -q
           git config user.name "github-actions[bot]"
