@@ -73,6 +73,7 @@ const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boo
   { nom: 'Mana Family', etat: 'vous y êtes', mot: 'La maison de votre famille : partager un moment, veiller sur les autres, garder la mémoire vivante.', ici: true },
   { nom: 'Mana Home', etat: 'le site', mot: 'La porte publique de la maison. Pour découvrir ce qu’est Mana Family et le faire connaître autour de vous.', href: 'https://manahome.org' },
   { nom: 'La Constitution numérique', etat: 'nos engagements', mot: 'Ce que nous refuserons toujours de faire : capter votre attention, vous culpabiliser, vendre vos données, effacer votre mémoire.', href: 'https://github.com/gilletaurelien-art/Digital-Constitution' },
+  { nom: 'Mana France', etat: 'l’association', mot: 'L’association qui porte la maison Mana en France — qui nous sommes, ce que nous construisons.', href: 'https://www.manafrance.org' },
   { nom: 'Mana citoyen', etat: 'bientôt', mot: 'L’entraide entre voisins d’un même territoire — se rendre service, reconnaître le temps donné.', bientot: true },
   { nom: 'TempoSystem', etat: 'bientôt', mot: 'La comptabilité discrète du temps que les êtres humains se consacrent. Elle travaille en coulisse ; vous ne la voyez jamais.', bientot: true },
 ]
@@ -848,9 +849,9 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
           <span className="geste-mot">écrire</span>
         </button>
 
-        <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — l'assistante">
+        <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — découvrir">
           <span className="geste-rond geste-visage"><ThemeIcon jour="/avatar-univers-jour.png" nuit="/avatar-univers-nuit.png" /></span>
-          <span className="geste-mot">l'assistante</span>
+          <span className="geste-mot">découvrir</span>
         </button>
       </div>
     </div>
