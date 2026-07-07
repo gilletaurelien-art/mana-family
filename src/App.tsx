@@ -79,6 +79,51 @@ const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boo
 ]
 
 /** L'univers Mana — pleine page : l'assistante, les questions douces, les portes de la maison. */
+/** Nous écrire — formulaire de contact (Web3Forms → contact@manahome.org).
+    Éléments natifs de l'app → thème jour/nuit automatique. */
+function NousEcrire() {
+  const [sending, setSending] = useState(false)
+  const [status, setStatus] = useState<{ msg: string; ok?: boolean }>({ msg: '' })
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const form = e.currentTarget
+    setSending(true)
+    setStatus({ msg: 'Envoi…' })
+    const data = Object.fromEntries(new FormData(form).entries())
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(data),
+      })
+      const r = await res.json()
+      if (r.success) { setStatus({ msg: 'Merci ! Votre message est parti. 🌱', ok: true }); form.reset() }
+      else setStatus({ msg: 'Oups — une erreur est survenue.' })
+    } catch { setStatus({ msg: 'Erreur réseau, réessayez.' }) }
+    finally { setSending(false) }
+  }
+  return (
+    <section className="assistante-bloc">
+      <h2>Nous écrire</h2>
+      <p className="faq-r">Une question, une idée, un souci&nbsp;? Écrivez-nous — nous lisons tout.</p>
+      <form onSubmit={onSubmit}>
+        <input type="hidden" name="access_key" value="6b87a2f3-2183-40e6-befe-23fd66944144" />
+        <input type="hidden" name="subject" value="Message via Mana Family (l'app)" />
+        <input type="checkbox" name="botcheck" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+        <input name="name" required placeholder="Votre nom" />
+        <input name="email" type="email" required placeholder="Votre e-mail" style={{ marginTop: '0.8rem' }} />
+        <textarea name="message" required placeholder="Votre message…" />
+        <button type="submit" className="primary" disabled={sending} style={{ marginTop: '0.8rem', width: '100%' }}>
+          {sending ? 'Envoi…' : 'Envoyer'}
+        </button>
+        {status.msg && (
+          <p className="faq-r" style={{ marginTop: '0.6rem', color: status.ok ? 'var(--ensemble)' : 'var(--emotionnel)' }}>{status.msg}</p>
+        )}
+      </form>
+    </section>
+  )
+}
+
 function AssistanteVue({ ciel, onRetour }: { ciel: CielData; onRetour: () => void }) {
   return (
     <div className="shell assistante-shell">
@@ -135,6 +180,8 @@ function AssistanteVue({ ciel, onRetour }: { ciel: CielData; onRetour: () => voi
           })}
         </ul>
       </section>
+
+      <NousEcrire />
 
       <section className="assistante-bloc assistante-signature">
         <p>
