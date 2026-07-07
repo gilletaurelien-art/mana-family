@@ -97,7 +97,7 @@ function NousEcrire() {
         body: JSON.stringify(data),
       })
       const r = await res.json()
-      if (r.success) { setStatus({ msg: 'Merci ! Votre message est parti. 🌱', ok: true }); form.reset() }
+      if (r.success) { setStatus({ msg: 'Merci ! Votre message est envoyé. 🌱', ok: true }); form.reset() }
       else setStatus({ msg: 'Oups — une erreur est survenue.' })
     } catch { setStatus({ msg: 'Erreur réseau, réessayez.' }) }
     finally { setSending(false) }
