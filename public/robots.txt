@@ -1,0 +1,5 @@
+# https://manafamily.org
+User-agent: *
+Allow: /
+
+Sitemap: https://manafamily.org/sitemap.xml
