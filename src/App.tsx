@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
 import { CALENDAR_LAYERS, KINDS, KINDS_RETIRES, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
+import DeesseChat from './DeesseChat'
 import { envoyerLien, monEmail, seDeconnecter, sessionCertifiee, supabase } from './lib/supabase'
 import {
   activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
@@ -180,6 +181,8 @@ function AssistanteVue({ ciel, onRetour }: { ciel: CielData; onRetour: () => voi
           })}
         </ul>
       </section>
+
+      <DeesseChat />
 
       <NousEcrire />
 
@@ -557,7 +560,7 @@ const PROMESSES: { glyphe: string; mot: string }[] = [
 /** Les deux piliers — la doctrine Présence / Mémoire, dite simplement,
     chacune portée par son illustration dorée. */
 const PILIERS: { titre: string; mot: string; illus?: string }[] = [
-  { titre: 'La Présence', illus: '/spiral.png', mot: 'Partagez un moment en quelques mots. La famille veille sur vous — jamais de relance, jamais de reproche. Le silence aussi vous appartient.' },
+  { titre: 'La Présence', illus: '/ecrire.png', mot: 'Partagez un moment en quelques mots. La famille veille sur vous — jamais de relance, jamais de reproche. Le silence aussi vous appartient.' },
   { titre: 'La Mémoire', illus: '/carnet-deesse.png', mot: 'Le carnet garde tout ce qui compte, du plus récent au plus ancien. Anniversaires, souvenirs, présences : la mémoire reste vivante.' },
 ]
 
@@ -566,7 +569,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
     <div className="shell vitrine-shell seuil-nuit">
       <header className="sky vitrine-hero">
         <div className="vitrine-tableau cadre-or">
-          <img src="/carnet-deesse.png" alt="Le carnet de famille — la déesse et les constellations de votre histoire" />
+          <img src="/carnet-famille.png" alt="Le carnet de famille — vos souvenirs, gardés" />
         </div>
         <p className="vitrine-eyebrow">Mana Family</p>
         <h1>Votre carnet de famille</h1>
