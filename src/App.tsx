@@ -276,6 +276,7 @@ function PjGlyph({ type }: { type: 'photo' | 'video' | 'audio' }) {
 
 type Phase =
   | { ecran: 'chargement' }
+  | { ecran: 'vitrine' }
   | { ecran: 'compte' }
   | { ecran: 'porte' }
   | { ecran: 'fondation' }
@@ -316,7 +317,8 @@ export default function App() {
   const rafraichir = async () => {
     if (!(await sessionCertifiee())) {
       setCiel(null)
-      setPhase((p) => (p.ecran === 'compte' ? p : { ecran: 'compte' }))
+      // Le premier seuil est la vitrine ; « se connecter » mène au compte.
+      setPhase((p) => (p.ecran === 'compte' || p.ecran === 'vitrine' ? p : { ecran: 'vitrine' }))
       return
     }
     const r = await charger()
@@ -358,8 +360,12 @@ export default function App() {
     )
   }
 
+  if (phase.ecran === 'vitrine') {
+    return <VitrineVue onSeConnecter={() => setPhase({ ecran: 'compte' })} />
+  }
+
   if (phase.ecran === 'compte') {
-    return <CompteVue />
+    return <CompteVue onRetour={() => setPhase({ ecran: 'vitrine' })} />
   }
 
   if (phase.ecran === 'porte') {
@@ -513,7 +519,7 @@ export default function App() {
         me={me}
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onCalendriers={(calendarIds) => setCiel(modifierCalendriers(ciel, me.id, calendarIds))}
-        onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'compte' }) }}
+        onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
       />
     )
   }
@@ -539,9 +545,90 @@ export default function App() {
   )
 }
 
+/* ---------- La vitrine — le premier seuil, avant toute connexion ---------- */
+
+/** Ce que la maison promet — trois lignes de confiance, pas des arguments de vente. */
+const PROMESSES: { glyphe: string; mot: string }[] = [
+  { glyphe: '🔒', mot: 'Rien n’est public. Seulement votre famille voit vos moments.' },
+  { glyphe: '🌱', mot: 'Rien n’est vendu. Vos souvenirs ne servent à rien d’autre qu’à vous relier.' },
+  { glyphe: '✦', mot: 'Rien ne s’efface. Ce qui est transmis reste, gardé pour ceux qui viennent.' },
+]
+
+/** Les deux piliers — la doctrine Présence / Mémoire, dite simplement,
+    chacune portée par son illustration dorée. */
+const PILIERS: { titre: string; mot: string; illus?: string }[] = [
+  { titre: 'La Présence', illus: '/spiral.png', mot: 'Partagez un moment en quelques mots. La famille veille sur vous — jamais de relance, jamais de reproche. Le silence aussi vous appartient.' },
+  { titre: 'La Mémoire', mot: 'Le carnet garde tout ce qui compte, du plus récent au plus ancien. Anniversaires, souvenirs, présences : la mémoire reste vivante.' },
+]
+
+function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
+  return (
+    <div className="shell vitrine-shell seuil-nuit">
+      <header className="sky vitrine-hero">
+        <div className="vitrine-tableau cadre-or">
+          <img src="/carnet-famille.png" alt="Le carnet de famille — vos souvenirs, gardés" />
+        </div>
+        <p className="vitrine-eyebrow">Mana Family</p>
+        <h1>Votre carnet de famille</h1>
+        <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
+      </header>
+
+      <section className="vitrine-pitch">
+        <p className="vitrine-phrase">
+          Un cercle privé pour prendre soin, ensemble, de ceux qu’on aime :
+          partager un moment, veiller sur les autres, garder la mémoire vivante.
+        </p>
+        <button className="primary vitrine-cta" onClick={onSeConnecter}>Se connecter</button>
+        <p className="whisper vitrine-sous-cta">Un e-mail, un lien à cliquer. Aucun mot de passe à retenir.</p>
+      </section>
+
+      <section className="vitrine-piliers">
+        {PILIERS.map((p) => (
+          <div className="vitrine-pilier" key={p.titre}>
+            {p.illus && <img className="vitrine-pilier-illus" src={p.illus} alt="" aria-hidden="true" />}
+            <span className="vitrine-pilier-titre">{p.titre}</span>
+            <p>{p.mot}</p>
+          </div>
+        ))}
+      </section>
+
+      <section className="vitrine-promesses">
+        {PROMESSES.map((p) => (
+          <p className="vitrine-promesse" key={p.mot}>
+            <span className="vitrine-promesse-glyphe" aria-hidden="true">{p.glyphe}</span>
+            <span>{p.mot}</span>
+          </p>
+        ))}
+      </section>
+
+      <section className="vitrine-livre">
+        <span className="vitrine-livre-etiquette">Le Livre blanc</span>
+        <p className="vitrine-livre-mot">
+          Toute la vision de Mana Family — les Cercles familiaux, la Présence et la Mémoire,
+          et ce que nous refuserons toujours de faire. À lire le jour où vous voulez comprendre
+          la maison en profondeur.
+        </p>
+        <a className="vitrine-livre-lien" href="/livre-blanc.html" target="_blank" rel="noopener">
+          Lire le Livre blanc →
+        </a>
+      </section>
+
+      <section className="vitrine-pied">
+        <div className="vitrine-tableau cadre-or">
+          <img src="/deesse.png" alt="Mana — la déesse veille sur la maison" />
+        </div>
+        <button className="primary" onClick={onSeConnecter}>Entrer dans la maison</button>
+        <p className="whisper vitrine-pied-mot">
+          Un proche vous a confié une clé&nbsp;? <button className="link" onClick={onSeConnecter}>Se connecter</button>, puis rejoignez la famille.
+        </p>
+      </section>
+    </div>
+  )
+}
+
 /* ---------- Le compte — e-mail certifié par code, identité durable ---------- */
 
-function CompteVue() {
+function CompteVue({ onRetour }: { onRetour: () => void }) {
   const [etape, setEtape] = useState<'email' | 'envoye'>('email')
   const [email, setEmail] = useState('')
   const [erreur, setErreur] = useState<string | null>(null)
@@ -560,7 +647,8 @@ function CompteVue() {
   }
 
   return (
-    <div className="shell">
+    <div className="shell seuil-nuit">
+      <RetourNav onRetour={onRetour} />
       <header className="sky porte-sky">
         <div className="porte-deesse">
           <img src="/logo-nuit.png" alt="" className="logo-nuit" />

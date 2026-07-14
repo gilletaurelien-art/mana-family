@@ -875,3 +875,181 @@ button:disabled { opacity: 0.35; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   .astre-ciel, .halo .astre-core::before, .galet-dot { animation: none; }
 }
+
+/* ---------- Le seuil — nuit forcée, charte noir-violet & déesse dorée ----------
+   La vitrine et le compte s'affichent toujours de nuit, quelle que soit la
+   préférence système : la maison Mana accueille par la déesse dorée sur un
+   ciel noir-violet. Les variables ci-dessous écrasent le thème jour dans ce
+   sous-arbre uniquement (les propriétés custom cascadent par proximité). */
+.seuil-nuit {
+  --fond: #0c0818;
+  --carte: rgba(214, 196, 255, 0.05);
+  --champ: #171233;
+  --encre: #efeaff;
+  --brume: #a99fcf;
+  --filet: rgba(198, 178, 255, 0.14);
+  --etoile: #f5edd8;
+  color: var(--encre);
+}
+/* Le ciel noir-violet, plein cadre, derrière tout le contenu du seuil. */
+.seuil-nuit::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 92% 62% at 50% -8%, rgba(126, 74, 196, 0.42), transparent 60%),
+    radial-gradient(ellipse 80% 55% at 50% 118%, rgba(58, 30, 108, 0.5), transparent 58%),
+    linear-gradient(180deg, #140c28 0%, #0b0716 100%);
+}
+/* La spirale filigrane, très douce, par-dessus le ciel. */
+.seuil-nuit::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: url('/mana-spiral-filigrane.png') no-repeat center 40% / min(78vw, 600px);
+  opacity: 0.09;
+}
+/* La déesse : toujours en version nuit (dorée), même si le système est en jour. */
+.seuil-nuit .porte-deesse .logo-nuit { display: inline; }
+.seuil-nuit .porte-deesse .logo-jour { display: none; }
+/* Le Retour fixe du bas garde sa robe de nuit sur le seuil. */
+.seuil-nuit .retour-bas { background: var(--champ); box-shadow: 0 6px 22px rgba(3, 3, 12, 0.6); }
+
+.vitrine-shell { padding-bottom: 3rem; }
+
+/* Le cadre doré — un tableau fin : double filet d'or, mat sombre, halo violet.
+   Les trois illustrations dorées sont accrochées comme des toiles dans
+   l'univers de la spirale. */
+.cadre-or {
+  display: inline-block;
+  background: #08050e;
+  border: 1.5px solid var(--or-doux);
+  border-radius: 4px;
+  padding: 6px;
+  box-shadow:
+    inset 0 0 0 1px #0a0712,
+    inset 0 0 0 2.5px rgba(229, 184, 66, 0.5),
+    0 0 22px rgba(126, 74, 196, 0.32),
+    0 10px 30px rgba(0, 0, 0, 0.55);
+}
+.cadre-or img { display: block; width: 100%; height: auto; border-radius: 2px; }
+
+.vitrine-hero { padding-top: 0.4rem; }
+/* Pleine largeur PWA : un tableau occupe toute la colonne de l'app. */
+.vitrine-tableau.cadre-or { display: block; width: 100%; margin: 0.4rem 0 0.3rem; }
+
+.vitrine-eyebrow {
+  margin: 0.2rem 0 0.05rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--or-mana);
+}
+
+.vitrine-pitch { text-align: center; margin: 1.4rem auto 0; max-width: 30rem; }
+.vitrine-phrase {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--encre);
+  margin: 0 0 1.5rem;
+}
+.vitrine-cta { min-width: 15rem; }
+.vitrine-sous-cta { margin-top: 0.6rem; }
+
+.vitrine-piliers {
+  display: grid;
+  gap: 1.6rem;
+  margin: 2.2rem auto 0;
+}
+.vitrine-pilier {
+  background: var(--carte);
+  border: 1px solid var(--filet);
+  border-radius: 16px;
+  padding: 1.3rem 1.2rem 1.2rem;
+  text-align: center;
+}
+/* Pleine largeur PWA : chaque tableau occupe toute la largeur de sa carte. */
+.vitrine-pilier-illus {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto 0.9rem;
+  background: #08050e;
+  border: 1.2px solid var(--or-doux);
+  border-radius: 3px;
+  padding: 6px;
+  box-shadow:
+    inset 0 0 0 1px #0a0712,
+    inset 0 0 0 2px rgba(229, 184, 66, 0.45),
+    0 0 14px rgba(126, 74, 196, 0.25),
+    0 6px 18px rgba(0, 0, 0, 0.5);
+}
+.vitrine-pilier-titre {
+  display: block;
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--or-mana);
+  margin-bottom: 0.4rem;
+}
+.vitrine-pilier p { margin: 0; color: var(--brume); font-size: 0.92rem; line-height: 1.55; }
+
+.vitrine-promesses {
+  margin: 1.8rem auto 0;
+  max-width: 32rem;
+  display: grid;
+  gap: 0.7rem;
+}
+.vitrine-promesse {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0;
+  color: var(--encre);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.vitrine-promesse-glyphe { flex: 0 0 auto; font-size: 1.05rem; line-height: 1.4; }
+
+.vitrine-livre {
+  margin: 2.2rem auto 0;
+  max-width: 32rem;
+  text-align: center;
+  padding: 1.4rem 1.3rem;
+  border: 1px solid var(--filet);
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(126, 74, 196, 0.12), rgba(12, 8, 24, 0.2));
+}
+.vitrine-livre-etiquette {
+  display: inline-block;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--or-mana);
+  margin-bottom: 0.5rem;
+}
+.vitrine-livre-mot {
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--encre);
+  margin: 0 0 1rem;
+}
+.vitrine-livre-lien {
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  color: var(--or-mana);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(229, 184, 66, 0.4);
+  padding-bottom: 1px;
+}
+.vitrine-livre-lien:hover { color: var(--etoile); border-color: var(--or-mana); }
+
+.vitrine-pied { text-align: center; margin: 2.4rem auto 0; max-width: 30rem; }
+.vitrine-pied .vitrine-tableau.cadre-or { margin: 0 0 1.3rem; }
+.vitrine-pied .primary { min-width: 15rem; }
+.vitrine-pied-mot { margin-top: 0.8rem; }
