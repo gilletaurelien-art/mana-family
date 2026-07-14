@@ -558,7 +558,7 @@ const PROMESSES: { glyphe: string; mot: string }[] = [
     chacune portée par son illustration dorée. */
 const PILIERS: { titre: string; mot: string; illus?: string }[] = [
   { titre: 'La Présence', illus: '/spiral.png', mot: 'Partagez un moment en quelques mots. La famille veille sur vous — jamais de relance, jamais de reproche. Le silence aussi vous appartient.' },
-  { titre: 'La Mémoire', mot: 'Le carnet garde tout ce qui compte, du plus récent au plus ancien. Anniversaires, souvenirs, présences : la mémoire reste vivante.' },
+  { titre: 'La Mémoire', illus: '/carnet-deesse.png', mot: 'Le carnet garde tout ce qui compte, du plus récent au plus ancien. Anniversaires, souvenirs, présences : la mémoire reste vivante.' },
 ]
 
 function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
@@ -566,7 +566,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
     <div className="shell vitrine-shell seuil-nuit">
       <header className="sky vitrine-hero">
         <div className="vitrine-tableau cadre-or">
-          <img src="/carnet-famille.png" alt="Le carnet de famille — vos souvenirs, gardés" />
+          <img src="/carnet-deesse.png" alt="Le carnet de famille — la déesse et les constellations de votre histoire" />
         </div>
         <p className="vitrine-eyebrow">Mana Family</p>
         <h1>Votre carnet de famille</h1>
