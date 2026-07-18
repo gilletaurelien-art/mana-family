@@ -3,7 +3,7 @@ import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } fr
 import { CALENDAR_LAYERS, KINDS, KINDS_RETIRES, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import DeesseChat from './DeesseChat'
-import { envoyerLien, monEmail, seDeconnecter, sessionCertifiee, supabase } from './lib/supabase'
+import { connexionMotDePasse, envoyerLien, monEmail, seDeconnecter, sessionCertifiee, supabase } from './lib/supabase'
 import {
   activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
   type Ciel as CielData, type Galaxie,
@@ -328,11 +328,11 @@ export default function App() {
     setHorsLigne(r.horsLigne)
     if (r.ciel) {
       setCiel(r.ciel)
-      setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'porte' ? { ecran: 'ciel' } : p))
+      setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'porte' || p.ecran === 'compte' ? { ecran: 'ciel' } : p))
     } else if (!r.horsLigne) {
-      setPhase((p) => (p.ecran === 'chargement' ? { ecran: 'porte' } : p))
+      setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'compte' ? { ecran: 'porte' } : p))
     } else {
-      setPhase((p) => (p.ecran === 'chargement' ? { ecran: 'porte' } : p))
+      setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'compte' ? { ecran: 'porte' } : p))
     }
   }
 
@@ -566,7 +566,7 @@ const PILIERS: { titre: string; mot: string; illus?: string }[] = [
 
 function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
   return (
-    <div className="shell vitrine-shell seuil-nuit">
+    <div className="shell vitrine-shell seuil-nuit fond-maison">
       <header className="sky vitrine-hero">
         <p className="vitrine-eyebrow">Mana Family</p>
         <h1>Votre carnet de famille</h1>
@@ -631,8 +631,11 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
 
 function CompteVue({ onRetour }: { onRetour: () => void }) {
   const [etape, setEtape] = useState<'email' | 'envoye'>('email')
+  const [mode, setMode] = useState<'lien' | 'motdepasse'>('lien')
   const [email, setEmail] = useState('')
+  const [motDePasse, setMotDePasse] = useState('')
   const [erreur, setErreur] = useState<string | null>(null)
+  const [note, setNote] = useState<string | null>(null)
   const [occupe, setOccupe] = useState(false)
 
   const emailValide = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())
@@ -647,13 +650,22 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
     } finally { setOccupe(false) }
   }
 
+  const entrerAvecMotDePasse = async () => {
+    setErreur(null); setOccupe(true)
+    try {
+      await connexionMotDePasse(email, motDePasse)
+      // La session s'ouvre : onAuthStateChange rafraîchit et ouvre la maison.
+    } catch {
+      setErreur("E-mail ou mot de passe incorrect — ou aucun mot de passe défini. Vous pouvez recevoir un lien à la place.")
+    } finally { setOccupe(false) }
+  }
+
   return (
-    <div className="shell seuil-nuit">
+    <div className="shell seuil-nuit fond-maison">
       <RetourNav onRetour={onRetour} />
       <header className="sky porte-sky">
-        <div className="porte-deesse">
-          <img src="/logo-nuit.png" alt="" className="logo-nuit" />
-          <img src="/logo-jour.png" alt="" className="logo-jour" />
+        <div className="clef-embleme cadre-or">
+          <img src="/mana-key.jpg" alt="La clef de la maison Mana" />
         </div>
         <h1>Mana Family</h1>
         <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
@@ -672,12 +684,39 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
               placeholder="votre@email.fr"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && emailValide && !occupe) demander() }}
+              onKeyDown={(e) => { if (e.key === 'Enter' && mode === 'lien' && emailValide && !occupe) demander() }}
               aria-label="Votre e-mail"
             />
-            <button className="primary" disabled={!emailValide || occupe} onClick={demander}>
-              {occupe ? 'Envoi…' : 'Recevoir mon lien'}
-            </button>
+            {mode === 'motdepasse' && (
+              <input
+                type="password"
+                autoComplete="current-password"
+                placeholder="Votre mot de passe"
+                value={motDePasse}
+                onChange={(e) => setMotDePasse(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && emailValide && motDePasse && !occupe) entrerAvecMotDePasse() }}
+                aria-label="Votre mot de passe"
+              />
+            )}
+            {mode === 'lien' ? (
+              <button className="primary" disabled={!emailValide || occupe} onClick={demander}>
+                {occupe ? 'Envoi…' : 'Recevoir mon lien'}
+              </button>
+            ) : (
+              <button className="primary" disabled={!emailValide || !motDePasse || occupe} onClick={entrerAvecMotDePasse}>
+                {occupe ? 'Connexion…' : 'Se connecter'}
+              </button>
+            )}
+
+            <div className="compte-options">
+              <button className="link" onClick={() => { setErreur(null); setNote(null); setMode(mode === 'lien' ? 'motdepasse' : 'lien') }}>
+                {mode === 'lien' ? 'Se connecter avec un mot de passe' : 'Recevoir plutôt un lien magique'}
+              </button>
+              <button className="link compte-manaid" onClick={() => { setErreur(null); setNote('MANA ID arrive bientôt — un seul compte pour tout l’univers Mana.') }}>
+                Se connecter avec MANA ID <span className="compte-bientot">bientôt</span>
+              </button>
+            </div>
+            {note && <p className="whisper compte-note">{note}</p>}
           </>
         ) : (
           <>

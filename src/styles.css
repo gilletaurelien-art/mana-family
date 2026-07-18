@@ -1068,7 +1068,7 @@ button:disabled { opacity: 0.35; cursor: default; }
    cadre. On franchira le seuil à la connexion — l'intérieur (le livre)
    n'apparaît qu'une fois entré. Le contenu défile par-dessus, tenu lisible
    par un voile sombre. */
-.vitrine-shell.seuil-nuit::before {
+.fond-maison.seuil-nuit::before {
   background:
     linear-gradient(180deg,
       rgba(12, 8, 24, 0.52) 0%,
@@ -1077,9 +1077,9 @@ button:disabled { opacity: 0.35; cursor: default; }
       rgba(12, 8, 24, 0.86) 100%),
     url('/maison-nuit-mobile.jpg') center 38% / cover no-repeat;
 }
-.vitrine-shell.seuil-nuit::after { opacity: 0.05; }
+.fond-maison.seuil-nuit::after { opacity: 0.05; }
 @media (min-width: 640px) {
-  .vitrine-shell.seuil-nuit::before {
+  .fond-maison.seuil-nuit::before {
     background:
       linear-gradient(180deg,
         rgba(12, 8, 24, 0.5) 0%,
@@ -1089,6 +1089,41 @@ button:disabled { opacity: 0.35; cursor: default; }
       url('/maison-nuit-desktop.jpg') center / cover no-repeat;
   }
 }
+
+/* La clef-emblème sur l'écran d'entrée (la vitrine a sa propre variante). */
+.clef-embleme {
+  display: inline-block;
+  width: min(56vw, 16rem);
+  margin: 0 auto;
+}
+.clef-embleme img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+}
+
+/* Les autres portes d'entrée — mot de passe, MANA ID — discrètes. */
+.compte-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dotted var(--filet);
+}
+.compte-manaid { display: inline-flex; align-items: center; gap: 0.4rem; }
+.compte-bientot {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  color: var(--or-mana);
+  border: 1px solid color-mix(in srgb, var(--or-mana) 40%, transparent);
+}
+.compte-note { text-align: center; color: var(--or-doux); margin-top: 0.7rem; }
 
 /* Les tableaux art deco ondulants — vagues généreuses, sans liseré, rétro-éclairage
    doublé (or + violet). Courbes serpentines, style années 1920. */

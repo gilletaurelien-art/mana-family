@@ -42,6 +42,18 @@ export async function envoyerLien(email: string): Promise<void> {
   if (error) throw error
 }
 
+/**
+ * Connexion par mot de passe — pour qui en a défini un (option, jamais
+ * imposée). Le lien magique reste le chemin par défaut.
+ */
+export async function connexionMotDePasse(email: string, motDePasse: string): Promise<void> {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.trim().toLowerCase(),
+    password: motDePasse,
+  })
+  if (error) throw error
+}
+
 export async function seDeconnecter(): Promise<void> {
   await supabase.auth.signOut()
 }
