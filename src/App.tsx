@@ -920,6 +920,10 @@ function etatDuCiel(c: CielData): string {
   return 'Douceur sur votre famille ce soir.'
 }
 
+// Le livre ne s'ouvre qu'une fois par session — quand on entre dans la maison,
+// pas à chaque retour à l'accueil.
+let livreDejaOuvert = false
+
 function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onChronologie, onJardin, onParametres, onAssistante }: {
   ciel: CielData
   me: Astre
@@ -942,6 +946,8 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
   // révèle le prénom (qui s'efface seul), un second appui ouvre la frise.
   const [nomme, setNomme] = useState<string | null>(null)
   const minuteur = useRef<number | null>(null)
+  // Vrai au tout premier affichage de l'accueil : le livre s'ouvre en fondu.
+  const [ouverture] = useState(() => { const premier = !livreDejaOuvert; livreDejaOuvert = true; return premier })
   const toucherAstre = (id: string) => {
     if (nomme === id) { onOuvrirFrise(id); return }
     setNomme(id)
@@ -952,6 +958,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
   return (
     <div className="shell foyer">
       <div className="foyer-fond" aria-hidden="true" />
+      {ouverture && <div className="foyer-fond-ferme" aria-hidden="true" />}
       <header className="sky">
         <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
         <p className="whisper">

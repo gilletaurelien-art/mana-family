@@ -864,6 +864,26 @@ button:disabled { opacity: 0.35; cursor: default; }
   .foyer-fond { background-position: center; }
 }
 
+/* L'ouverture : au premier accueil, le livre FERMÉ est posé par-dessus
+   l'ouvert, puis s'efface — le livre s'ouvre quand on entre dans la maison. */
+.foyer-fond-ferme {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url('/livre-ferme.jpg') center 48% / cover no-repeat;
+  animation: livre-souvre 1.5s ease-in 0.2s forwards;
+}
+@media (min-width: 640px) {
+  .foyer-fond-ferme { background-position: center; }
+}
+@keyframes livre-souvre {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .foyer-fond-ferme { display: none; }
+}
+
 /* Sur l'accueil, le fond reste nocturne quel que soit le thème système :
    les textes gardent la lueur claire pour rester lisibles sur l'image. */
 .foyer .sky h1 { color: #fdf6e3; text-shadow: 0 2px 20px rgba(0, 0, 0, 0.65); }
