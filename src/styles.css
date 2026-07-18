@@ -5,6 +5,16 @@
    Nuit = Noir Atlantique (défaut) · Jour = Écume & Toile de Lin.
    ============================================================ */
 
+/* Marelle — cursive de l'Éducation nationale (SIL OFL 1.1), pour la main
+   des messages : l'écriture et la lecture du carnet. Voir public/fonts/. */
+@font-face {
+  font-family: 'Marelle';
+  src: url('/fonts/Marelle-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Les fonds & structures — le calme */
   --noir-atlantique: #0b131f;
@@ -39,6 +49,8 @@
   /* L'ancrage (mémoire, serif) et la transmission (présence, sans-serif) */
   --serif: 'Iowan Old Style', 'Palatino', 'Caslon', Georgia, serif;
   --sans: 'Inter', 'Avenir Next', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  /* La main des messages — cursive Marelle (écrire & lire le carnet). */
+  --cursive: 'Marelle', 'Segoe Script', 'Bradley Hand', cursive;
 }
 
 @media (prefers-color-scheme: light) {
@@ -551,7 +563,12 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 /* La zone du message — le micro veille dans le coin */
 .message-zone { position: relative; }
-.message-zone textarea { padding-right: 3.4rem; }
+.message-zone textarea {
+  padding-right: 3.4rem;
+  font-family: var(--cursive);
+  font-size: 1.24rem;
+  line-height: 1.5;
+}
 .dictee {
   position: absolute; right: 0.55rem; bottom: 0.7rem;
   width: 2.5rem; height: 2.5rem; padding: 0; border-radius: 50%;
@@ -641,7 +658,9 @@ button:disabled { opacity: 0.35; cursor: default; }
 .tx.kind-souvenir { border-left-color: var(--souvenir); }
 
 .tx-head { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--brume); }
-.tx-body { margin: 0.45rem 0; line-height: 1.5; font-size: 1rem; }
+/* Le corps du message — écrit à la main : cursive Marelle, un peu plus
+   grande et aérée pour rester douce à lire. */
+.tx-body { margin: 0.5rem 0; font-family: var(--cursive); font-size: 1.24rem; line-height: 1.55; }
 .tx-foot {
   display: flex; justify-content: space-between; align-items: center;
   font-size: 0.78rem; color: var(--brume);
