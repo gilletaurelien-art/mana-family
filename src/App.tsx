@@ -581,8 +581,6 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         <div className="vitrine-tableau cadre-or">
           <img src="/livre-ouvert.jpg" alt="Le carnet de famille — vos souvenirs, gardés" />
         </div>
-        <button className="primary vitrine-cta" onClick={onSeConnecter}>Se connecter</button>
-        <p className="whisper vitrine-sous-cta">Un e-mail, un lien à cliquer. Aucun mot de passe à retenir.</p>
       </section>
 
       <section className="vitrine-piliers">
