@@ -1110,7 +1110,9 @@ button:disabled { opacity: 0.35; cursor: default; }
   z-index: 1;
 }
 
-.vitrine-hero { padding-top: 0.4rem; }
+/* On aère : tout le haut reste libre — le ciel et la lune respirent avant
+   que « MANA FAMILY » n'ouvre le récit, bien centré. */
+.vitrine-hero { padding-top: clamp(3rem, 15vh, 11rem); }
 /* Pleine largeur PWA : un tableau occupe toute la colonne de l'app. */
 .vitrine-tableau.cadre-or { display: block; width: 100%; margin: 0.4rem 0 0.3rem; }
 
