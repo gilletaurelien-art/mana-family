@@ -615,6 +615,9 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       </section>
 
       <section className="vitrine-pied">
+        <div className="vitrine-pied-clef cadre-or">
+          <img src="/mana-key.jpg" alt="La clef de la maison Mana" />
+        </div>
         <button className="primary" onClick={onSeConnecter}>Entrer dans la maison</button>
         <p className="whisper vitrine-pied-mot">
           Un proche vous a confié une clé&nbsp;? <button className="link" onClick={onSeConnecter}>Se connecter</button>, puis rejoignez la famille.

@@ -1264,16 +1264,20 @@ button:disabled { opacity: 0.35; cursor: default; }
   50% { opacity: 0.6; }
 }
 
-.vitrine-pied .primary {
-  position: relative;
-}
-.vitrine-pied .primary::before {
-  content: '🔑';
+/* La clef de la maison Mana — emblème enluminé au-dessus du seuil. */
+.vitrine-pied-clef {
   display: inline-block;
-  margin-right: 0.5rem;
-  font-size: 1.1em;
+  width: min(58vw, 17rem);
+  margin: 0 auto 1.4rem;
 }
-.vitrine-pied .primary { min-width: 15rem; }
+.vitrine-pied-clef img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 18px;
+}
+
+.vitrine-pied .primary { position: relative; min-width: 15rem; }
 .vitrine-pied-mot { margin-top: 0.8rem; }
 
 /* ---------- Parle à Mana — le chat de la Déesse ---------- */
