@@ -603,6 +603,28 @@ button:disabled { opacity: 0.35; cursor: default; }
 .calendar-option span { line-height: 1.35; }
 
 /* Le fil de vie — se contemple, ne se scrolle pas frénétiquement */
+/* Le carnet vierge : la page qui se tourne, offerte comme première page à
+   écrire. Peu de texte — l'illustration peut vivre pleinement. */
+.carnet-vierge { margin: 1.6rem 0 0; text-align: center; }
+.carnet-vierge-page {
+  display: block;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+  border-radius: 16px;
+  border: 1px solid var(--filet);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.42);
+}
+.carnet-vierge-mot {
+  margin: 1.1rem auto 0;
+  max-width: 26rem;
+  color: var(--brume);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
 .frise { list-style: none; padding: 0; margin: 1.2rem 0 0; display: flex; flex-direction: column; gap: 0.8rem; }
 .tx {
   background: var(--carte);

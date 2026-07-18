@@ -1681,7 +1681,14 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
       )}
 
       {txs.length === 0 ? (
-        <p className="empty">{filtre === 'tous' ? 'Le carnet est encore vierge. La première transmission y écrira sa première page.' : 'Aucune page de cette sorte, pour l’instant.'}</p>
+        filtre === 'tous' ? (
+          <div className="carnet-vierge">
+            <img src="/livre-page-1.jpg" alt="" className="carnet-vierge-page" />
+            <p className="carnet-vierge-mot">Le carnet est encore vierge.<br />La première transmission y écrira sa première page.</p>
+          </div>
+        ) : (
+          <p className="empty">Aucune page de cette sorte, pour l’instant.</p>
+        )
       ) : (
         <ul className="frise">
           {txs.map((t) => {
