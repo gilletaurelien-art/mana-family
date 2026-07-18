@@ -47,15 +47,6 @@ function RetourNav({ onRetour }: { onRetour: () => void }) {
   )
 }
 
-function ThemeIcon({ jour, nuit }: { jour: string; nuit: string }) {
-  return (
-    <picture>
-      <source media="(prefers-color-scheme: light)" srcSet={jour} />
-      <img src={nuit} alt="" />
-    </picture>
-  )
-}
-
 /** Les questions douces — pensées pour la grand-mère : chaque mot lui est naturel. */
 const FAQ: { q: string; r: string }[] = [
   { q: 'Comment je partage un moment ?', r: 'Le galet doré, tout en bas au centre. Touchez « écrire », choisissez une sorte, écrivez quelques mots. C’est tout.' },
@@ -1043,17 +1034,17 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
 
       <div className="barre-bas">
         <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-          <span className="geste-rond geste-visage"><ThemeIcon jour="/avatar-carnet-jour.png" nuit="/avatar-carnet-nuit.png" /></span>
+          <span className="geste-rond geste-visage"><img src="/carnet.jpg" alt="" /></span>
           <span className="geste-mot">lire</span>
         </button>
 
         <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-          <span className="geste-rond geste-mandala"><ThemeIcon jour="/avatar-ecrire-jour.png" nuit="/avatar-ecrire-nuit.png" /></span>
+          <span className="geste-rond geste-mandala"><img src="/plume.jpg" alt="" /></span>
           <span className="geste-mot">écrire</span>
         </button>
 
         <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — découvrir">
-          <span className="geste-rond geste-visage"><ThemeIcon jour="/avatar-univers-jour.png" nuit="/avatar-univers-nuit.png" /></span>
+          <span className="geste-rond geste-visage"><img src="/mana-key.jpg" alt="" /></span>
           <span className="geste-mot">découvrir</span>
         </button>
       </div>
