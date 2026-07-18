@@ -826,6 +826,108 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 @media (prefers-reduced-motion: reduce) { .geste-ecrire .geste-rond { animation: none; } }
 
+/* ============================================================
+   L'ACCUEIL — « La maison veille »
+   Fond plein cadre : la maison de pierre, porte allumée, sous les
+   astres. Les étoiles de l'image et les astres de la famille se
+   confondent ; la lumière des fenêtres est la Lueur.
+   Immersion douce (validée) : l'illustration reste vive, un voile
+   ne tombe QUE sous les mots (haut = nom de la famille ;
+   bas = phrase météo + barre). Le rouge n'existe que dans l'image
+   — les coquelicots, fleur du souvenir — jamais dans le chrome.
+   ============================================================ */
+.foyer-fond {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('/livre-ouvert.jpg');
+  background-size: cover;
+  background-position: center 48%;
+  background-repeat: no-repeat;
+}
+/* Le voile — ne pèse que là où vivent les mots ; noir chaud du bois. */
+.foyer-fond::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 12, 7, 0.55) 0%,
+    rgba(18, 12, 7, 0)    16%,
+    rgba(18, 12, 7, 0)    54%,
+    rgba(18, 12, 7, 0.58) 82%,
+    rgba(18, 12, 7, 0.82) 100%
+  );
+}
+/* Grand écran : le livre respire au centre du cadre paysage. */
+@media (min-width: 640px) {
+  .foyer-fond { background-position: center; }
+}
+
+/* Sur l'accueil, le fond reste nocturne quel que soit le thème système :
+   les textes gardent la lueur claire pour rester lisibles sur l'image. */
+.foyer .sky h1 { color: #fdf6e3; text-shadow: 0 2px 20px rgba(0, 0, 0, 0.65); }
+.foyer .whisper { color: rgba(253, 246, 227, 0.82); text-shadow: 0 1px 12px rgba(0, 0, 0, 0.72); }
+.foyer .whisper .link { color: rgba(253, 246, 227, 0.9); border-bottom-color: rgba(253, 246, 227, 0.35); }
+/* Les astres sont des étincelles nues ; le prénom ne paraît qu'au toucher,
+   posé sur un souffle sombre pour rester lisible, puis s'efface seul. */
+.foyer .prenom {
+  color: rgba(255, 253, 246, 0.96);
+  opacity: 1;
+  margin-top: 0.15rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(13, 11, 31, 0.55);
+  backdrop-filter: blur(3px);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
+  animation: prenom-parait 0.4s ease-out both;
+}
+@keyframes prenom-parait {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* L'étincelle sur la scène illustrée : un peu plus vive qu'une étoile nue,
+   cernée d'un souffle sombre pour ne pas se perdre sur les zones claires. */
+.foyer .astre-pure-light {
+  width: 9px; height: 9px;
+  background: rgba(255, 253, 246, 0.92);
+  box-shadow:
+    0 0 0 4px rgba(13, 11, 31, 0.28),
+    0 0 12px 3px rgba(255, 253, 246, 0.55),
+    0 0 22px 6px rgba(229, 184, 66, 0.18);
+  animation: scintille 5.5s ease-in-out infinite;
+}
+@keyframes scintille {
+  0%, 100% { opacity: 0.7; }
+  50%      { opacity: 1; }
+}
+/* Nommé, l'astre s'avive doucement le temps qu'on le regarde */
+.foyer .nomme .astre-pure-light {
+  background: var(--etoile);
+  box-shadow:
+    0 0 0 4px rgba(13, 11, 31, 0.3),
+    0 0 18px 5px rgba(255, 253, 246, 0.7),
+    0 0 30px 8px rgba(229, 184, 66, 0.3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .foyer .astre-pure-light { animation: none; }
+}
+.foyer .etat-ciel {
+  color: #fdf6e3;
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.78);
+  border-top-color: rgba(253, 246, 227, 0.22);
+}
+/* Les trois tuiles du bas : un verre nocturne posé sur le jardin */
+.foyer .geste-rond {
+  background: rgba(13, 11, 31, 0.5);
+  border-color: rgba(253, 246, 227, 0.2);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+.foyer .geste-mot { color: rgba(253, 246, 227, 0.85); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.75); }
+.foyer .geste-ecrire .geste-mot { color: var(--or-mana); }
+
 /* Le galet — une invitation, pas un ordre. Concave, poli par la mer. */
 .galet {
   width: 160px;
@@ -920,22 +1022,51 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 .vitrine-shell { padding-bottom: 3rem; }
 
-/* Le cadre doré — un tableau fin : double filet d'or, mat sombre, halo violet.
-   Les trois illustrations dorées sont accrochées comme des toiles dans
-   l'univers de la spirale. */
+/* La vitrine (landing, avant connexion) : la maison vue du dehors, plein
+   cadre. On franchira le seuil à la connexion — l'intérieur (le livre)
+   n'apparaît qu'une fois entré. Le contenu défile par-dessus, tenu lisible
+   par un voile sombre. */
+.vitrine-shell.seuil-nuit::before {
+  background:
+    linear-gradient(180deg,
+      rgba(12, 8, 24, 0.52) 0%,
+      rgba(12, 8, 24, 0.12) 22%,
+      rgba(12, 8, 24, 0.42) 52%,
+      rgba(12, 8, 24, 0.86) 100%),
+    url('/maison-nuit-mobile.jpg') center 38% / cover no-repeat;
+}
+.vitrine-shell.seuil-nuit::after { opacity: 0.05; }
+@media (min-width: 640px) {
+  .vitrine-shell.seuil-nuit::before {
+    background:
+      linear-gradient(180deg,
+        rgba(12, 8, 24, 0.5) 0%,
+        rgba(12, 8, 24, 0.12) 22%,
+        rgba(12, 8, 24, 0.42) 52%,
+        rgba(12, 8, 24, 0.86) 100%),
+      url('/maison-nuit-desktop.jpg') center / cover no-repeat;
+  }
+}
+
+/* Les tableaux art deco ondulants — vagues généreuses, sans liseré, rétro-éclairage
+   doublé (or + violet). Courbes serpentines, style années 1920. */
 .cadre-or {
   display: inline-block;
-  background: #08050e;
-  border: 1.5px solid var(--or-doux);
-  border-radius: 4px;
-  padding: 6px;
+  border-radius: 32px 12px 32px 12px / 12px 32px 12px 32px;
   box-shadow:
-    inset 0 0 0 1px #0a0712,
-    inset 0 0 0 2.5px rgba(229, 184, 66, 0.5),
-    0 0 22px rgba(126, 74, 196, 0.32),
-    0 10px 30px rgba(0, 0, 0, 0.55);
+    0 0 44px 6px rgba(229, 184, 66, 0.30),
+    0 0 90px 10px rgba(126, 74, 196, 0.44),
+    0 14px 44px rgba(126, 74, 196, 0.40);
+  position: relative;
 }
-.cadre-or img { display: block; width: 100%; height: auto; border-radius: 2px; }
+.cadre-or img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 32px 12px 32px 12px / 12px 32px 12px 32px;
+  position: relative;
+  z-index: 1;
+}
 
 .vitrine-hero { padding-top: 0.4rem; }
 /* Pleine largeur PWA : un tableau occupe toute la colonne de l'app. */

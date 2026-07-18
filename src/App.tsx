@@ -617,9 +617,6 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       </section>
 
       <section className="vitrine-pied">
-        <div className="vitrine-tableau cadre-or">
-          <img src="/deesse.png" alt="Mana — la déesse veille sur la maison" />
-        </div>
         <button className="primary" onClick={onSeConnecter}>Entrer dans la maison</button>
         <p className="whisper vitrine-pied-mot">
           Un proche vous a confié une clé&nbsp;? <button className="link" onClick={onSeConnecter}>Se connecter</button>, puis rejoignez la famille.
@@ -941,8 +938,20 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
     ciel.transmissions.filter((t) => t.aboutId && Object.keys(t.veilles).length > 0).map((t) => t.aboutId as string),
   )
 
+  // Nom au toucher : les astres restent des étincelles nues ; un appui
+  // révèle le prénom (qui s'efface seul), un second appui ouvre la frise.
+  const [nomme, setNomme] = useState<string | null>(null)
+  const minuteur = useRef<number | null>(null)
+  const toucherAstre = (id: string) => {
+    if (nomme === id) { onOuvrirFrise(id); return }
+    setNomme(id)
+    if (minuteur.current) window.clearTimeout(minuteur.current)
+    minuteur.current = window.setTimeout(() => setNomme(null), 3400)
+  }
+
   return (
-    <div className="shell">
+    <div className="shell foyer">
+      <div className="foyer-fond" aria-hidden="true" />
       <header className="sky">
         <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
         <p className="whisper">
@@ -961,14 +970,15 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
           return (
             <button
               key={a.id}
-              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''}`}
+              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''} ${nomme === a.id ? 'nomme' : ''}`}
               style={{ left: `${left}%`, top: `${top}%`, animationDuration: `${9 + (i % 5) * 1.7}s`, animationDelay: `${-(i * 2.3)}s` }}
-              onClick={() => onOuvrirFrise(a.id)}
+              aria-label={nomIntime(a)}
+              onClick={() => toucherAstre(a.id)}
             >
               <span className="astre-core">
                 {a.avatarUrl ? <img src={a.avatarUrl} alt="" className="astre-photo" /> : <span className="astre-pure-light" />}
               </span>
-              <span className="prenom">{nomIntime(a)}</span>
+              {nomme === a.id && <span className="prenom">{nomIntime(a)}</span>}
             </button>
           )
         })}
