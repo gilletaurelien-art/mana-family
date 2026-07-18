@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
 import { CALENDAR_LAYERS, KINDS, KINDS_RETIRES, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
+import { demoCiel } from './demo'
 import DeesseChat from './DeesseChat'
 import { connexionMotDePasse, envoyerLien, monEmail, seDeconnecter, sessionCertifiee, supabase } from './lib/supabase'
 import {
@@ -337,6 +338,13 @@ export default function App() {
   }
 
   useEffect(() => {
+    // Mode test (dev-only) : ?demo=1 ouvre l'intérieur avec une fausse famille,
+    // sans auth ni base. Jamais actif en production (import.meta.env.DEV).
+    if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('demo')) {
+      setCiel(demoCiel())
+      setPhase({ ecran: 'ciel' })
+      return
+    }
     rafraichir()
     const iv = setInterval(rafraichir, 30000) // marée calme : pas de temps réel frénétique
     const onVis = () => { if (document.visibilityState === 'visible') rafraichir() }
