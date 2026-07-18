@@ -568,19 +568,19 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
   return (
     <div className="shell vitrine-shell seuil-nuit">
       <header className="sky vitrine-hero">
-        <div className="vitrine-tableau cadre-or">
-          <img src="/livre-ouvert.jpg" alt="Le carnet de famille — vos souvenirs, gardés" />
-        </div>
         <p className="vitrine-eyebrow">Mana Family</p>
         <h1>Votre carnet de famille</h1>
         <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
-      </header>
-
-      <section className="vitrine-pitch">
         <p className="vitrine-phrase">
           Un cercle privé pour prendre soin, ensemble, de ceux qu’on aime :
           partager un moment, veiller sur les autres, garder la mémoire vivante.
         </p>
+      </header>
+
+      <section className="vitrine-pitch">
+        <div className="vitrine-tableau cadre-or">
+          <img src="/livre-ouvert.jpg" alt="Le carnet de famille — vos souvenirs, gardés" />
+        </div>
         <button className="primary vitrine-cta" onClick={onSeConnecter}>Se connecter</button>
         <p className="whisper vitrine-sous-cta">Un e-mail, un lien à cliquer. Aucun mot de passe à retenir.</p>
       </section>
