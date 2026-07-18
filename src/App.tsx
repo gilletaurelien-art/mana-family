@@ -1590,7 +1590,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
     .filter((t) => filtre === 'tous' || t.kind === filtre)
 
   return (
-    <div className="shell">
+    <div className="shell carnet-papier">
       <RetourNav onRetour={onRetour} />
       {!sujet ? (
         <header className="sky assistante-hero carnet-hero">
