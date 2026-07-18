@@ -1593,22 +1593,17 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
     <div className="shell carnet-papier">
       <RetourNav onRetour={onRetour} />
       {!sujet ? (
-        <header className="sky assistante-hero carnet-hero">
-          <div className="carnet-hero-top">
-            <div className="assistante-hero-texte">
-              <h1>Le carnet de famille</h1>
-              <p className="assistante-mot">
-                Ici vit la mémoire<br />
-                de la famille.<br />
-                Tout ce qu’on a partagé,<br />
-                du plus récent au plus ancien.
-              </p>
-            </div>
-            <div className="assistante-hero-visage carnet-hero-visage" aria-hidden="true">
-              <img src="/carnet-hero-nuit.png" alt="" className="logo-nuit" />
-              <img src="/carnet-hero-jour.png" alt="" className="logo-jour" />
-            </div>
+        <header className="sky carnet-hero-lire">
+          <div className="carnet-hero-tableau">
+            <img src="/carnet.jpg" alt="" />
           </div>
+          <h1>Le carnet de famille</h1>
+          <p className="assistante-mot">
+            Ici vit la mémoire<br />
+            de la famille.<br />
+            Tout ce qu’on a partagé,<br />
+            du plus récent au plus ancien.
+          </p>
           <div className="carnet-filtre-barre">
             <button
               className={`carnet-filtre-btn ${filtresOuverts ? 'ouvert' : ''} ${filtre !== 'tous' ? 'actif' : ''}`}

@@ -671,10 +671,18 @@ button:disabled { opacity: 0.35; cursor: default; }
   background-blend-mode: multiply, multiply, multiply, multiply, multiply;
 }
 
-/* En-tête et cartes s'accordent à l'encre. La lueur reste dorée mais
-   plus chaude pour tenir sur le papier. */
-.carnet-papier .assistante-hero-visage img,
-.carnet-papier .carnet-hero-visage img { opacity: 0.55; }
+/* En-tête : le carnet enluminé en tableau centré, le texte dessous. */
+.carnet-hero-lire { padding-top: 0.4rem; }
+.carnet-hero-tableau {
+  width: min(62vw, 14.5rem);
+  margin: 0.2rem auto 0.5rem;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(70, 50, 25, 0.3);
+}
+.carnet-hero-tableau img { width: 100%; height: auto; display: block; }
+
+/* Cartes accordées à l'encre, presque effacées pour laisser parler la page. */
 .carnet-papier .tx {
   background: var(--carte);
   border-color: var(--filet);
