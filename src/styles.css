@@ -695,12 +695,14 @@ button:disabled { opacity: 0.35; cursor: default; }
 .papier .retour-btn:hover,
 .papier .retour-bas { color: var(--etoile); }
 
-/* Un seul Retour sur le carnet : on retire celui du haut. */
-.carnet-papier .retour-haut { display: none; }
+/* Un seul Retour sur les écrans papier : on retire celui du haut. */
+.carnet-papier .retour-haut,
+.papier .retour-haut { display: none; }
 
 /* Responsive desktop / PWA : la colonne s'élargit, le papier remplit le fond. */
 @media (min-width: 700px) {
-  .shell.carnet-papier { max-width: 680px; padding-top: 1.6rem; }
+  .shell.carnet-papier,
+  .shell.papier { max-width: 680px; padding-top: 1.6rem; }
   .carnet-hero-tableau { width: min(42vw, 17rem); }
 }
 

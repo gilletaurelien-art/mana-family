@@ -1365,25 +1365,16 @@ function Composer({ ciel, me, onDone }: {
 
   return (
     <div className="shell papier">
-      <div className="composer-fond" aria-hidden="true">
-        <img src="/ecrire-arbre-nuit.png" alt="" className="logo-nuit" />
-        <img src="/ecrire-arbre-jour.png" alt="" className="logo-jour" />
-      </div>
       <RetourNav onRetour={() => onDone(null)} />
-      <header className="sky assistante-hero carnet-hero composer-hero">
-        <div className="carnet-hero-top">
-          <div className="assistante-hero-texte">
-            <h1>Transmettre</h1>
-            <p className="assistante-mot">
-              Un acte de soin aujourd'hui,<br />
-              un acte de mémoire demain.
-            </p>
-          </div>
-          <div className="assistante-hero-visage carnet-hero-visage" aria-hidden="true">
-            <img src="/ecrire-hero-nuit.png" alt="" className="logo-nuit" />
-            <img src="/ecrire-hero-jour.png" alt="" className="logo-jour" />
-          </div>
+      <header className="sky carnet-hero-lire">
+        <div className="carnet-hero-tableau">
+          <img src="/plume.jpg" alt="" />
         </div>
+        <h1>Transmettre</h1>
+        <p className="assistante-mot">
+          Un acte de soin aujourd'hui,<br />
+          un acte de mémoire demain.
+        </p>
       </header>
 
       <section className="card composer-card">
