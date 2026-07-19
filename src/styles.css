@@ -875,10 +875,11 @@ button:disabled { opacity: 0.35; cursor: default; }
   margin-top: 0.5rem;
   padding: 1.1rem 0.5rem;
   color: var(--encre);
-  font-size: 1.08rem;
+  font-family: var(--cursive);
+  font-size: 1.14rem;
   font-weight: 500;
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.35;
 }
 
 /* La barre du bas — lire (le carnet) et écrire (le galet) */
@@ -921,8 +922,9 @@ button:disabled { opacity: 0.35; cursor: default; }
   font-size: 0.98rem; letter-spacing: 0; color: var(--brume);
   font-family: var(--cursive);
 }
-/* Le mot « Famille » du titre, écrit à la main. */
-.mot-famille { font-family: var(--cursive); }
+/* Les mots de famille, écrits à la main (titre « Famille », prénom du membre). */
+.mot-famille { font-family: var(--cursive); font-style: normal; }
+.whisper .mot-famille { font-size: 1.05rem; }
 
 /* écrire — le geste central, mis en avant par une lueur dorée qui respire */
 .geste-ecrire .geste-rond {
