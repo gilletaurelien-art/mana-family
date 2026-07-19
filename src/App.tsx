@@ -1318,6 +1318,21 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 
 /* ---------- Composer ---------- */
 
+// Offrir un geste : des attentions légères, silencieuses, à toucher.
+const GESTES: [string, string][] = [
+  ['🤍', 'Pensée'], ['🤗', 'Câlin'], ['😘', 'Bisou'],
+  ['🌸', 'Fleur'], ['🌼', 'Bouquet'], ['🍀', 'Trèfle'],
+  ['🌞', 'Rayon de soleil'], ['🌙', 'Douce nuit'], ['⭐', 'Étoile'],
+  ['🦋', 'Papillon'], ['🕊️', 'Colombe'],
+  ['☕', 'Café'], ['🍵', 'Thé'], ['🍫', 'Chocolat chaud'],
+  ['🍰', 'Gâteau'], ['🍎', 'Pomme'], ['🍯', 'Douceur'],
+  ['🌳', 'Arbre'], ['🌱', 'Jeune pousse'], ['🌾', 'Graine'],
+  ['🔥', 'Feu de cheminée'],
+  ['😊', 'Sourire'], ['❤️', 'Merci'], ['🫶', 'Amour'],
+  ['🙏', 'Gratitude'], ['💪', 'Courage'], ['✨', 'Espoir'],
+  ['🎉', 'Félicitations'],
+]
+
 function Composer({ ciel, me, aboutId = null, onDone }: {
   ciel: CielData
   me: Astre
@@ -1327,6 +1342,7 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
   const others = ciel.astres.filter((a) => a.id !== me.id)
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const [body, setBody] = useState('')
+  const [offrirOuvert, setOffrirOuvert] = useState(false)
 
   const [ecoute, setEcoute] = useState(false)
   const recognitionRef = useRef<any>(null)
@@ -1389,7 +1405,14 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
           {ecoute ? 'Je vous écoute…' : 'Écrivez, ou touchez le micro pour dicter.'}
         </p>
 
-        {/* 2. Pièce jointe */}
+        {/* 2. Offrir un geste — un bouton qui ouvre la feuille des attentions */}
+        <h2>Offrir un geste</h2>
+        <button type="button" className="offrir-bouton" onClick={() => setOffrirOuvert(true)}>
+          <span className="offrir-bouton-emoji" aria-hidden="true">🫶</span>
+          Offrir une attention…
+        </button>
+
+        {/* 3. Pièce jointe */}
         <h2>Pièce jointe</h2>
         <div className="pj-ligne">
           <span className="pj-option bientot"><PjGlyph type="photo" /> Photo</span>
@@ -1409,6 +1432,31 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
           </button>
         </div>
       </section>
+
+      {offrirOuvert && (
+        <div className="offrir-veil" onClick={() => setOffrirOuvert(false)}>
+          <div className="offrir-sheet" role="dialog" aria-label="Offrir un geste" onClick={(e) => e.stopPropagation()}>
+            <button className="offrir-fermer" onClick={() => setOffrirOuvert(false)} aria-label="Fermer">✕</button>
+            <h2 className="offrir-titre">Offrir un geste</h2>
+            <p className="whisper offrir-mot">
+              Une attention {sujet ? <>pour <b>{nomIntime(sujet)}</b></> : <>pour toute la famille</>} — touchez pour l'offrir.
+            </p>
+            <div className="offrir-capsules">
+              {GESTES.map(([emoji, libelle]) => (
+                <button
+                  key={libelle}
+                  type="button"
+                  className="offrir-capsule"
+                  onClick={() => onDone({ kind: 'souvenir', body: `${emoji} ${libelle}`, aboutId, recipientIds: others.map((a) => a.id), happensOn: null })}
+                >
+                  <span className="offrir-emoji" aria-hidden="true">{emoji}</span>
+                  <span>{libelle}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
