@@ -1579,15 +1579,15 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
   const [enEdition, setEnEdition] = useState(false)
   const [nomDouxEdit, setNomDouxEdit] = useState(false)
   const [nomDouxVal, setNomDouxVal] = useState('')
-  const [filtre, setFiltre] = useState<TransmissionKind | 'tous'>('tous')
-  const [filtresOuverts, setFiltresOuverts] = useState(false)
+  const [ordre, setOrdre] = useState<'recent' | 'ancien'>('recent')
   const nameOf = (id: string | null) => {
     const a = ciel.astres.find((x) => x.id === id)
     return a ? nomIntime(a) : null
   }
   const txs = ciel.transmissions
     .filter((t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId)
-    .filter((t) => filtre === 'tous' || t.kind === filtre)
+    .slice()
+    .sort((a, b) => (ordre === 'recent' ? b.createdAt.localeCompare(a.createdAt) : a.createdAt.localeCompare(b.createdAt)))
 
   return (
     <div className="shell carnet-papier">
@@ -1606,32 +1606,14 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
           </p>
           <div className="carnet-filtre-barre">
             <button
-              className={`carnet-filtre-btn ${filtresOuverts ? 'ouvert' : ''} ${filtre !== 'tous' ? 'actif' : ''}`}
-              onClick={() => setFiltresOuverts((v) => !v)}
-              aria-expanded={filtresOuverts}
+              className="carnet-filtre-btn"
+              onClick={() => setOrdre((o) => (o === 'recent' ? 'ancien' : 'recent'))}
+              aria-label="Changer l'ordre par date"
             >
               <span className="filtre-glyph"><FiltreGlyph /></span>
-              {filtre === 'tous' ? 'Filtrer' : kindMeta(filtre).label}
+              {ordre === 'recent' ? 'Du plus récent' : 'Du plus ancien'}
             </button>
-            {filtre !== 'tous' && (
-              <button className="link carnet-filtre-clear" onClick={() => { setFiltre('tous'); setFiltresOuverts(false) }}>tout voir</button>
-            )}
           </div>
-          {filtresOuverts && (
-            <div className="carnet-filtres">
-              <button className={`chip ${filtre === 'tous' ? 'on' : ''}`} onClick={() => { setFiltre('tous'); setFiltresOuverts(false) }}>Tout</button>
-              {KINDS.map((k) => (
-                <button
-                  key={k.kind}
-                  className={`chip chip-filtre ${filtre === k.kind ? 'on' : ''}`}
-                  style={filtre === k.kind ? undefined : { color: `var(--${k.kind})` }}
-                  onClick={() => { setFiltre(k.kind); setFiltresOuverts(false) }}
-                >
-                  <span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}
-                </button>
-              ))}
-            </div>
-          )}
         </header>
       ) : (
       <header className="sky">
@@ -1715,14 +1697,10 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
       )}
 
       {txs.length === 0 ? (
-        filtre === 'tous' ? (
-          <div className="carnet-vierge">
-            <img src="/livre-page-1.jpg" alt="" className="carnet-vierge-page" />
-            <p className="carnet-vierge-mot">Le carnet est encore vierge.<br />La première transmission y écrira sa première page.</p>
-          </div>
-        ) : (
-          <p className="empty">Aucune page de cette sorte, pour l’instant.</p>
-        )
+        <div className="carnet-vierge">
+          <img src="/livre-page-1.jpg" alt="" className="carnet-vierge-page" />
+          <p className="carnet-vierge-mot">Le carnet est encore vierge.<br />La première transmission y écrira sa première page.</p>
+        </div>
       ) : (
         <ul className="frise">
           {txs.map((t) => {
