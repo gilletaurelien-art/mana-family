@@ -607,7 +607,6 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
             }}
           />
         ))}
-        <span className="filante" />
       </div>
       <header className="sky vitrine-hero">
         <div className="vitrine-accroche">
