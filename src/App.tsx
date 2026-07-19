@@ -1107,7 +1107,7 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
   }
 
   return (
-    <div className="shell">
+    <div className="shell papier">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Les générations</h1>
@@ -1126,7 +1126,7 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
                   <span className="astre-core">
                     {a.avatarUrl ? <img src={a.avatarUrl} alt="" className="astre-photo" /> : <span className="astre-pure-light" />}
                   </span>
-                  <span className="prenom">{a.name}</span>
+                  <span className="prenom">{nomIntime(a)}</span>
                   <span className="naissance">
                     {a.birthDate
                       ? `${naissanceEnClair(a.birthDate)} · ${ageDe(a.birthDate)} an${ageDe(a.birthDate) > 1 ? 's' : ''}${estAnniversaire(a.birthDate) ? ' ✦' : ''}`
