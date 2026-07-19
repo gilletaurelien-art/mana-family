@@ -572,14 +572,31 @@ const PILIERS: { titre: string; mot: string; illus?: string }[] = [
 function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
   return (
     <div className="shell vitrine-shell seuil-nuit fond-maison">
+      <div className="ciel-anime" aria-hidden="true">
+        {Array.from({ length: 16 }).map((_, i) => (
+          <span
+            key={i}
+            className="etoile-s"
+            style={{
+              left: `${((i * 61) % 96) + 2}%`,
+              top: `${((i * 37) % 44) + 3}%`,
+              animationDelay: `${(i % 5) * 0.7}s`,
+              animationDuration: `${2.6 + (i % 4) * 0.6}s`,
+            }}
+          />
+        ))}
+        <span className="filante" />
+      </div>
       <header className="sky vitrine-hero">
-        <p className="vitrine-eyebrow">Mana Family</p>
-        <h1>Votre carnet de famille</h1>
-        <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
-        <p className="vitrine-phrase">
-          Un cercle privé pour prendre soin, ensemble, de ceux qu’on aime :
-          partager un moment, veiller sur les autres, garder la mémoire vivante.
-        </p>
+        <div className="vitrine-accroche">
+          <p className="vitrine-eyebrow">Mana Family</p>
+          <h1>Votre carnet de famille</h1>
+          <p className="vitrine-phrase">
+            Un cercle privé pour prendre soin, ensemble, de ceux qu’on aime :
+            partager un moment, veiller sur les autres, garder la mémoire vivante.
+          </p>
+        </div>
+        <p className="vitrine-slogan">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
 
       <section className="vitrine-piliers">
