@@ -411,6 +411,29 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .astre-fixe .naissance { line-height: 1.35; }
 
+/* Action « écrire » ancrée en bas de la fiche d'un membre. */
+.fiche-ecrire {
+  position: fixed;
+  right: 0.9rem;
+  bottom: max(0.9rem, env(safe-area-inset-bottom, 0.9rem));
+  z-index: 60;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.4rem 1.1rem 0.4rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--filet);
+  background: var(--champ);
+  color: var(--etoile);
+  font-family: var(--cursive);
+  font-size: 1.2rem;
+  box-shadow: 0 8px 24px rgba(70, 50, 25, 0.28);
+  cursor: pointer;
+}
+.fiche-ecrire-plume {
+  width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex: none;
+  border: 1px solid var(--filet);
+}
+.fiche-ecrire-plume img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 /* « Les générations » à l'identité : parchemin, noms manuscrits,
    étoiles dorées, photos rondes. */
 .papier .etage-nom { color: var(--etoile); }

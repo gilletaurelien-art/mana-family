@@ -277,7 +277,7 @@ type Phase =
   | { ecran: 'parametres' }
   | { ecran: 'assistante' }
   | { ecran: 'frise'; aboutId: string | null }
-  | { ecran: 'composer' }
+  | { ecran: 'composer'; aboutId?: string | null }
 
 export default function App() {
   const [ciel, setCiel] = useState<CielData | null>(null)
@@ -436,6 +436,7 @@ export default function App() {
       <Composer
         ciel={ciel}
         me={me}
+        aboutId={phase.aboutId ?? null}
         onDone={(t) => {
           if (t) setCiel(transmettre(ciel, t))
           setPhase({ ecran: 'ciel' })
@@ -451,6 +452,7 @@ export default function App() {
         me={me}
         aboutId={phase.aboutId}
         onRetour={() => setPhase({ ecran: 'ciel' })}
+        onEcrire={() => setPhase({ ecran: 'composer', aboutId: phase.aboutId })}
         onVeiller={(txId) => setCiel(veiller(ciel, txId))}
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
@@ -1316,12 +1318,14 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 
 /* ---------- Composer ---------- */
 
-function Composer({ ciel, me, onDone }: {
+function Composer({ ciel, me, aboutId = null, onDone }: {
   ciel: CielData
   me: Astre
+  aboutId?: string | null
   onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null } | null) => void
 }) {
   const others = ciel.astres.filter((a) => a.id !== me.id)
+  const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const [body, setBody] = useState('')
 
   const [ecoute, setEcoute] = useState(false)
@@ -1357,6 +1361,7 @@ function Composer({ ciel, me, onDone }: {
         <div className="carnet-hero-tableau">
           <img src="/plume.jpg" alt="La plume — écrire" />
         </div>
+        {sujet && <p className="whisper">au sujet de <b>{nomIntime(sujet)}</b></p>}
       </header>
 
       <section className="card composer-card">
@@ -1398,7 +1403,7 @@ function Composer({ ciel, me, onDone }: {
           <button
             className="primary"
             disabled={!body.trim()}
-            onClick={() => onDone({ kind: 'souvenir', body: body.trim(), aboutId: null, recipientIds: others.map((a) => a.id), happensOn: null })}
+            onClick={() => onDone({ kind: 'souvenir', body: body.trim(), aboutId, recipientIds: others.map((a) => a.id), happensOn: null })}
           >
             Transmettre
           </button>
@@ -1454,11 +1459,12 @@ function ProfilForm({ sujet, onEnregistrer }: {
 
 /* ---------- Le fil de vie ---------- */
 
-function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissance, onProfil, onNommer }: {
+function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait, onNaissance, onProfil, onNommer }: {
   ciel: CielData
   me: Astre
   aboutId: string | null
   onRetour: () => void
+  onEcrire: () => void
   onVeiller: (txId: string) => void
   onPortrait: (astreId: string, dataUrl: string) => void
   onNaissance: (astreId: string, date: string) => void
@@ -1619,6 +1625,13 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
             )
           })}
         </ul>
+      )}
+
+      {sujet && (
+        <button className="fiche-ecrire" onClick={onEcrire} aria-label={`Écrire au sujet de ${nomIntime(sujet)}`}>
+          <span className="fiche-ecrire-plume"><img src="/plume.jpg" alt="" /></span>
+          <span>écrire</span>
+        </button>
       )}
     </div>
   )
