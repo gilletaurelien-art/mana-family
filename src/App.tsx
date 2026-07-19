@@ -334,8 +334,9 @@ export default function App() {
 
   if (phase.ecran === 'chargement') {
     return (
-      <div className="shell">
-        <header className="sky"><LogoSeuil /><h1>Mana Family</h1><p className="whisper">La famille s'ouvre…</p></header>
+      <div className="shell seuil-nuit fond-maison chargement-ecran">
+        <div className="chargement-cle"><img src="/mana-key.jpg" alt="Mana Family" /></div>
+        <div className="chargement-spin" role="status" aria-label="Chargement…"></div>
       </div>
     )
   }
