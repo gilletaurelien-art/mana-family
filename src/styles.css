@@ -1002,22 +1002,15 @@ button:disabled { opacity: 0.35; cursor: default; }
 .foyer .sky h1 { color: #fdf6e3; text-shadow: 0 2px 20px rgba(0, 0, 0, 0.65); }
 .foyer .whisper { color: rgba(253, 246, 227, 0.82); text-shadow: 0 1px 12px rgba(0, 0, 0, 0.72); }
 .foyer .whisper .link { color: rgba(253, 246, 227, 0.9); border-bottom-color: rgba(253, 246, 227, 0.35); }
-/* Les astres sont des étincelles nues ; le prénom ne paraît qu'au toucher,
-   posé sur un souffle sombre pour rester lisible, puis s'efface seul. */
+/* Le prénom sous chaque astre — écrit à la main, posé sur un souffle
+   sombre pour rester lisible sur la page. */
 .foyer .prenom {
-  color: rgba(255, 253, 246, 0.96);
+  color: rgba(255, 253, 246, 0.98);
   opacity: 1;
-  margin-top: 0.15rem;
-  padding: 0.12rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(13, 11, 31, 0.55);
-  backdrop-filter: blur(3px);
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
-  animation: prenom-parait 0.4s ease-out both;
-}
-@keyframes prenom-parait {
-  from { opacity: 0; transform: translateY(-3px); }
-  to   { opacity: 1; transform: translateY(0); }
+  margin-top: 0.2rem;
+  font-family: var(--cursive);
+  font-size: 1rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.75);
 }
 
 /* L'étincelle sur la scène illustrée : un peu plus vive qu'une étoile nue,
