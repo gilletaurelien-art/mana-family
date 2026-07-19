@@ -230,6 +230,25 @@ body:has(.carnet-hero)::before { display: none; }
   border-bottom: 1px dotted var(--filet); padding-bottom: 0.4rem; margin-bottom: 0.9rem;
 }
 
+/* Le tableau des formules (découvrir). */
+.formules-intro { margin: -0.4rem 0 0.8rem; }
+.formules-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.formules-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--mono); font-size: 0.8rem; color: var(--encre);
+}
+.formules-table th, .formules-table td {
+  padding: 0.5rem 0.5rem; text-align: center;
+  border-bottom: 1px dotted var(--filet); white-space: nowrap;
+}
+.formules-table th:first-child, .formules-table td:first-child {
+  text-align: left; color: var(--brume); white-space: normal;
+}
+.formules-table thead th { color: var(--etoile); font-weight: 700; line-height: 1.3; }
+.formules-table thead th span {
+  display: block; font-weight: 400; font-size: 0.72rem; color: var(--brume);
+}
+
 /* Marelle pour les titres de « découvrir » (sections, assistance, questions). */
 .assistante-shell h2 {
   font-family: var(--cursive); font-size: 1.55rem; color: var(--etoile);

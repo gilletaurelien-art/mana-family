@@ -146,6 +146,27 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
       </section>
 
       <section className="assistante-bloc">
+        <h2>Les formules</h2>
+        <p className="whisper formules-intro">La Famille est gratuite et sans limite de membres. Le Récit et La Lignée sont à venir.</p>
+        <div className="formules-table-wrap">
+          <table className="formules-table">
+            <thead>
+              <tr><th></th><th>Famille<span>0 €</span></th><th>Le Récit<span>9 €</span></th><th>La Lignée<span>39 €</span></th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Membres</td><td>∞</td><td>∞</td><td>∞</td></tr>
+              <tr><td>Photos</td><td>compressées</td><td>moyennes</td><td>originaux</td></tr>
+              <tr><td>Vidéo</td><td>—</td><td>courtes</td><td>HD/4K</td></tr>
+              <tr><td>Voix · export récit</td><td>—</td><td>✓</td><td>✓</td></tr>
+              <tr><td>Arbre · artefacts</td><td>—</td><td>—</td><td>✓</td></tr>
+              <tr><td>MANAkids</td><td>protection</td><td>+ suivi</td><td>+ coffret</td></tr>
+              <tr><td>MANAcare</td><td>✓</td><td>✓</td><td>✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="assistante-bloc">
         <h2>Les portes de la maison Mana</h2>
         <ul className="portes">
           {PORTES.map((p) => {
