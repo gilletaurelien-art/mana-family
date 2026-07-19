@@ -1106,6 +1106,9 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* Les mots de famille, écrits à la main (titre « Famille », prénom du membre). */
 .mot-famille { font-family: var(--cursive); font-style: normal; }
 
+/* « La clé de la maison » en Marelle. */
+.inviter-shell h1 { font-family: var(--cursive); font-size: 1.9rem; }
+
 /* Le code de la clé (Inviter) — en noir, mono, sur le parchemin. */
 .inviter-code {
   font-family: var(--mono);

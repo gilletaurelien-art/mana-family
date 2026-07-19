@@ -1343,7 +1343,7 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
   }
 
   return (
-    <div className="shell papier">
+    <div className="shell papier inviter-shell">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>La clé de la maison</h1>
@@ -1352,7 +1352,7 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
         <div className="clef-embleme cadre-or"><img src="/mana-key.jpg" alt="La clef de la maison Mana" /></div>
         <p>Chaque proche ouvre l'application, choisit « Rejoindre avec une clé », et entre :</p>
         <p className="inviter-code">{ciel.inviteCode}</p>
-        <p className="whisper">La clé ne se partage qu'en famille — c'est la porte de votre maison.</p>
+        <p className="whisper slogan-marelle">La clé ne se partage qu'en famille — c'est la porte de votre maison.</p>
 
         <h2>Ou envoyer un lien</h2>
         <p className="whisper">Un e-mail avec le lien — le proche rejoint la maison sans saisir la clé.</p>
