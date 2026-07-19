@@ -1662,6 +1662,19 @@ button:disabled { opacity: 0.35; cursor: default; }
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45);
 }
 .vitrine-pied-mot { margin-top: 0.8rem; }
+.vitrine-pied .vitrine-promesses { margin-top: 1.6rem; text-align: left; }
+
+/* Badge de pied de page — propulsé par TEMPOsystem. */
+.vitrine-footer {
+  text-align: center;
+  padding: 2rem 1rem 2.4rem;
+  margin-top: 1.4rem;
+  display: flex; flex-direction: column; gap: 0.3rem;
+  color: var(--brume); font-size: 0.8rem; letter-spacing: 0.04em;
+  border-top: 1px dotted var(--filet);
+}
+.vitrine-footer b { color: var(--etoile); font-weight: 600; }
+.vitrine-footer-legal { font-size: 0.72rem; opacity: 0.8; }
 
 /* ---------- Parle à Mana — le chat de la Déesse ---------- */
 /* Toute l'assistance parle en monospace (SF Mono) — la voix « système ». */

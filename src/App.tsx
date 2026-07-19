@@ -630,15 +630,6 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         ))}
       </section>
 
-      <section className="vitrine-promesses">
-        {PROMESSES.map((p) => (
-          <p className="vitrine-promesse" key={p.mot}>
-            <span className="vitrine-promesse-glyphe" aria-hidden="true">{p.glyphe}</span>
-            <span>{p.mot}</span>
-          </p>
-        ))}
-      </section>
-
       <section className="vitrine-livre">
         <div className="vitrine-tableau cadre-or">
           <img src="/livre-ouvert.jpg" alt="Le carnet de famille — vos souvenirs, gardés" />
@@ -662,7 +653,20 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         <p className="whisper vitrine-pied-mot">
           Un proche vous a confié une clé&nbsp;? <button className="link" onClick={onSeConnecter}>Se connecter</button>, puis rejoignez la famille.
         </p>
+        <div className="vitrine-promesses">
+          {PROMESSES.map((p) => (
+            <p className="vitrine-promesse" key={p.mot}>
+              <span className="vitrine-promesse-glyphe" aria-hidden="true">{p.glyphe}</span>
+              <span>{p.mot}</span>
+            </p>
+          ))}
+        </div>
       </section>
+
+      <footer className="vitrine-footer">
+        <span>propulsé par <b>TEMPOsystem</b></span>
+        <span className="vitrine-footer-legal">© 2026 · Tous droits réservés</span>
+      </footer>
     </div>
   )
 }
