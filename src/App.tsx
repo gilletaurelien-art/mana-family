@@ -1321,7 +1321,7 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
   onRetour: () => void
 }) {
   return (
-    <div className="shell">
+    <div className="shell papier">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>La clé de la maison</h1>
