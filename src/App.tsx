@@ -561,12 +561,6 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         </p>
       </header>
 
-      <section className="vitrine-pitch">
-        <div className="vitrine-tableau cadre-or">
-          <img src="/livre-ouvert.jpg" alt="Le carnet de famille — vos souvenirs, gardés" />
-        </div>
-      </section>
-
       <section className="vitrine-piliers">
         {PILIERS.map((p) => (
           <div className="vitrine-pilier" key={p.titre}>
@@ -587,6 +581,9 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       </section>
 
       <section className="vitrine-livre">
+        <div className="vitrine-tableau cadre-or">
+          <img src="/livre-ouvert.jpg" alt="Le carnet de famille — vos souvenirs, gardés" />
+        </div>
         <span className="vitrine-livre-etiquette">Le Livre blanc</span>
         <p className="vitrine-livre-mot">
           Toute la vision de Mana Family — les Cercles familiaux, la Présence et la Mémoire,
