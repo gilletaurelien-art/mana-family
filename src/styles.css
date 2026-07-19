@@ -413,20 +413,19 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .astre-fixe .naissance { line-height: 1.35; }
 
-/* Offrir un geste — un bouton (dans le parchemin) qui ouvre une feuille. */
-.offrir-bouton {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  margin-top: 0.35rem;
-  padding: 0.5rem 1.2rem; border-radius: 999px;
-  border: 1px solid var(--filet); background: var(--champ);
-  color: var(--etoile); font-family: var(--cursive); font-size: 1.2rem;
-  cursor: pointer; box-shadow: 0 4px 14px rgba(70, 50, 25, 0.18);
+/* Offrir un geste — le cadeau, à la largeur du header, ouvre la feuille. */
+.offrir-tableau {
+  display: block;
+  width: min(62vw, 14.5rem);
+  margin: 0.4rem auto 0.2rem;
+  padding: 0; border: none; background: none; cursor: pointer;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 10px 28px rgba(70, 50, 25, 0.28);
+  transition: transform 0.2s ease;
 }
-.offrir-bouton-emblem {
-  width: 30px; height: 30px; border-radius: 50%; overflow: hidden; flex: none;
-  border: 1px solid var(--filet);
-}
-.offrir-bouton-emblem img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.offrir-tableau:active { transform: scale(0.98); }
+.offrir-tableau img { width: 100%; height: auto; display: block; }
+@media (min-width: 700px) { .offrir-tableau { width: min(42vw, 17rem); } }
 
 /* Le pop-up parchemin — une feuille qui monte du bas. */
 .offrir-veil {

@@ -1405,14 +1405,7 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
           {ecoute ? 'Je vous écoute…' : 'Écrivez, ou touchez le micro pour dicter.'}
         </p>
 
-        {/* 2. Offrir un geste — un bouton qui ouvre la feuille des attentions */}
-        <h2>Offrir un geste</h2>
-        <button type="button" className="offrir-bouton" onClick={() => setOffrirOuvert(true)}>
-          <span className="offrir-bouton-emblem" aria-hidden="true"><img src="/cadeau.jpg" alt="" /></span>
-          Offrir une attention…
-        </button>
-
-        {/* 3. Pièce jointe */}
+        {/* 2. Pièce jointe */}
         <h2>Pièce jointe</h2>
         <div className="pj-ligne">
           <span className="pj-option bientot"><PjGlyph type="photo" /> Photo</span>
@@ -1420,6 +1413,12 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
           <span className="pj-option bientot"><PjGlyph type="audio" /> Audio</span>
         </div>
         <p className="whisper naissance-note">en direct ou depuis la galerie — <b>bientôt</b></p>
+
+        {/* 3. Offrir un geste — le cadeau (largeur du header) ouvre la feuille */}
+        <h2>Offrir un geste</h2>
+        <button type="button" className="offrir-tableau" onClick={() => setOffrirOuvert(true)} aria-label="Offrir un geste">
+          <img src="/cadeau.jpg" alt="" />
+        </button>
 
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>
