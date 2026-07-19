@@ -117,11 +117,13 @@ body::before {
 .retour-btn span { font-style: normal; }
 .retour-btn:hover { color: var(--or-mana); }
 .retour-bas {
-  position: fixed; left: 0.9rem; bottom: 0.9rem; z-index: 60;
-  padding: 0.55rem 1rem; border-radius: 999px;
-  background: var(--cale); border: 1px solid var(--filet);
-  color: var(--etoile); font-style: normal;
-  box-shadow: 0 6px 22px rgba(3, 7, 15, 0.55);
+  position: fixed; left: 0.9rem;
+  bottom: max(0.9rem, env(safe-area-inset-bottom, 0.9rem)); z-index: 60;
+  padding: 0.4rem 1.1rem; border-radius: 999px;
+  background: var(--champ); border: 1px solid var(--filet);
+  color: var(--etoile); font-family: var(--cursive); font-style: normal;
+  font-size: 1.2rem;
+  box-shadow: 0 8px 24px rgba(70, 50, 25, 0.28);
 }
 @media (prefers-color-scheme: light) {
   .retour-bas { background: #fff; box-shadow: 0 6px 20px rgba(43, 82, 117, 0.18); }
