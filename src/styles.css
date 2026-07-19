@@ -226,6 +226,14 @@ body:has(.carnet-hero)::before { display: none; }
   border-bottom: 1px dotted var(--filet); padding-bottom: 0.4rem; margin-bottom: 0.9rem;
 }
 
+/* Marelle pour les titres de « découvrir » (sections, assistance, questions). */
+.assistante-shell h2 {
+  font-family: var(--cursive); font-size: 1.55rem; color: var(--etoile);
+}
+.assistante-shell .faq-q {
+  font-family: var(--cursive); font-size: 1.3rem; color: var(--etoile);
+}
+
 /* Les questions douces */
 .faq { display: flex; flex-direction: column; gap: 1.1rem; }
 .faq-item { }

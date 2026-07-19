@@ -13,7 +13,7 @@ type Ligne = { qui: 'deesse' | 'moi'; mot: string }
 
 const ACCUEIL: Ligne = {
   qui: 'deesse',
-  mot: "Je suis la Déesse — la confidente de ta maison. Demande-moi ce que tu veux comprendre : comment partager un moment, veiller sur un proche, ou garder un souvenir vivant.",
+  mot: "Bonjour, je suis l'assistance de MANAfamily — la confidente de ta maison. Demande-moi ce que tu veux comprendre : comment partager un moment, veiller sur un proche, ou garder un souvenir vivant.",
 }
 
 const CONTEXTE = [
@@ -69,7 +69,7 @@ export default function DeesseChat() {
       <div className="deesse-tete">
         <img className="deesse-orbe" src="/deesse.png" alt="" />
         <div>
-          <h2>Parler à la Déesse</h2>
+          <h2>Assistance MANAfamily</h2>
           <p className="deesse-sous">la confidente de ta maison</p>
         </div>
       </div>

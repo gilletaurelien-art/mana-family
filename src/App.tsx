@@ -49,12 +49,12 @@ function RetourNav({ onRetour }: { onRetour: () => void }) {
 
 /** Les questions douces — pensées pour la grand-mère : chaque mot lui est naturel. */
 const FAQ: { q: string; r: string }[] = [
-  { q: 'Comment je partage un moment ?', r: 'Le galet doré, tout en bas au centre. Touchez « écrire », choisissez une sorte, écrivez quelques mots. C’est tout.' },
+  { q: 'Comment je partage un moment ?', r: 'Touchez « écrire », en bas au centre : écrivez quelques mots — ou offrez un petit geste. C’est tout.' },
   { q: 'Où je retrouve ce que la famille a partagé ?', r: 'À gauche, « lire » : c’est le carnet de famille. Tout y est rangé, du plus récent au plus ancien.' },
   { q: 'C’est quoi la petite lumière autour d’un visage ?', r: 'Quelqu’un a veillé sur ce moment — il l’a lu, il y a pensé. On voit qui a veillé, jamais qui ne l’a pas fait.' },
   { q: 'Est-ce que la famille voit si je n’ai pas lu ?', r: 'Non. Jamais. Votre silence vous appartient. Personne n’est jamais montré du doigt ici.' },
   { q: 'Dois-je écrire tous les jours ?', r: 'Non. Le silence est un état légitime. La maison vous attend sans rien réclamer — même après de longues saisons.' },
-  { q: 'Comment j’ajoute quelqu’un à la famille ?', r: 'En haut, « inviter ». Vous confiez la clé de la maison à un proche ; il choisit alors qui il est parmi vous.' },
+  { q: 'Comment j’ajoute quelqu’un à la famille ?', r: 'Ici même, dans « découvrir », touchez « inviter ». Vous confiez la clé de la maison à un proche ; il choisit alors qui il est parmi vous.' },
   { q: 'Comment je change mon nom, ma photo, ma date de naissance ?', r: 'Touchez votre visage, puis « modifier le profil ». Tout est facultatif : vous ne donnez que ce que vous voulez.' },
   { q: 'Puis-je appartenir à deux familles ?', r: 'Oui : c’est le jardin. Une même personne peut vivre dans plusieurs maisons — deux foyers, une famille de cœur, une lignée.' },
   { q: 'Est-ce que nos souvenirs peuvent disparaître ?', r: 'Non. Ce qui est transmis ne s’efface pas : c’est une ligne que nous ne franchirons jamais. La mémoire de la famille est gardée.' },
