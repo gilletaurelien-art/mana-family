@@ -47,12 +47,14 @@
   --champ: #101a29;
 
   /* L'ancrage (mémoire, serif) et la transmission (présence, sans-serif) */
-  --serif: 'Iowan Old Style', 'Palatino', 'Caslon', Georgia, serif;
-  --sans: 'Inter', 'Avenir Next', -apple-system, 'Segoe UI', system-ui, sans-serif;
-  /* La main des messages — cursive Marelle (écrire & lire le carnet). */
-  --cursive: 'Marelle', 'Segoe Script', 'Bradley Hand', cursive;
-  /* La voix de l'assistance — monospace système (SF Mono). */
+  /* Charte texte réduite à DEUX familles :
+     — Marelle (cursive) : la main de la famille ;
+     — SF Mono (monospace) : tout le reste (titres, interface, assistance).
+     --serif et --sans redirigent donc vers --mono. */
   --mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Cascadia Code', monospace;
+  --serif: var(--mono);
+  --sans: var(--mono);
+  --cursive: 'Marelle', 'Segoe Script', 'Bradley Hand', cursive;
 }
 
 @media (prefers-color-scheme: light) {
