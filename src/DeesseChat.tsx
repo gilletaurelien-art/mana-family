@@ -67,7 +67,7 @@ export default function DeesseChat() {
   return (
     <section className="assistante-bloc deesse-chat">
       <div className="deesse-tete">
-        <img className="deesse-orbe" src="/deesse.png" alt="" />
+        <img className="deesse-orbe" src="/plume.jpg" alt="" />
         <div>
           <h2>Assistance MANAfamily</h2>
           <p className="deesse-sous">la confidente de ta maison</p>
@@ -77,13 +77,13 @@ export default function DeesseChat() {
       <div className="deesse-fil" ref={filRef}>
         {fil.map((l, i) => (
           <div className={`deesse-ligne ${l.qui === 'moi' ? 'moi' : ''}`} key={i}>
-            {l.qui === 'deesse' && <img className="deesse-mini" src="/deesse.png" alt="" />}
+            {l.qui === 'deesse' && <img className="deesse-mini" src="/plume.jpg" alt="" />}
             <p className={`deesse-bulle ${l.qui === 'moi' ? 'moi' : ''}`}>{l.mot}</p>
           </div>
         ))}
         {occupe && (
           <div className="deesse-ligne">
-            <img className="deesse-mini" src="/deesse.png" alt="" />
+            <img className="deesse-mini" src="/plume.jpg" alt="" />
             <p className="deesse-bulle">
               <span className="deesse-points" aria-label="la Déesse réfléchit"><span></span><span></span><span></span></span>
             </p>

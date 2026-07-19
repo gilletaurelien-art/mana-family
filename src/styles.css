@@ -51,6 +51,8 @@
   --sans: 'Inter', 'Avenir Next', -apple-system, 'Segoe UI', system-ui, sans-serif;
   /* La main des messages — cursive Marelle (écrire & lire le carnet). */
   --cursive: 'Marelle', 'Segoe Script', 'Bradley Hand', cursive;
+  /* La voix de l'assistance — monospace système (SF Mono). */
+  --mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Cascadia Code', monospace;
 }
 
 @media (prefers-color-scheme: light) {
@@ -1544,7 +1546,13 @@ button:disabled { opacity: 0.35; cursor: default; }
 .vitrine-pied-mot { margin-top: 0.8rem; }
 
 /* ---------- Parle à Mana — le chat de la Déesse ---------- */
-.deesse-chat { }
+/* Toute l'assistance parle en monospace (SF Mono) — la voix « système ». */
+.deesse-chat { font-family: var(--mono); }
+.deesse-chat .deesse-tete h2 { font-family: var(--mono); font-size: 1.1rem; letter-spacing: -0.01em; }
+.deesse-chat .deesse-sous,
+.deesse-chat .deesse-bulle { font-family: var(--mono); }
+.deesse-chat .deesse-saisie input,
+.deesse-chat .deesse-saisie button { font-family: var(--mono); }
 .deesse-tete {
   display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
 }
