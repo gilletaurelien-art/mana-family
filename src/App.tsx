@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
-import { CALENDAR_LAYERS, KINDS, KINDS_RETIRES, ROLES, nomIntime } from './types'
+import { CALENDAR_LAYERS, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import { demoCiel } from './demo'
 import DeesseChat from './DeesseChat'
@@ -1329,10 +1329,6 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 
 /* ---------- Composer ---------- */
 
-function kindMeta(kind: TransmissionKind) {
-  return KINDS.find((k) => k.kind === kind) ?? KINDS_RETIRES.find((k) => k.kind === kind) ?? { kind, label: kind }
-}
-
 function Composer({ ciel, me, onDone }: {
   ciel: CielData
   me: Astre
@@ -1625,16 +1621,14 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
       ) : (
         <ul className="frise">
           {txs.map((t) => {
-            const k = kindMeta(t.kind)
             const mine = t.authorId === me.id
             const forMe = t.forMe
             const iVeilled = Boolean(t.veilles[me.id])
             const lueurs = Object.keys(t.veilles).map((id) => nameOf(id)).filter(Boolean) as string[]
 
             return (
-              <li key={t.id} className={`tx kind-${t.kind}`}>
+              <li key={t.id} className="tx">
                 <div className="tx-head">
-                  <span className="tx-kind"><span className="kind-glyph tx-glyph"><KindGlyph kind={k.kind} /></span> {k.label}</span>
                   <span className="tx-when">
                     {t.happensOn && new Date(t.happensOn).toDateString() !== new Date(t.createdAt).toDateString()
                       ? `pour le ${new Date(t.happensOn).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`
