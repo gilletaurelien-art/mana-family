@@ -117,7 +117,13 @@ function NousEcrire() {
   )
 }
 
-function AssistanteVue({ onRetour }: { onRetour: () => void }) {
+function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
+  me: Astre
+  onJardin: () => void
+  onParametres: () => void
+  onInviter: () => void
+  onRetour: () => void
+}) {
   return (
     <div className="shell assistante-shell papier">
       <RetourNav onRetour={onRetour} />
@@ -125,6 +131,9 @@ function AssistanteVue({ onRetour }: { onRetour: () => void }) {
         <div className="carnet-hero-tableau">
           <img src="/mana-key.jpg" alt="L'univers Mana" />
         </div>
+        <p className="whisper">
+          <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
+        </p>
       </header>
 
       <section className="assistante-bloc">
@@ -509,21 +518,25 @@ export default function App() {
   }
 
   if (phase.ecran === 'assistante') {
-    return <AssistanteVue onRetour={() => setPhase({ ecran: 'ciel' })} />
+    return (
+      <AssistanteVue
+        me={me}
+        onJardin={() => setPhase({ ecran: 'jardin' })}
+        onParametres={() => setPhase({ ecran: 'parametres' })}
+        onInviter={() => setPhase({ ecran: 'inviter' })}
+        onRetour={() => setPhase({ ecran: 'ciel' })}
+      />
+    )
   }
 
   return (
     <CielVue
       ciel={ciel}
-      me={me}
       horsLigne={horsLigne}
       onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
       onTransmettre={() => setPhase({ ecran: 'composer' })}
-      onInviter={() => setPhase({ ecran: 'inviter' })}
       onGalaxie={() => setPhase({ ecran: 'galaxie' })}
       onChronologie={() => setPhase({ ecran: 'chronologie' })}
-      onJardin={() => setPhase({ ecran: 'jardin' })}
-      onParametres={() => setPhase({ ecran: 'parametres' })}
       onAssistante={() => setPhase({ ecran: 'assistante' })}
     />
   )
@@ -945,17 +958,13 @@ function etatDuCiel(c: CielData): string {
 // pas à chaque retour à l'accueil.
 let livreDejaOuvert = false
 
-function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter, onGalaxie, onChronologie, onJardin, onParametres, onAssistante }: {
+function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onChronologie, onAssistante }: {
   ciel: CielData
-  me: Astre
   horsLigne: boolean
   onOuvrirFrise: (aboutId: string | null) => void
   onTransmettre: () => void
-  onInviter: () => void
   onGalaxie: () => void
   onChronologie: () => void
-  onJardin: () => void
-  onParametres: () => void
   onAssistante: () => void
 }) {
   const n = ciel.astres.length
@@ -972,10 +981,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
       {ouverture && <div className="foyer-fond-ferme" aria-hidden="true" />}
       <header className="sky">
         <h1><button className="titre-lien" onClick={onGalaxie}><span className="mot-famille">Famille</span> {ciel.name}</button></h1>
-        <p className="whisper">
-          <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
-          {horsLigne && <> · hors réseau — les gestes attendent</>}
-        </p>
+        {horsLigne && <p className="whisper">hors réseau — les gestes attendent</p>}
       </header>
 
       <div className="ciel">
