@@ -1,8 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
+// Family vit dans un schéma Postgres dédié `family`, à côté du civique
+// (schéma public) dans la MÊME base MANA-app. Toutes les tables et RPC de
+// la maison y sont isolées : `.from()` / `.rpc()` visent `family`, l'auth et
+// le storage restent partagés (un seul compte MANA). Le schéma `family` doit
+// être exposé dans l'API Supabase (Settings → API → Exposed schemas).
 export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL as string,
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+  { db: { schema: 'family' } },
 )
 
 /**
