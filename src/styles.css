@@ -266,6 +266,8 @@ body:has(.carnet-hero)::before { display: none; }
 }
 
 .formules-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.formules-nb { margin: 0.9rem 0 0; font-size: 0.78rem; line-height: 1.5; }
+.formules-nb strong { color: var(--or-doux); font-weight: 700; }
 .formules-table {
   width: 100%; border-collapse: collapse;
   font-family: var(--mono); font-size: 0.8rem; color: var(--encre);

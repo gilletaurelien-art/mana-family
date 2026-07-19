@@ -3,7 +3,6 @@ import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } fr
 import { CALENDAR_LAYERS, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import { demoCiel } from './demo'
-import DeesseChat from './DeesseChat'
 import { connexionMotDePasse, envoyerLien, monEmail, seDeconnecter, sessionCertifiee, supabase } from './lib/supabase'
 import {
   activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
@@ -72,9 +71,9 @@ const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boo
   { nom: 'Mana Family', etat: 'vous y êtes', mot: 'La maison de votre famille : partager un moment, veiller sur les autres, garder la mémoire vivante.', ici: true },
   { nom: 'Mana Home', etat: 'le site', mot: 'La porte publique de la maison. Pour découvrir ce qu’est Mana Family et le faire connaître autour de vous.', href: 'https://manahome.org' },
   { nom: 'La Constitution numérique', etat: 'nos engagements', mot: 'Ce que nous refuserons toujours de faire : capter votre attention, vous culpabiliser, vendre vos données, effacer votre mémoire.', href: 'https://constitution.manahome.org' },
-  { nom: 'Mana France', etat: 'l’association', mot: 'L’association qui porte la maison Mana en France — qui nous sommes, ce que nous construisons.', href: 'https://www.manafrance.org' },
-  { nom: 'Mana citoyen', etat: 'bientôt', mot: 'L’entraide entre voisins d’un même territoire — se rendre service, reconnaître le temps donné.', bientot: true },
-  { nom: 'TempoSystem', etat: 'bientôt', mot: 'La comptabilité discrète du temps que les êtres humains se consacrent. Elle travaille en coulisse ; vous ne la voyez jamais.', bientot: true },
+  { nom: 'Alliance Mana', etat: 'l’association', mot: 'L’association qui porte la maison Mana en France — qui nous sommes, ce que nous construisons.', href: 'https://www.manafrance.org' },
+  { nom: 'Mana citoyen', etat: 'territoires', mot: 'Actions territoriales, entraides, bénévolat.', href: 'https://www.manafrance.org' },
+  { nom: 'TempoSystem', etat: 'le moteur', mot: 'La comptabilité discrète du temps que les êtres humains se consacrent. Elle travaille en coulisse ; vous ne la voyez jamais.', href: 'https://temposystem.eu' },
 ]
 
 /** L'univers Mana — pleine page : l'assistante, les questions douces, les portes de la maison. */
@@ -183,6 +182,12 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
             </tbody>
           </table>
         </div>
+        <p className="whisper formules-nb">
+          <strong>MANAkids</strong> — l’espace des plus jeunes&nbsp;: leurs souvenirs sont protégés et leur accès veillé, un garde-fou toujours actif et gratuit. Le premium ajoute le suivi et, à la majorité, un coffret de souvenirs.
+        </p>
+        <p className="whisper formules-nb">
+          <strong>MANAcare</strong> — le pont du soin&nbsp;: un proche aidant ou un soignant peut déposer un mot dans le carnet sans jamais lire la mémoire de la famille. Gratuit pour tous.
+        </p>
       </section>
 
       <section className="assistante-bloc">
@@ -209,16 +214,7 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
         </ul>
       </section>
 
-      <DeesseChat />
-
       <NousEcrire />
-
-      <section className="assistante-bloc assistante-signature">
-        <p>
-          Bientôt, je pourrai vous montrer les gestes quand vous le voudrez —
-          jamais sans que vous me le demandiez. Le logiciel disparaît ; la famille reste.
-        </p>
-      </section>
     </div>
   )
 }
