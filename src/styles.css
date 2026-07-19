@@ -918,9 +918,11 @@ button:disabled { opacity: 0.35; cursor: default; }
 .geste-rond picture,
 .geste-rond img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .geste-mot {
-  font-size: 0.76rem; letter-spacing: 0.05em; color: var(--brume);
-  font-family: var(--serif);
+  font-size: 0.98rem; letter-spacing: 0; color: var(--brume);
+  font-family: var(--cursive);
 }
+/* Le mot « Famille » du titre, écrit à la main. */
+.mot-famille { font-family: var(--cursive); }
 
 /* écrire — le geste central, mis en avant par une lueur dorée qui respire */
 .geste-ecrire .geste-rond {

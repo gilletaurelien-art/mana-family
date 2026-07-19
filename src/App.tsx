@@ -981,7 +981,7 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
       <div className="foyer-fond" aria-hidden="true" />
       {ouverture && <div className="foyer-fond-ferme" aria-hidden="true" />}
       <header className="sky">
-        <h1><button className="titre-lien" onClick={onGalaxie}>Famille {ciel.name}</button></h1>
+        <h1><button className="titre-lien" onClick={onGalaxie}><span className="mot-famille">Famille</span> {ciel.name}</button></h1>
         <p className="whisper">
           {nomIntime(me)} · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
           {horsLigne && <> · hors réseau — les gestes attendent</>}
