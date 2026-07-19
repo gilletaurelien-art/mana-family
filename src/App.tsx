@@ -1498,15 +1498,8 @@ function FriseVue({ ciel, me, aboutId, onRetour, onVeiller, onPortrait, onNaissa
       {!sujet ? (
         <header className="sky carnet-hero-lire">
           <div className="carnet-hero-tableau">
-            <img src="/carnet.jpg" alt="" />
+            <img src="/carnet.jpg" alt="Le carnet de famille" />
           </div>
-          <h1>Le carnet de famille</h1>
-          <p className="assistante-mot">
-            Ici vit la mémoire<br />
-            de la famille.<br />
-            Tout ce qu’on a partagé,<br />
-            du plus récent au plus ancien.
-          </p>
           <div className="carnet-filtre-barre">
             <button
               className="carnet-filtre-btn"
