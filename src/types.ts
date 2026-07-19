@@ -51,6 +51,9 @@ export interface Transmission {
   aboutId: string | null
   kind: TransmissionKind
   body: string
+  /** Pièce jointe (facultative). Data-URL tant que le geste est optimiste/local,
+      puis chemin dans le bucket privé une fois monté (le client le signe pour l'afficher). */
+  imageUrl?: string | null
   /** Le moment que la transmission CONCERNE (facultatif). Passé = souvenir, futur = organiser. */
   happensOn?: string | null
   /** Projection publique : ce que l'appareil doit savoir, pas toute l'audience. */

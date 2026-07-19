@@ -23,6 +23,21 @@ async function preparerPortrait(file: File): Promise<string> {
   return canvas.toDataURL('image/jpeg', 0.82)
 }
 
+/** Pièce jointe : ratio préservé, réduite au plus grand côté (palier « compressé »
+    ~1600px de la formule Famille), JPEG. On ne garde jamais l'original. */
+async function preparerImage(file: File, maxDim = 1600, quality = 0.82): Promise<string> {
+  const img = await createImageBitmap(file)
+  const ratio = Math.min(1, maxDim / Math.max(img.width, img.height))
+  const w = Math.max(1, Math.round(img.width * ratio))
+  const h = Math.max(1, Math.round(img.height * ratio))
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(img, 0, 0, w, h)
+  return canvas.toDataURL('image/jpeg', quality)
+}
+
 interface AstreDraft { name: string; role: Role; circle: 1 | 2 | 3; birthDate: string | null }
 
 /** Le visage — logo & future assistante. Uniquement aux seuils, jamais dans la vie de famille. */
@@ -1367,11 +1382,13 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
   ciel: CielData
   me: Astre
   aboutId?: string | null
-  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null } | null) => void
+  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null } | null) => void
 }) {
   const others = ciel.astres.filter((a) => a.id !== me.id)
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const [body, setBody] = useState('')
+  const [image, setImage] = useState<string | null>(null)
+  const [prepImage, setPrepImage] = useState(false)
   const [offrirOuvert, setOffrirOuvert] = useState(false)
 
   const [ecoute, setEcoute] = useState(false)
@@ -1432,13 +1449,31 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
           {ecoute ? 'Je vous écoute…' : 'Écrivez, ou touchez le micro pour dicter.'}
         </p>
 
-        {/* 2. Deux options illustrées, côte à côte : pièce jointe (bientôt) & offrir un geste */}
+        {/* 2. Deux options illustrées, côte à côte : pièce jointe & offrir un geste */}
         <div className="composer-tuiles">
-          <button type="button" className="composer-tuile bientot" disabled aria-label="Pièce jointe — bientôt">
-            <span className="composer-tuile-img"><img src="/pj.jpg" alt="" /></span>
-            <span className="composer-tuile-mot">Pièce jointe</span>
-            <span className="composer-tuile-note">bientôt</span>
-          </button>
+          {image ? (
+            <div className="composer-pj-apercu">
+              <img src={image} alt="Aperçu de la pièce jointe" />
+              <button type="button" className="composer-pj-retirer" onClick={() => setImage(null)} aria-label="Retirer la photo">✕</button>
+            </div>
+          ) : (
+            <label className={`composer-tuile ${prepImage ? 'bientot' : ''}`} aria-label="Ajouter une photo">
+              <span className="composer-tuile-img"><img src="/pj.jpg" alt="" /></span>
+              <span className="composer-tuile-mot">{prepImage ? 'Préparation…' : 'Pièce jointe'}</span>
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={async (e) => {
+                  const f = e.target.files?.[0]
+                  e.target.value = '' // permet de re-choisir le même fichier
+                  if (!f) return
+                  setPrepImage(true)
+                  try { setImage(await preparerImage(f)) } finally { setPrepImage(false) }
+                }}
+              />
+            </label>
+          )}
           <button type="button" className="composer-tuile" onClick={() => setOffrirOuvert(true)} aria-label="Offrir un geste">
             <span className="composer-tuile-img"><img src="/cadeau.jpg" alt="" /></span>
             <span className="composer-tuile-mot">Offrir un geste</span>
@@ -1449,8 +1484,8 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
           <button onClick={() => onDone(null)}>Annuler</button>
           <button
             className="primary"
-            disabled={!body.trim()}
-            onClick={() => onDone({ kind: 'souvenir', body: body.trim(), aboutId, recipientIds: others.map((a) => a.id), happensOn: null })}
+            disabled={(!body.trim() && !image) || prepImage}
+            onClick={() => onDone({ kind: 'souvenir', body: body.trim(), aboutId, recipientIds: others.map((a) => a.id), happensOn: null, imageUrl: image })}
           >
             Transmettre
           </button>
@@ -1531,6 +1566,22 @@ function ProfilForm({ sujet, onEnregistrer }: {
 }
 
 /* ---------- Le fil de vie ---------- */
+
+/** L'image d'une transmission : une data-URL (geste optimiste, hors ligne)
+    s'affiche telle quelle ; un chemin du bucket privé est signé à la volée. */
+function TxImage({ src }: { src: string }) {
+  const [url, setUrl] = useState<string | null>(src.startsWith('data:') ? src : null)
+  useEffect(() => {
+    if (src.startsWith('data:')) { setUrl(src); return }
+    let vivant = true
+    supabase.storage.from('pieces-jointes').createSignedUrl(src, 3600)
+      .then(({ data }) => { if (vivant) setUrl(data?.signedUrl ?? null) })
+      .catch(() => { if (vivant) setUrl(null) })
+    return () => { vivant = false }
+  }, [src])
+  if (!url) return null
+  return <img className="tx-image" src={url} alt="" loading="lazy" />
+}
 
 function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait, onNaissance, onProfil, onNommer }: {
   ciel: CielData
@@ -1677,7 +1728,8 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
                       : new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>
                 </div>
-                <p className="tx-body">{t.body}</p>
+                {t.body && <p className="tx-body">{t.body}</p>}
+                {t.imageUrl && <TxImage src={t.imageUrl} />}
                 <div className="tx-foot">
                   <span className="tx-meta">
                     {nameOf(t.authorId)}

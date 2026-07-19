@@ -19,7 +19,7 @@ const CACHE = 'mana-family-ciel-cache'
 const OUTBOX = 'mana-family-outbox'
 
 type Geste =
-  | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null }
+  | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl: string | null }
   | { geste: 'veiller'; txId: string }
   | { geste: 'portrait'; astreId: string; url: string }
   | { geste: 'naissance'; astreId: string; date: string }
@@ -42,7 +42,17 @@ async function rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> {
 
 async function jouer(g: Geste): Promise<void> {
   if (g.geste === 'transmettre') {
-    await rpc('transmettre', { p_id: g.id, p_kind: g.kind, p_body: g.body, p_about: g.aboutId, p_recipients: g.recipientIds, p_happens_on: g.happensOn })
+    // La pièce jointe part d'abord dans le bucket privé (nommée par l'id de la
+    // transmission) ; on n'inscrit que son chemin. L'octet n'est lisible
+    // qu'une fois la transmission créée et le droit accordé (RLS storage).
+    let chemin: string | null = g.imageUrl && !g.imageUrl.startsWith('data:') ? g.imageUrl : null
+    if (g.imageUrl && g.imageUrl.startsWith('data:')) {
+      const blob = await (await fetch(g.imageUrl)).blob()
+      chemin = `${g.id}.jpg`
+      const { error } = await supabase.storage.from('pieces-jointes').upload(chemin, blob, { contentType: 'image/jpeg', upsert: true })
+      if (error) throw error
+    }
+    await rpc('transmettre', { p_id: g.id, p_kind: g.kind, p_body: g.body, p_about: g.aboutId, p_recipients: g.recipientIds, p_happens_on: g.happensOn, p_image: chemin })
   } else if (g.geste === 'veiller') {
     await rpc('veiller', { p_tx: g.txId })
   } else if (g.geste === 'naissance') {
@@ -110,7 +120,7 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
       next = {
         ...next,
         transmissions: [
-          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, happensOn: g.happensOn, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
+          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, imageUrl: g.imageUrl, happensOn: g.happensOn, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
           ...next.transmissions,
         ],
       }
@@ -162,14 +172,15 @@ export async function charger(): Promise<{ ciel: Ciel | null; horsLigne: boolean
 
 export function transmettre(
   ciel: Ciel,
-  t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null },
+  t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null },
 ): Ciel {
   const id = crypto.randomUUID()
-  enfiler({ geste: 'transmettre', id, ...t })
+  const imageUrl = t.imageUrl ?? null
+  enfiler({ geste: 'transmettre', id, kind: t.kind, body: t.body, aboutId: t.aboutId, recipientIds: t.recipientIds, happensOn: t.happensOn, imageUrl })
   return {
     ...ciel,
     transmissions: [
-      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, happensOn: t.happensOn, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
+      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, imageUrl, happensOn: t.happensOn, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
       ...ciel.transmissions,
     ],
   }

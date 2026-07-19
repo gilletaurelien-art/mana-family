@@ -466,6 +466,29 @@ button:disabled { opacity: 0.35; cursor: default; }
 .composer-tuile.bientot { cursor: default; }
 .composer-tuile.bientot .composer-tuile-img { opacity: 0.7; }
 
+/* L'aperçu de la pièce jointe choisie — occupe la même case qu'une tuile. */
+.composer-pj-apercu {
+  flex: 1 1 0; position: relative;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 8px 22px rgba(70, 50, 25, 0.24);
+  aspect-ratio: 1;
+}
+.composer-pj-apercu img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.composer-pj-retirer {
+  position: absolute; top: 6px; right: 6px;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(20, 12, 6, 0.62); color: #f3e8ca;
+  border: none; font-size: 0.9rem; cursor: pointer; padding: 0;
+}
+
+/* La photo jointe, dans la carte de la transmission. */
+.tx-image {
+  display: block; width: 100%; height: auto;
+  margin: 0.55rem 0 0.2rem; border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(70, 50, 25, 0.18);
+}
+
 /* Le pop-up parchemin — une feuille qui monte du bas. */
 .offrir-veil {
   position: fixed; inset: 0; z-index: 80;
