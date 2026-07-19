@@ -331,8 +331,15 @@ export default function App() {
     // Mode test (dev-only) : ?demo=1 ouvre l'intérieur avec une fausse famille,
     // sans auth ni base. Jamais actif en production (import.meta.env.DEV).
     if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('demo')) {
-      setCiel(demoCiel())
-      setPhase({ ecran: 'ciel' })
+      const d = demoCiel()
+      setCiel(d)
+      // QA visuel dev-only : ?demo=1&ecran=porte|fondation|choisir-moi|rejoindre|hisser|…
+      // saute directement sur un écran, avec des données de démo pour ceux
+      // qui en réclament (parcours de fondation, hors UI en démo normale).
+      const ecran = new URLSearchParams(window.location.search).get('ecran')
+      if (ecran === 'choisir-moi') setPhase({ ecran, nom: d.name, brouillon: d.astres.map((a) => ({ name: a.name, role: a.role, circle: a.circle, birthDate: a.birthDate ?? null })) })
+      else if (ecran) setPhase({ ecran } as Phase)
+      else setPhase({ ecran: 'ciel' })
       return
     }
     rafraichir()
@@ -764,7 +771,7 @@ function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
   onHisser: () => void
 }) {
   return (
-    <div className="shell">
+    <div className="shell seuil-nuit fond-maison">
       <header className="sky porte-sky">
         <div className="porte-deesse">
           <img src="/logo-nuit.png" alt="" className="logo-nuit" />
@@ -809,7 +816,7 @@ function Fondation({ onPrete, onRetour }: { onPrete: (nom: string, brouillon: As
   }
 
   return (
-    <div className="shell">
+    <div className="shell seuil-nuit fond-maison">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <LogoSeuil />
@@ -860,7 +867,7 @@ function Fondation({ onPrete, onRetour }: { onPrete: (nom: string, brouillon: As
 
 function ChoisirMoi({ nom, brouillon, onChoisi, onRetour }: { nom: string; brouillon: AstreDraft[]; onChoisi: (index: number) => void; onRetour: () => void }) {
   return (
-    <div className="shell">
+    <div className="shell seuil-nuit fond-maison">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Famille {nom}</h1>
@@ -886,7 +893,7 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
   const [erreur, setErreur] = useState('')
 
   return (
-    <div className="shell">
+    <div className="shell seuil-nuit fond-maison">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Rejoindre</h1>
@@ -931,7 +938,7 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
 
 function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHisse: (meId: string) => void; onRetour: () => void }) {
   return (
-    <div className="shell">
+    <div className="shell seuil-nuit fond-maison">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Famille {heritage.name}</h1>
