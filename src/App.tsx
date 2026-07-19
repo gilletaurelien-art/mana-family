@@ -1368,13 +1368,8 @@ function Composer({ ciel, me, onDone }: {
       <RetourNav onRetour={() => onDone(null)} />
       <header className="sky carnet-hero-lire">
         <div className="carnet-hero-tableau">
-          <img src="/plume.jpg" alt="" />
+          <img src="/plume.jpg" alt="La plume — écrire" />
         </div>
-        <h1>Transmettre</h1>
-        <p className="assistante-mot">
-          Un acte de soin aujourd'hui,<br />
-          un acte de mémoire demain.
-        </p>
       </header>
 
       <section className="card composer-card">
