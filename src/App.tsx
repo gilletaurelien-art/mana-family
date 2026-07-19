@@ -1076,7 +1076,7 @@ function ParametresVue({ me, onRetour, onCalendriers, onDeconnexion }: {
   }
 
   return (
-    <div className="shell">
+    <div className="shell papier">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Paramètres</h1>
@@ -1212,7 +1212,7 @@ function ChronologieVue({ ciel, onOuvrirFrise, onRetour }: {
   })
 
   return (
-    <div className="shell chrono-shell">
+    <div className="shell chrono-shell papier">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Le fil du temps</h1>
@@ -1268,7 +1268,7 @@ function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
   }, [])
 
   return (
-    <div className="shell">
+    <div className="shell papier">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
         <h1>Le jardin</h1>
