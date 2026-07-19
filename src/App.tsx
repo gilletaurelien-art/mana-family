@@ -208,13 +208,6 @@ function naissanceEnClair(birthDate: string): string {
   return new Date(birthDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-function dateIsoDuJour(date = new Date()): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
 /* ---------- Les glyphes gravés — line-art, monde céleste & nautique ---------- */
 
 function KindGlyph({ kind }: { kind: TransmissionKind }) {
@@ -1336,12 +1329,6 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 
 /* ---------- Composer ---------- */
 
-const KIND_GROUPS: { label: string; kinds: TransmissionKind[] }[] = [
-  { label: 'Passé', kinds: ['souvenir'] },
-  { label: 'Présent', kinds: ['sante', 'emotionnel', 'ensemble'] },
-  { label: 'Futur', kinds: ['organiser'] },
-]
-
 function kindMeta(kind: TransmissionKind) {
   return KINDS.find((k) => k.kind === kind) ?? KINDS_RETIRES.find((k) => k.kind === kind) ?? { kind, label: kind }
 }
@@ -1352,17 +1339,10 @@ function Composer({ ciel, me, onDone }: {
   onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null } | null) => void
 }) {
   const others = ciel.astres.filter((a) => a.id !== me.id)
-  const [kind, setKind] = useState<TransmissionKind | null>(null)
-  const [recipients, setRecipients] = useState<string[]>(others.map((a) => a.id))
-  const [aboutId, setAboutId] = useState<string | null>(null)
   const [body, setBody] = useState('')
-  const [quand, setQuand] = useState(() => dateIsoDuJour())
 
   const [ecoute, setEcoute] = useState(false)
   const recognitionRef = useRef<any>(null)
-
-  const toggle = (id: string) =>
-    setRecipients((r) => (r.includes(id) ? r.filter((x) => x !== id) : [...r, id]))
 
   // La dictée — la voix devient mémoire (reconnaissance du navigateur, hors ligne quand dispo)
   const dicter = () => {
@@ -1444,71 +1424,12 @@ function Composer({ ciel, me, onDone }: {
         </div>
         <p className="whisper naissance-note">en direct ou depuis la galerie — <b>bientôt</b></p>
 
-        {/* 3. Passé · présent · futur */}
-        <div className="kind-ligne">
-          {KIND_GROUPS.map((group, gi) => (
-            <div className={`kind-groupe ${group.kinds.includes(kind as TransmissionKind) ? 'actif' : ''}`} key={group.label}>
-              <span className="kind-time-label">{group.label}</span>
-              <div className="kind-groupe-rangee">
-                {group.kinds.map((kindId) => {
-                  const k = kindMeta(kindId)
-                  return (
-                    <button key={k.kind} className={`kind kind-${k.kind} ${kind === k.kind ? 'on' : ''}`} onClick={() => setKind(k.kind)}>
-                      <span className="kind-glyph"><KindGlyph kind={k.kind} /></span>
-                      <span className="kind-nom">{k.label}</span>
-                    </button>
-                  )
-                })}
-              </div>
-              {gi < KIND_GROUPS.length - 1 && <span className="kind-sep" aria-hidden="true" />}
-            </div>
-          ))}
-        </div>
-
-        {(kind === 'organiser' || kind === 'souvenir') && (
-          <div className="row naissance-row quand-row">
-            <input type="date" value={quand} onChange={(e) => setQuand(e.target.value)} aria-label="Quand" />
-            <span className="whisper naissance-note">
-              {kind === 'organiser' ? 'ce qui vient — la date du rendez-vous' : 'le jour du souvenir, modifiable si besoin'}
-            </span>
-          </div>
-        )}
-
-        {/* 4. Au sujet de */}
-        <h2>Au sujet de</h2>
-        <div className="chips">
-          <button className={`chip ${aboutId === null ? 'on' : ''}`} onClick={() => setAboutId(null)}>
-            la famille
-          </button>
-          {ciel.astres.map((a) => (
-            <button key={a.id} className={`chip ${aboutId === a.id ? 'on' : ''}`} onClick={() => setAboutId(a.id)}>
-              {nomIntime(a)}
-            </button>
-          ))}
-        </div>
-
-        {/* 5. Pour */}
-        <h2>Pour</h2>
-        <div className="chips">
-          <button
-            className={`chip ${recipients.length === others.length ? 'on' : ''}`}
-            onClick={() => setRecipients(others.map((a) => a.id))}
-          >
-            la famille
-          </button>
-          {others.map((a) => (
-            <button key={a.id} className={`chip ${recipients.includes(a.id) ? 'on' : ''}`} onClick={() => toggle(a.id)}>
-              {nomIntime(a)}
-            </button>
-          ))}
-        </div>
-
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>
           <button
             className="primary"
-            disabled={!kind || !body.trim() || recipients.length === 0}
-            onClick={() => onDone({ kind: kind!, body: body.trim(), aboutId, recipientIds: recipients, happensOn: quand || null })}
+            disabled={!body.trim()}
+            onClick={() => onDone({ kind: 'souvenir', body: body.trim(), aboutId: null, recipientIds: others.map((a) => a.id), happensOn: null })}
           >
             Transmettre
           </button>
