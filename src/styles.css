@@ -232,6 +232,39 @@ body:has(.carnet-hero)::before { display: none; }
 
 /* Le tableau des formules (découvrir). */
 .formules-intro { margin: -0.4rem 0 0.8rem; }
+
+/* Formule actuelle — la carte de statut de l'abonnement */
+.formule-actuelle {
+  display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+  padding: 1rem 1rem 0.9rem; margin: 0 0 0.9rem;
+  border: 1px solid var(--or-sombre); border-radius: 14px;
+  background: color-mix(in srgb, var(--or-mana) 8%, transparent);
+}
+.formule-actuelle-label {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--brume);
+}
+.formule-actuelle-nom {
+  font-family: var(--cursive); font-size: 1.7rem; color: var(--or-doux); line-height: 1.1;
+}
+.formule-actuelle-prix {
+  font-family: var(--mono); font-size: 0.75rem; color: var(--brume);
+}
+
+/* Changer de formule — grisé jusqu'aux paiements */
+.formule-changer {
+  display: flex; flex-direction: column; gap: 0.55rem; margin: 0 0 1.1rem;
+}
+.formule-btn {
+  font-family: var(--mono); font-size: 0.85rem; font-weight: 700;
+  padding: 0.7rem 1rem; border-radius: 12px;
+  border: 1px solid var(--filet); background: var(--champ); color: var(--brume);
+  cursor: not-allowed; opacity: 0.55;
+}
+.formule-bientot {
+  text-align: center; margin: 0.1rem 0 0; font-size: 0.72rem;
+}
+
 .formules-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .formules-table {
   width: 100%; border-collapse: collapse;

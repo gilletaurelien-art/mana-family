@@ -154,6 +154,19 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
       <section className="assistante-bloc">
         <h2>Les formules</h2>
         <p className="whisper formules-intro">La Famille est gratuite et sans limite de membres. Le Récit et La Lignée sont à venir.</p>
+
+        <div className="formule-actuelle">
+          <span className="formule-actuelle-label">Votre formule</span>
+          <span className="formule-actuelle-nom">Famille<sup className="palier-marque">✦</sup></span>
+          <span className="formule-actuelle-prix">gratuite · sans limite de membres</span>
+        </div>
+
+        <div className="formule-changer">
+          <button className="formule-btn" disabled>Passer au Récit · 9 €/mois</button>
+          <button className="formule-btn" disabled>Passer à La Lignée · 39 €/mois</button>
+          <p className="whisper formule-bientot">Le changement de formule ouvrira au lancement des paiements.</p>
+        </div>
+
         <div className="formules-table-wrap">
           <table className="formules-table">
             <thead>
