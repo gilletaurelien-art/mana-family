@@ -40,9 +40,9 @@ function RetourNav({ onRetour }: { onRetour: () => void }) {
   return (
     <>
       <div className="retour-haut">
-        <button className="retour-btn" onClick={onRetour}><span aria-hidden="true">←</span> Retour</button>
+        <button className="retour-btn" onClick={onRetour}><span aria-hidden="true">←</span> retour</button>
       </div>
-      <button className="retour-btn retour-bas" onClick={onRetour} aria-label="Retour"><span aria-hidden="true">←</span> Retour</button>
+      <button className="retour-btn retour-bas" onClick={onRetour} aria-label="Retour"><span aria-hidden="true">←</span> retour</button>
     </>
   )
 }
@@ -128,9 +128,6 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
     <div className="shell assistante-shell papier">
       <RetourNav onRetour={onRetour} />
       <header className="sky carnet-hero-lire">
-        <div className="carnet-hero-tableau">
-          <img src="/mana-key.jpg" alt="L'univers Mana" />
-        </div>
         <p className="whisper">
           <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
         </p>
@@ -1364,9 +1361,6 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
     <div className="shell papier">
       <RetourNav onRetour={() => onDone(null)} />
       <header className="sky carnet-hero-lire">
-        <div className="carnet-hero-tableau">
-          <img src="/plume.jpg" alt="La plume — écrire" />
-        </div>
         {sujet && <p className="whisper">au sujet de <b>{nomIntime(sujet)}</b></p>}
       </header>
 
@@ -1526,9 +1520,6 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
       <RetourNav onRetour={onRetour} />
       {!sujet ? (
         <header className="sky carnet-hero-lire">
-          <div className="carnet-hero-tableau">
-            <img src="/carnet.jpg" alt="Le carnet de famille" />
-          </div>
           <div className="carnet-filtre-barre">
             <button
               className="carnet-filtre-btn"
