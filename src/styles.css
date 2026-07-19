@@ -1025,6 +1025,8 @@ button:disabled { opacity: 0.35; cursor: default; }
   font-size: 1rem;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.98), 0 0 9px rgba(0, 0, 0, 0.9);
 }
+/* Familles nombreuses : l'initiale seule, un peu plus grande. */
+.foyer .prenom-initiale { font-size: 1.4rem; }
 
 /* L'astre prend la forme d'une étoile légèrement dorée — cœur clair,
    pointes dorées, lueur douce (drop-shadow qui suit la forme). */

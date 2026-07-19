@@ -968,6 +968,9 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
   onAssistante: () => void
 }) {
   const n = ciel.astres.length
+  // Familles nombreuses : au-delà de 12 astres, on n'affiche que l'initiale
+  // sous chaque étoile pour garder un ciel lisible (nom complet au toucher / aria).
+  const initialesSeules = n > 12
   const halos = new Set(
     ciel.transmissions.filter((t) => t.aboutId && Object.keys(t.veilles).length > 0).map((t) => t.aboutId as string),
   )
@@ -1002,7 +1005,7 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
               <span className="astre-core">
                 {a.avatarUrl ? <img src={a.avatarUrl} alt="" className="astre-photo" /> : <span className="astre-pure-light" />}
               </span>
-              <span className="prenom">{nomIntime(a)}</span>
+              <span className={`prenom ${initialesSeules ? 'prenom-initiale' : ''}`}>{initialesSeules ? nomIntime(a).charAt(0).toUpperCase() : nomIntime(a)}</span>
             </button>
           )
         })}
