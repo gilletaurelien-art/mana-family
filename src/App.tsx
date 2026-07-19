@@ -1388,7 +1388,7 @@ function Composer({ ciel, me, onDone }: {
   const dicteeDispo = typeof window !== 'undefined' && ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
 
   return (
-    <div className="shell">
+    <div className="shell papier">
       <div className="composer-fond" aria-hidden="true">
         <img src="/ecrire-arbre-nuit.png" alt="" className="logo-nuit" />
         <img src="/ecrire-arbre-jour.png" alt="" className="logo-jour" />

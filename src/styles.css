@@ -647,16 +647,17 @@ button:disabled { opacity: 0.35; cursor: default; }
    Encre sombre, cursive, cartes presque effacées : les messages
    semblent écrits à la main sur la page. Thème clair local au carnet.
    ============================================================ */
-.carnet-papier {
+.carnet-papier, .papier {
   --fond: #e7d9ba;
   --encre: #3b2f21;
   --brume: #7c6a4e;
   --filet: rgba(80, 60, 35, 0.30);
   --etoile: #6a4a22;
   --carte: rgba(120, 92, 55, 0.05);
+  --champ: #f3e8ca;            /* champs & puces : une zone claire sur la page */
   color: var(--encre);
 }
-.carnet-papier::before {
+.carnet-papier::before, .papier::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -688,9 +689,11 @@ button:disabled { opacity: 0.35; cursor: default; }
   border-color: var(--filet);
   box-shadow: 0 2px 10px rgba(70, 50, 25, 0.08);
 }
-.carnet-papier .tx-body { color: #2f2415; }
+.carnet-papier .tx-body, .papier .tx-body { color: #2f2415; }
 .carnet-papier .retour-btn:hover,
-.carnet-papier .retour-bas { color: var(--etoile); }
+.carnet-papier .retour-bas,
+.papier .retour-btn:hover,
+.papier .retour-bas { color: var(--etoile); }
 
 /* Un seul Retour sur le carnet : on retire celui du haut. */
 .carnet-papier .retour-haut { display: none; }
