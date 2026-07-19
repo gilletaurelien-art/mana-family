@@ -1105,6 +1105,21 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 /* Les mots de famille, écrits à la main (titre « Famille », prénom du membre). */
 .mot-famille { font-family: var(--cursive); font-style: normal; }
+
+/* Slogan et boutons en Marelle (Porte / Fondation). */
+.slogan-marelle { font-family: var(--cursive); font-style: normal; font-size: 1.15rem; }
+.btn-marelle { font-family: var(--cursive); font-size: 1.3rem; letter-spacing: 0; }
+
+/* Fondation : titres en Marelle, champs empilés (1 par ligne, PWA). */
+.fondation-shell .card h2 {
+  font-family: var(--cursive); font-size: 1.4rem;
+  text-transform: none; letter-spacing: 0; color: var(--etoile);
+}
+.fondation-champ { display: block; width: 100%; margin-top: 0.7rem; }
+.fondation-ajout {
+  width: 100%; margin-top: 0.9rem;
+  font-family: var(--cursive); font-size: 1.2rem;
+}
 /* La marque de formule, en exposant du mot « Famille » (gratuite par défaut). */
 .palier-marque {
   font-family: var(--mono);

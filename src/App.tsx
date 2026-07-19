@@ -41,15 +41,6 @@ async function preparerImage(file: File, maxDim = 1600, quality = 0.82): Promise
 interface AstreDraft { name: string; role: Role; circle: 1 | 2 | 3; birthDate: string | null }
 
 /** Le visage — logo & future assistante. Uniquement aux seuils, jamais dans la vie de famille. */
-function LogoSeuil() {
-  return (
-    <div className="logo-seuil-wrap">
-      <img src="/logo-nuit.png" alt="" className="logo-seuil logo-nuit" />
-      <img src="/logo-jour.png" alt="" className="logo-seuil logo-jour" />
-    </div>
-  )
-}
-
 /** Navigation constante — « ← Retour » collant en haut à gauche (au-dessus de tout) + un fixe en bas à gauche. */
 function RetourNav({ onRetour }: { onRetour: () => void }) {
   return (
@@ -791,24 +782,20 @@ function Porte({ heritage, avis, onFonder, onRejoindre, onHisser }: {
   return (
     <div className="shell seuil-nuit fond-maison">
       <header className="sky porte-sky">
-        <div className="porte-deesse">
-          <img src="/logo-nuit.png" alt="" className="logo-nuit" />
-          <img src="/logo-jour.png" alt="" className="logo-jour" />
-        </div>
-        <h1>Mana Family</h1>
-        <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
+        <h1>MANAfamily</h1>
+        <p className="whisper slogan-marelle">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
       {avis && <section className="card"><p className="whisper" style={{ margin: 0 }}>{avis}</p></section>}
       <section className="card">
         {heritage && (
-          <button className="primary" onClick={onHisser}>
+          <button className="primary btn-marelle" onClick={onHisser}>
             Ouvrir « {heritage.name} » dans la famille
           </button>
         )}
-        <button className={heritage ? '' : 'primary'} style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onFonder}>
+        <button className={`btn-marelle ${heritage ? '' : 'primary'}`} style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onFonder}>
           Fonder une famille
         </button>
-        <button style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onRejoindre}>
+        <button className="btn-marelle" style={{ width: '100%', marginTop: '0.8rem', padding: '0.85rem' }} onClick={onRejoindre}>
           Rejoindre avec une clé
         </button>
       </section>
@@ -826,45 +813,42 @@ function Fondation({ onPrete, onRetour }: { onPrete: (nom: string, brouillon: As
   const [naissance, setNaissance] = useState('')
 
   const add = () => {
-    if (!draft.trim()) return
+    if (!draft.trim() || !naissance) return
     const meta = ROLES.find((r) => r.role === role)!
-    setAstres([...astres, { name: draft.trim(), role, circle: meta.circle, birthDate: naissance || null }])
+    setAstres([...astres, { name: draft.trim(), role, circle: meta.circle, birthDate: naissance }])
     setDraft('')
     setNaissance('')
+    setRole('parent')
   }
 
   return (
-    <div className="shell seuil-nuit fond-maison">
+    <div className="shell seuil-nuit fond-maison fondation-shell">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
-        <LogoSeuil />
-        <h1>Mana Family</h1>
-        <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
+        <h1>MANAfamily</h1>
+        <p className="whisper slogan-marelle">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
 
       <section className="card">
         <h2>Fonder la famille</h2>
-        <input placeholder="Nom de la famille (ex. Les Gillet)" value={name} onChange={(e) => setName(e.target.value)} />
+        <input placeholder="Nom de Famille (Ex. Dubois)" value={name} onChange={(e) => setName(e.target.value)} />
 
         <h2>Les membres de la famille</h2>
-        <div className="row">
-          <input
-            placeholder="Prénom"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && add()}
-          />
-          <select value={role} onChange={(e) => setRole(e.target.value as Role)}>
-            {ROLES.map((r) => (
-              <option key={r.role} value={r.role}>{r.label}</option>
-            ))}
-          </select>
-          <button onClick={add} aria-label="Ajouter cet astre" className="ajout-astre">✦</button>
-        </div>
-        <div className="row naissance-row">
-          <input type="date" value={naissance} onChange={(e) => setNaissance(e.target.value)} aria-label="Date de naissance" />
-          <span className="whisper naissance-note">naissance — pour les anniversaires et l'arbre, facultatif</span>
-        </div>
+        <input
+          className="fondation-champ"
+          placeholder="Prénom"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && add()}
+        />
+        <select className="fondation-champ" value={role} onChange={(e) => setRole(e.target.value as Role)}>
+          {ROLES.map((r) => (
+            <option key={r.role} value={r.role}>{r.label}</option>
+          ))}
+        </select>
+        <input type="date" className="fondation-champ" value={naissance} onChange={(e) => setNaissance(e.target.value)} aria-label="Date de naissance" required />
+        <p className="whisper naissance-note">pour les anniversaires et l'arbre — obligatoire</p>
+        <button onClick={add} disabled={!draft.trim() || !naissance} className="fondation-ajout">Ajouter ce membre ✦</button>
 
         <ul className="astre-list">
           {astres.map((a, i) => (
@@ -875,7 +859,7 @@ function Fondation({ onPrete, onRetour }: { onPrete: (nom: string, brouillon: As
           ))}
         </ul>
 
-        <button className="primary" disabled={!name.trim() || astres.length < 2} onClick={() => onPrete(name.trim(), astres)}>
+        <button className="primary btn-marelle" disabled={!name.trim() || astres.length < 2} onClick={() => onPrete(name.trim(), astres)}>
           Créer la famille
         </button>
       </section>
