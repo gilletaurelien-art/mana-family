@@ -598,6 +598,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 /* « Les générations » à l'identité : parchemin, noms manuscrits,
    étoiles dorées, photos rondes. */
+.sky h1.galaxie-titre { font-family: var(--cursive); font-weight: 400; letter-spacing: 0; }
 .papier .etage-nom { color: var(--etoile); }
 .papier .galaxie-rang .prenom {
   font-family: var(--cursive);

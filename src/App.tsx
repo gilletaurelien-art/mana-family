@@ -1162,7 +1162,7 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
     <div className="shell papier">
       <RetourNav onRetour={onRetour} />
       <header className="sky">
-        <h1>Les générations</h1>
+        <h1 className="galaxie-titre">Les générations</h1>
         <p className="whisper">les générations, des aînés aux enfants</p>
       </header>
 
