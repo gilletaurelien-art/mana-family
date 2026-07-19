@@ -1059,6 +1059,16 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 /* Les mots de famille, écrits à la main (titre « Famille », prénom du membre). */
 .mot-famille { font-family: var(--cursive); font-style: normal; }
+/* La marque de formule, en exposant du mot « Famille » (gratuite par défaut). */
+.palier-marque {
+  font-family: var(--mono);
+  font-size: 0.4em;
+  vertical-align: super;
+  color: var(--or-mana);
+  margin-left: 0.08em;
+  opacity: 0.92;
+}
+.foyer .palier-marque { text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9); }
 .whisper .mot-famille { font-size: 1.05rem; }
 
 /* écrire — le geste central, mis en avant par une lueur dorée qui respire */
