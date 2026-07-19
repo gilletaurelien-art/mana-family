@@ -690,6 +690,10 @@ button:disabled { opacity: 0.35; cursor: default; }
   box-shadow: 0 2px 10px rgba(70, 50, 25, 0.08);
 }
 .carnet-papier .tx-body, .papier .tx-body { color: #2f2415; }
+/* Les accents dorés (questions FAQ, sous-titre Déesse) passent à l'encre
+   pour rester lisibles sur le parchemin. */
+.papier .faq-q,
+.papier .deesse-sous { color: var(--etoile); }
 .carnet-papier .retour-btn:hover,
 .carnet-papier .retour-bas,
 .papier .retour-btn:hover,

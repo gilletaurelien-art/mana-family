@@ -117,24 +117,13 @@ function NousEcrire() {
   )
 }
 
-function AssistanteVue({ ciel, onRetour }: { ciel: CielData; onRetour: () => void }) {
+function AssistanteVue({ onRetour }: { onRetour: () => void }) {
   return (
-    <div className="shell assistante-shell">
+    <div className="shell assistante-shell papier">
       <RetourNav onRetour={onRetour} />
-      <header className="sky assistante-hero">
-        <div className="assistante-hero-texte">
-          <h1>L'univers Mana</h1>
-          <p className="assistante-mot">
-            Bienvenue chez vous,<br />
-            dans la famille {ciel.name}.<br />
-            Voici la maison :<br />
-            comment y vivre,<br />
-            et les portes qu’elle ouvre.
-          </p>
-          </div>
-        <div className="assistante-hero-visage" aria-hidden="true">
-          <img src="/logo-nuit.png" alt="" className="logo-nuit" />
-          <img src="/logo-jour.png" alt="" className="logo-jour" />
+      <header className="sky carnet-hero-lire">
+        <div className="carnet-hero-tableau">
+          <img src="/mana-key.jpg" alt="L'univers Mana" />
         </div>
       </header>
 
@@ -520,7 +509,7 @@ export default function App() {
   }
 
   if (phase.ecran === 'assistante') {
-    return <AssistanteVue ciel={ciel} onRetour={() => setPhase({ ecran: 'ciel' })} />
+    return <AssistanteVue onRetour={() => setPhase({ ecran: 'ciel' })} />
   }
 
   return (
