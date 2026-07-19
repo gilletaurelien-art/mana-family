@@ -1026,28 +1026,26 @@ button:disabled { opacity: 0.35; cursor: default; }
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.98), 0 0 9px rgba(0, 0, 0, 0.9);
 }
 
-/* L'étincelle sur la scène illustrée : un peu plus vive qu'une étoile nue,
-   cernée d'un souffle sombre pour ne pas se perdre sur les zones claires. */
+/* L'astre prend la forme d'une étoile légèrement dorée — cœur clair,
+   pointes dorées, lueur douce (drop-shadow qui suit la forme). */
 .foyer .astre-pure-light {
-  width: 9px; height: 9px;
-  background: rgba(255, 253, 246, 0.92);
-  box-shadow:
-    0 0 0 4px rgba(13, 11, 31, 0.28),
-    0 0 12px 3px rgba(255, 253, 246, 0.55),
-    0 0 22px 6px rgba(229, 184, 66, 0.18);
+  width: 17px; height: 17px;
+  border-radius: 0;
+  background: radial-gradient(circle at 50% 42%, #fffdf3 22%, #f3dfa4 58%, var(--or-mana) 100%);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  filter: drop-shadow(0 0 4px rgba(229, 184, 66, 0.85)) drop-shadow(0 0 9px rgba(255, 245, 210, 0.4));
+  box-shadow: none;
   animation: scintille 5.5s ease-in-out infinite;
 }
 @keyframes scintille {
-  0%, 100% { opacity: 0.7; }
+  0%, 100% { opacity: 0.78; }
   50%      { opacity: 1; }
 }
-/* Nommé, l'astre s'avive doucement le temps qu'on le regarde */
-.foyer .nomme .astre-pure-light {
-  background: var(--etoile);
-  box-shadow:
-    0 0 0 4px rgba(13, 11, 31, 0.3),
-    0 0 18px 5px rgba(255, 253, 246, 0.7),
-    0 0 30px 8px rgba(229, 184, 66, 0.3);
+/* Veillé, l'étoile grandit et brille plus fort. */
+.foyer .halo .astre-pure-light {
+  width: 24px; height: 24px;
+  background: radial-gradient(circle at 50% 42%, #fff6d8 20%, var(--or-mana) 78%);
+  filter: drop-shadow(0 0 6px rgba(229, 184, 66, 1)) drop-shadow(0 0 15px rgba(255, 224, 130, 0.6));
 }
 @media (prefers-reduced-motion: reduce) {
   .foyer .astre-pure-light { animation: none; }
