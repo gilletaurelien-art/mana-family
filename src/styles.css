@@ -422,7 +422,11 @@ button:disabled { opacity: 0.35; cursor: default; }
   color: var(--etoile); font-family: var(--cursive); font-size: 1.2rem;
   cursor: pointer; box-shadow: 0 4px 14px rgba(70, 50, 25, 0.18);
 }
-.offrir-bouton-emoji { font-size: 1.2rem; line-height: 1; }
+.offrir-bouton-emblem {
+  width: 30px; height: 30px; border-radius: 50%; overflow: hidden; flex: none;
+  border: 1px solid var(--filet);
+}
+.offrir-bouton-emblem img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* Le pop-up parchemin — une feuille qui monte du bas. */
 .offrir-veil {
@@ -450,7 +454,14 @@ button:disabled { opacity: 0.35; cursor: default; }
   position: absolute; top: 0.7rem; right: 0.9rem;
   background: none; border: none; font-size: 1.15rem; color: var(--brume); cursor: pointer;
 }
-.offrir-titre { margin: 0.1rem 0 0.1rem; font-family: var(--serif); color: var(--etoile); }
+.offrir-cadeau {
+  width: min(40vw, 9rem); margin: 0 auto 0.4rem;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 10px 28px rgba(70, 50, 25, 0.3);
+}
+.offrir-cadeau img { width: 100%; height: auto; display: block; }
+.offrir-titre { margin: 0.1rem 0 0.1rem; text-align: center; font-family: var(--serif); color: var(--etoile); }
+.offrir-mot { text-align: center; }
 .offrir-mot { margin: 0 0 0.9rem; color: var(--brume); }
 
 /* Les capsules d'attention, sur le papier. */

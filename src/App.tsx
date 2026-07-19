@@ -1408,7 +1408,7 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
         {/* 2. Offrir un geste — un bouton qui ouvre la feuille des attentions */}
         <h2>Offrir un geste</h2>
         <button type="button" className="offrir-bouton" onClick={() => setOffrirOuvert(true)}>
-          <span className="offrir-bouton-emoji" aria-hidden="true">🫶</span>
+          <span className="offrir-bouton-emblem" aria-hidden="true"><img src="/cadeau.jpg" alt="" /></span>
           Offrir une attention…
         </button>
 
@@ -1437,6 +1437,7 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
         <div className="offrir-veil" onClick={() => setOffrirOuvert(false)}>
           <div className="offrir-sheet" role="dialog" aria-label="Offrir un geste" onClick={(e) => e.stopPropagation()}>
             <button className="offrir-fermer" onClick={() => setOffrirOuvert(false)} aria-label="Fermer">✕</button>
+            <div className="offrir-cadeau" aria-hidden="true"><img src="/cadeau.jpg" alt="" /></div>
             <h2 className="offrir-titre">Offrir un geste</h2>
             <p className="whisper offrir-mot">
               Une attention {sujet ? <>pour <b>{nomIntime(sujet)}</b></> : <>pour toute la famille</>} — touchez pour l'offrir.
