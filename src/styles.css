@@ -1028,6 +1028,14 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* Familles nombreuses : l'initiale seule, un peu plus grande. */
 .foyer .prenom-initiale { font-size: 1.4rem; }
 
+/* Photo d'astre : petit rond dans le ciel. Le prénom se pose DESSOUS
+   (et non dessus) pour ne pas cacher le visage. */
+.foyer .astre-photo { width: 40px; height: 40px; }
+.foyer .astre-avec-photo .prenom {
+  top: auto; bottom: 0;
+  transform: translate(-50%, calc(100% + 1px));
+}
+
 /* L'astre prend la forme d'une étoile légèrement dorée — cœur clair,
    pointes dorées, lueur douce (drop-shadow qui suit la forme). */
 .foyer .astre-pure-light {

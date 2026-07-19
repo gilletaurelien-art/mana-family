@@ -820,7 +820,7 @@ function Fondation({ onPrete, onRetour }: { onPrete: (nom: string, brouillon: As
           {astres.map((a, i) => (
             <li key={i}>
               <span className="astre-dot" /> {a.name}{' '}
-              <em>· {ROLES.find((r) => r.role === a.role)?.label} · Cercle {a.circle}{a.birthDate ? ` · ${naissanceEnClair(a.birthDate)}` : ''}</em>
+              <em>· {ROLES.find((r) => r.role === a.role)?.label}{a.birthDate ? ` · ${naissanceEnClair(a.birthDate)}` : ''}</em>
             </li>
           ))}
         </ul>
@@ -991,13 +991,15 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
         {ciel.astres.map((a, i) => {
           const graine = [...a.id].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) % 9973, 7)
           const angle = (i / n) * 2 * Math.PI - Math.PI / 2 + ((graine % 100) / 100 - 0.5) * 0.9
-          const r = 24 + (a.circle - 1) * 10 + (graine % 7)
+          // Un seul cercle familial : le rayon ne dépend plus du « circle »,
+          // juste d'une dérive organique — une constellation, pas trois anneaux.
+          const r = 24 + (graine % 16)
           const left = 50 + r * Math.cos(angle) + ((graine % 11) - 5) * 0.8
           const top = 48 + r * 0.8 * Math.sin(angle) + ((graine % 13) - 6) * 0.7
           return (
             <button
               key={a.id}
-              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''}`}
+              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''} ${a.avatarUrl ? 'astre-avec-photo' : ''}`}
               style={{ left: `${left}%`, top: `${top}%`, animationDuration: `${9 + (i % 5) * 1.7}s`, animationDelay: `${-(i * 2.3)}s` }}
               aria-label={nomIntime(a)}
               onClick={() => onOuvrirFrise(a.id)}
