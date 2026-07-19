@@ -1006,18 +1006,15 @@ function CielVue({ ciel, me, horsLigne, onOuvrirFrise, onTransmettre, onInviter,
 
       <div className="barre-bas">
         <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-          <span className="geste-rond geste-visage"><img src="/carnet.jpg" alt="" /></span>
-          <span className="geste-mot">lire</span>
+          <span className="geste-rond geste-visage"><img src="/carnet.jpg" alt="" /><span className="geste-mot">lire</span></span>
         </button>
 
         <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-          <span className="geste-rond geste-mandala"><img src="/plume.jpg" alt="" /></span>
-          <span className="geste-mot">écrire</span>
+          <span className="geste-rond geste-mandala"><img src="/plume.jpg" alt="" /><span className="geste-mot">écrire</span></span>
         </button>
 
         <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — découvrir">
-          <span className="geste-rond geste-visage"><img src="/mana-key.jpg" alt="" /></span>
-          <span className="geste-mot">découvrir</span>
+          <span className="geste-rond geste-visage"><img src="/mana-key.jpg" alt="" /><span className="geste-mot">découvrir</span></span>
         </button>
       </div>
     </div>
