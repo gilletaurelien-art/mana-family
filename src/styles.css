@@ -413,19 +413,27 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .astre-fixe .naissance { line-height: 1.35; }
 
-/* Offrir un geste — le cadeau, à la largeur du header, ouvre la feuille. */
-.offrir-tableau {
-  display: block;
-  width: min(62vw, 14.5rem);
-  margin: 0.4rem auto 0.2rem;
-  padding: 0; border: none; background: none; cursor: pointer;
-  border-radius: 16px; overflow: hidden;
-  box-shadow: 0 10px 28px rgba(70, 50, 25, 0.28);
+/* Deux options illustrées côte à côte : pièce jointe & offrir un geste. */
+.composer-tuiles { display: flex; gap: 0.9rem; margin: 0.9rem 0 0.2rem; }
+.composer-tuile {
+  flex: 1 1 0;
+  display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+  background: none; border: none; padding: 0; cursor: pointer;
+}
+.composer-tuile-img {
+  width: 100%; aspect-ratio: 1; border-radius: 16px; overflow: hidden; display: block;
+  box-shadow: 0 8px 22px rgba(70, 50, 25, 0.24);
   transition: transform 0.2s ease;
 }
-.offrir-tableau:active { transform: scale(0.98); }
-.offrir-tableau img { width: 100%; height: auto; display: block; }
-@media (min-width: 700px) { .offrir-tableau { width: min(42vw, 17rem); } }
+.composer-tuile:not(.bientot):active .composer-tuile-img { transform: scale(0.97); }
+.composer-tuile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.composer-tuile-mot { font-family: var(--cursive); font-size: 1.18rem; color: var(--etoile); }
+.composer-tuile-note {
+  font-size: 0.66rem; color: var(--brume); letter-spacing: 0.14em;
+  text-transform: uppercase; margin-top: -0.25rem;
+}
+.composer-tuile.bientot { cursor: default; }
+.composer-tuile.bientot .composer-tuile-img { opacity: 0.7; }
 
 /* Le pop-up parchemin — une feuille qui monte du bas. */
 .offrir-veil {

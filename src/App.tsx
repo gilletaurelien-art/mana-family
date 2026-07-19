@@ -250,16 +250,6 @@ function FiltreGlyph() {
   )
 }
 
-/** Les pièces jointes — appareil, film, onde. */
-function PjGlyph({ type }: { type: 'photo' | 'video' | 'audio' }) {
-  const svg = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
-  if (type === 'photo')
-    return <svg {...svg}><path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2l1.2-1.8h6.6L15.5 7h2A1.5 1.5 0 0 1 19 8.5v9A1.5 1.5 0 0 1 17.5 19h-13A1.5 1.5 0 0 1 3 17.5Z" /><circle cx="11" cy="12.5" r="3" /></svg>
-  if (type === 'video')
-    return <svg {...svg}><rect x="3" y="6" width="12" height="12" rx="2" /><path d="M15 10.5 21 7v10l-6-3.5Z" /></svg>
-  return <svg {...svg}><path d="M4 12h2l2-5 3 12 2.5-9 1.5 4H20" /></svg>
-}
-
 type Phase =
   | { ecran: 'chargement' }
   | { ecran: 'vitrine' }
@@ -1405,20 +1395,18 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
           {ecoute ? 'Je vous écoute…' : 'Écrivez, ou touchez le micro pour dicter.'}
         </p>
 
-        {/* 2. Pièce jointe */}
-        <h2>Pièce jointe</h2>
-        <div className="pj-ligne">
-          <span className="pj-option bientot"><PjGlyph type="photo" /> Photo</span>
-          <span className="pj-option bientot"><PjGlyph type="video" /> Vidéo</span>
-          <span className="pj-option bientot"><PjGlyph type="audio" /> Audio</span>
+        {/* 2. Deux options illustrées, côte à côte : pièce jointe (bientôt) & offrir un geste */}
+        <div className="composer-tuiles">
+          <button type="button" className="composer-tuile bientot" disabled aria-label="Pièce jointe — bientôt">
+            <span className="composer-tuile-img"><img src="/pj.jpg" alt="" /></span>
+            <span className="composer-tuile-mot">Pièce jointe</span>
+            <span className="composer-tuile-note">bientôt</span>
+          </button>
+          <button type="button" className="composer-tuile" onClick={() => setOffrirOuvert(true)} aria-label="Offrir un geste">
+            <span className="composer-tuile-img"><img src="/cadeau.jpg" alt="" /></span>
+            <span className="composer-tuile-mot">Offrir un geste</span>
+          </button>
         </div>
-        <p className="whisper naissance-note">en direct ou depuis la galerie — <b>bientôt</b></p>
-
-        {/* 3. Offrir un geste — le cadeau (largeur du header) ouvre la feuille */}
-        <h2>Offrir un geste</h2>
-        <button type="button" className="offrir-tableau" onClick={() => setOffrirOuvert(true)} aria-label="Offrir un geste">
-          <img src="/cadeau.jpg" alt="" />
-        </button>
 
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>
