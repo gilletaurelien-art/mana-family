@@ -293,6 +293,9 @@ type Phase =
   | { ecran: 'frise'; aboutId: string | null }
   | { ecran: 'composer'; aboutId?: string | null }
 
+// Lien d'invitation par e-mail : ?clef=CODE amène directement à « Rejoindre ».
+const clefUrl = new URLSearchParams(window.location.search).get('clef')
+
 export default function App() {
   const [ciel, setCiel] = useState<CielData | null>(null)
   const [horsLigne, setHorsLigne] = useState(false)
@@ -326,10 +329,11 @@ export default function App() {
     if (r.ciel) {
       setCiel(r.ciel)
       setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'porte' || p.ecran === 'compte' ? { ecran: 'ciel' } : p))
-    } else if (!r.horsLigne) {
-      setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'compte' ? { ecran: 'porte' } : p))
     } else {
-      setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'compte' ? { ecran: 'porte' } : p))
+      // Pas encore de famille : porte habituelle, sauf si on arrive par un
+      // lien d'invitation (?clef=…) → droit vers « Rejoindre », la clé en main.
+      const cible: Phase = clefUrl ? { ecran: 'rejoindre' } : { ecran: 'porte' }
+      setPhase((p) => (p.ecran === 'chargement' || p.ecran === 'compte' ? cible : p))
     }
   }
 
@@ -418,6 +422,7 @@ export default function App() {
   if (phase.ecran === 'rejoindre') {
     return (
       <Rejoindre
+        codeInitial={clefUrl}
         onArrime={(code, astreId) => tenter(() => rejoindre(code, astreId))}
         onRetour={() => setPhase({ ecran: phase.retour === 'jardin' ? 'jardin' : 'porte' })}
       />
@@ -889,10 +894,25 @@ function ChoisirMoi({ nom, brouillon, onChoisi, onRetour }: { nom: string; broui
 
 /* ---------- Rejoindre avec la clé de la maison ---------- */
 
-function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: string) => void; onRetour: () => void }) {
-  const [code, setCode] = useState('')
+function Rejoindre({ codeInitial, onArrime, onRetour }: { codeInitial?: string | null; onArrime: (code: string, astreId: string) => void; onRetour: () => void }) {
+  const [code, setCode] = useState(codeInitial ?? '')
   const [astres, setAstres] = useState<Astre[] | null>(null)
   const [erreur, setErreur] = useState('')
+
+  const chercher = async (c: string) => {
+    if (!c) return
+    setErreur('')
+    try {
+      const a = await astresDe(c)
+      if (a.length === 0) setErreur('Clé inconnue — vérifie auprès de la famille.')
+      else setAstres(a)
+    } catch {
+      setErreur('Le réseau est agité — réessaie dans un instant.')
+    }
+  }
+
+  // Lien d'invitation (?clef=…) : la clé est déjà là, on charge la famille.
+  useEffect(() => { if (codeInitial) chercher(codeInitial) }, [])
 
   return (
     <div className="shell seuil-nuit fond-maison">
@@ -904,18 +924,7 @@ function Rejoindre({ onArrime, onRetour }: { onArrime: (code: string, astreId: s
         <h2>La clé de la famille</h2>
         <div className="row">
           <input placeholder="ex. 3f9a1c2e" value={code} onChange={(e) => setCode(e.target.value.trim().toLowerCase())} />
-          <button
-            onClick={async () => {
-              setErreur('')
-              try {
-                const a = await astresDe(code)
-                if (a.length === 0) setErreur('Clé inconnue — vérifie auprès de la famille.')
-                else setAstres(a)
-              } catch {
-                setErreur('Le réseau est agité — réessaie dans un instant.')
-              }
-            }}
-          >Ouvrir</button>
+          <button onClick={() => chercher(code)}>Ouvrir</button>
         </div>
         {erreur && <p className="whisper">{erreur}</p>}
         {astres && (
@@ -1322,6 +1331,17 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
   onChangerAstre: (astreId: string) => void
   onRetour: () => void
 }) {
+  const [email, setEmail] = useState('')
+  const emailValide = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())
+  const lien = `${window.location.origin}/?clef=${ciel.inviteCode}`
+  const envoyerParEmail = () => {
+    const sujet = encodeURIComponent('Rejoignez notre famille sur MANAfamily')
+    const corps = encodeURIComponent(
+      `Bonjour,\n\nJe vous ouvre la porte de notre famille sur MANAfamily. Il suffit de cliquer :\n${lien}\n\n(ou d'entrer la clé « ${ciel.inviteCode} » dans l'application.)\n\nÀ bientôt à la maison.`,
+    )
+    window.location.href = `mailto:${email.trim()}?subject=${sujet}&body=${corps}`
+  }
+
   return (
     <div className="shell papier">
       <RetourNav onRetour={onRetour} />
@@ -1329,11 +1349,17 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
         <h1>La clé de la maison</h1>
       </header>
       <section className="card" style={{ textAlign: 'center' }}>
-        <p>Chaque proche ouvre l'application sur son appareil, choisit « Rejoindre avec une clé », et entre :</p>
-        <p style={{ fontFamily: 'var(--serif)', fontSize: '2rem', letterSpacing: '0.2em', color: 'var(--or-mana)' }}>
-          {ciel.inviteCode}
-        </p>
+        <div className="clef-embleme cadre-or"><img src="/mana-key.jpg" alt="La clef de la maison Mana" /></div>
+        <p>Chaque proche ouvre l'application, choisit « Rejoindre avec une clé », et entre :</p>
+        <p className="inviter-code">{ciel.inviteCode}</p>
         <p className="whisper">La clé ne se partage qu'en famille — c'est la porte de votre maison.</p>
+
+        <h2>Ou envoyer un lien</h2>
+        <p className="whisper">Un e-mail avec le lien — le proche rejoint la maison sans saisir la clé.</p>
+        <div className="row">
+          <input type="email" inputMode="email" placeholder="e-mail du proche" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="E-mail du proche" />
+          <button className="primary" style={{ width: 'auto', marginTop: 0 }} disabled={!emailValide} onClick={envoyerParEmail}>Envoyer</button>
+        </div>
 
         <h2>Cet appareil est {nomIntime(me)}</h2>
         <div className="chips" style={{ justifyContent: 'center' }}>
