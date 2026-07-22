@@ -1102,11 +1102,29 @@ button:disabled { opacity: 0.35; cursor: default; }
   margin-top: 0.5rem;
   padding: 1.1rem 0.5rem;
   color: var(--encre);
-  font-family: var(--cursive);
-  font-size: 1.14rem;
+  font-family: var(--mono);
+  font-size: 0.95rem;
   font-weight: 500;
+  letter-spacing: -0.01em;
   text-align: center;
-  line-height: 1.35;
+  line-height: 1.4;
+  min-height: 2.6em;   /* réserve la place : pas de saut quand la phrase se compose */
+}
+.etat-texte { white-space: pre-wrap; }
+/* Le curseur de la machine à écrire — un bloc calme qui clignote, avant et après. */
+.etat-curseur {
+  display: inline-block;
+  margin-left: 1px;
+  color: var(--or-doux);
+  transform: translateY(1px);
+  animation: etat-curseur-clignote 1.05s steps(1) infinite;
+}
+@keyframes etat-curseur-clignote {
+  0%, 50%   { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .etat-curseur { animation: none; opacity: 0.55; }
 }
 
 /* La barre du bas — lire (le carnet) et écrire (le galet) */

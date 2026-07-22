@@ -1010,6 +1010,31 @@ function etatDuCiel(c: CielData): string {
 // pas à chaque retour à l'accueil.
 let livreDejaOuvert = false
 
+/** L'État du Ciel — la phrase se compose à la machine à écrire (SF Mono),
+    caractère par caractère, puis le curseur reste, calme, à la fin. */
+function EtatCiel({ texte, onClick }: { texte: string; onClick: () => void }) {
+  const reduit = typeof window !== 'undefined'
+    && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  const [n, setN] = useState(reduit ? texte.length : 0)
+  useEffect(() => {
+    if (reduit) { setN(texte.length); return }
+    setN(0)
+    const id = window.setInterval(() => {
+      setN((k) => {
+        if (k >= texte.length) { window.clearInterval(id); return k }
+        return k + 1
+      })
+    }, 45)
+    return () => window.clearInterval(id)
+  }, [texte, reduit])
+  return (
+    <button className="etat-ciel" onClick={onClick} aria-label={texte}>
+      <span className="etat-texte">{texte.slice(0, n)}</span>
+      <span className="etat-curseur" aria-hidden="true">▋</span>
+    </button>
+  )
+}
+
 function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onChronologie, onAssistante }: {
   ciel: CielData
   horsLigne: boolean
@@ -1065,7 +1090,7 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
         })}
       </div>
 
-      <button className="etat-ciel" onClick={onChronologie}>{etatDuCiel(ciel)}</button>
+      <EtatCiel texte={etatDuCiel(ciel)} onClick={onChronologie} />
 
       <div className="barre-bas">
         <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
