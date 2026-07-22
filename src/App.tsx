@@ -665,9 +665,8 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         </div>
         <span className="vitrine-livre-etiquette">Le Livre blanc</span>
         <p className="vitrine-livre-mot">
-          Toute la vision de Mana Family — les Cercles familiaux, la Présence et la Mémoire,
-          et ce que nous refuserons toujours de faire. À lire le jour où vous voulez comprendre
-          la maison en profondeur.
+          Notre vision, en clair : ce que nous protégeons, et ce que nous
+          ne ferons jamais.
         </p>
         <a className="vitrine-livre-lien" href="/livre-blanc.html" target="_blank" rel="noopener">
           Lire le Livre blanc →
