@@ -1863,7 +1863,9 @@ button:disabled { opacity: 0.35; cursor: default; }
   margin: 0; color: #ffffff; font-size: 0.95rem; line-height: 1.55;
   font-family: 'Philosopher', var(--serif);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+  white-space: pre-line;
 }
+.vitrine-pilier-lien { margin-top: 0.9rem; }
 
 .vitrine-promesses {
   margin: 1.8rem auto 0;

@@ -602,8 +602,14 @@ const PROMESSES: { glyphe: string; mot: string }[] = [
 
 /** Les deux piliers — la doctrine Présence / Mémoire, dite simplement,
     chacune portée par son illustration dorée. */
-const PILIERS: { titre: string; mot: string; illus?: string }[] = [
-  { titre: 'La Présence fait vivre.\nLa Mémoire fait durer.', illus: '/plume.jpg', mot: '' },
+const PILIERS: { titre: string; mot: string; illus?: string; lien?: string; lienHref?: string }[] = [
+  {
+    titre: 'La Présence fait vivre.\nLa Mémoire fait durer.',
+    illus: '/plume.jpg',
+    mot: 'Notre vision, en clair :\nce que nous protégeons,\net ce que nous vous offrons.',
+    lien: 'Lire le Livre blanc →',
+    lienHref: '/livre-blanc.html',
+  },
   { titre: '', illus: '/carnet.jpg', mot: '' },
 ]
 
@@ -655,28 +661,16 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
             {p.illus && <img className="vitrine-pilier-illus" src={p.illus} alt="" aria-hidden="true" />}
             {p.titre && <span className="vitrine-pilier-titre">{p.titre}</span>}
             {p.mot && <p>{p.mot}</p>}
+            {p.lien && (
+              <a className="vitrine-livre-lien vitrine-pilier-lien" href={p.lienHref} target="_blank" rel="noopener">
+                {p.lien}
+              </a>
+            )}
           </div>
         ))}
       </section>
 
-      <section className="vitrine-livre">
-        <div className="vitrine-tableau cadre-or">
-          <img src="/livre-ouvert.jpg" alt="Le carnet de famille — vos souvenirs, gardés" />
-        </div>
-        <span className="vitrine-livre-etiquette">Le Livre blanc</span>
-        <p className="vitrine-livre-mot">
-          Notre vision, en clair : ce que nous protégeons, et ce que nous
-          vous offrons.
-        </p>
-        <a className="vitrine-livre-lien" href="/livre-blanc.html" target="_blank" rel="noopener">
-          Lire le Livre blanc →
-        </a>
-      </section>
-
       <section className="vitrine-pied">
-        <div className="vitrine-pied-clef cadre-or">
-          <img src="/mana-key.jpg" alt="La clef de la maison Mana" />
-        </div>
         <div className="vitrine-serment">
           <h2 className="vitrine-serment-titre">Votre Carnet de Famille</h2>
           <div className="vitrine-promesses">
