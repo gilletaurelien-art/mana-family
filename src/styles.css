@@ -642,13 +642,28 @@ button:disabled { opacity: 0.35; cursor: default; }
 .nom-doux-row { justify-content: center; margin-top: 0.6rem; }
 .nom-doux-row input { max-width: 14rem; }
 
-/* Le carnet — filtres repliés derrière un entonnoir, dépliés à la demande */
-.carnet-filtre-barre { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.9rem; }
-.carnet-filtre-btn {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.45rem 0.9rem; border-radius: 999px;
-  color: var(--brume); font-size: 0.88rem;
+/* Le carnet — la barre de filtres : ordre + auteur + sujet + médium.
+   Tout en SF Mono, petite taille, pour une lisibilité maximale. */
+.carnet-filtre-barre {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 0.4rem; margin-top: 0.9rem;
 }
+.carnet-filtre-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.75rem; border-radius: 999px;
+  border: 1px solid var(--filet); background: var(--champ);
+  color: var(--encre); font-family: var(--mono);
+  font-size: 0.7rem; letter-spacing: -0.02em;
+}
+.carnet-filtre-select {
+  font-family: var(--mono);
+  font-size: 0.7rem; letter-spacing: -0.02em;
+  color: var(--encre); background: var(--champ);
+  border: 1px solid var(--filet); border-radius: 999px;
+  padding: 0.4rem 0.5rem; cursor: pointer;
+  max-width: 100%;
+}
+.carnet-filtre-select:focus-visible { outline: 2px solid var(--or-mana); outline-offset: 1px; }
 .carnet-filtre-btn .filtre-glyph { display: inline-flex; transition: transform 0.2s ease; }
 .carnet-filtre-btn.ouvert { border-color: var(--or-mana); color: var(--etoile); }
 .carnet-filtre-btn.ouvert .filtre-glyph { transform: rotate(180deg); }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Astre, CalendarLayerId, Constellation, Role, TransmissionKind } from './types'
+import type { Astre, CalendarLayerId, Constellation, Role, Transmission, TransmissionKind } from './types'
 import { CALENDAR_LAYERS, ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import { demoCiel } from './demo'
@@ -1026,6 +1026,21 @@ function etatsDuCiel(c: CielData): string[] {
 // pas à chaque retour à l'accueil.
 let livreDejaOuvert = false
 
+/* Le médium d'une transmission — pour le filtre du carnet. Aujourd'hui seule
+   la photo existe dans les données ; audio/vidéo/musique sont prêts à filtrer
+   dès que ces pièces jointes arriveront. */
+type Medium = 'photo' | 'audio' | 'video' | 'musique'
+const MEDIUMS: { id: Medium; label: string }[] = [
+  { id: 'photo', label: 'Photo' },
+  { id: 'audio', label: 'Audio' },
+  { id: 'video', label: 'Vidéo' },
+  { id: 'musique', label: 'Musique' },
+]
+function mediumDe(t: Transmission): Medium | null {
+  if (t.imageUrl) return 'photo'
+  return null
+}
+
 /** L'État du Ciel — une à trois phrases empilées, composées à la machine
     à écrire (SF Mono), l'une après l'autre. Le curseur suit la frappe puis
     reste, calme, à la fin. `rejouer` (incrémenté au clic sur « Famille »)
@@ -1692,12 +1707,18 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
   const [nomDouxEdit, setNomDouxEdit] = useState(false)
   const [nomDouxVal, setNomDouxVal] = useState('')
   const [ordre, setOrdre] = useState<'recent' | 'ancien'>('recent')
+  const [auteurFiltre, setAuteurFiltre] = useState('')
+  const [sujetFiltre, setSujetFiltre] = useState('')
+  const [mediumFiltre, setMediumFiltre] = useState<'' | Medium>('')
   const nameOf = (id: string | null) => {
     const a = ciel.astres.find((x) => x.id === id)
     return a ? nomIntime(a) : null
   }
   const txs = ciel.transmissions
     .filter((t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId)
+    .filter((t) => !auteurFiltre || t.authorId === auteurFiltre)
+    .filter((t) => !sujetFiltre || t.aboutId === sujetFiltre)
+    .filter((t) => !mediumFiltre || mediumDe(t) === mediumFiltre)
     .slice()
     .sort((a, b) => (ordre === 'recent' ? b.createdAt.localeCompare(a.createdAt) : a.createdAt.localeCompare(b.createdAt)))
 
@@ -1715,6 +1736,42 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
               <span className="filtre-glyph"><FiltreGlyph /></span>
               {ordre === 'recent' ? 'Du plus récent' : 'Du plus ancien'}
             </button>
+
+            <select
+              className="carnet-filtre-select"
+              value={auteurFiltre}
+              onChange={(e) => setAuteurFiltre(e.target.value)}
+              aria-label="Filtrer par auteur"
+            >
+              <option value="">Auteur · tous</option>
+              {ciel.astres.map((a) => (
+                <option key={a.id} value={a.id}>{nomIntime(a)}</option>
+              ))}
+            </select>
+
+            <select
+              className="carnet-filtre-select"
+              value={sujetFiltre}
+              onChange={(e) => setSujetFiltre(e.target.value)}
+              aria-label="Filtrer par sujet"
+            >
+              <option value="">Sujet · tous</option>
+              {ciel.astres.map((a) => (
+                <option key={a.id} value={a.id}>{nomIntime(a)}</option>
+              ))}
+            </select>
+
+            <select
+              className="carnet-filtre-select"
+              value={mediumFiltre}
+              onChange={(e) => setMediumFiltre(e.target.value as '' | Medium)}
+              aria-label="Filtrer par médium"
+            >
+              <option value="">Médium · tous</option>
+              {MEDIUMS.map((m) => (
+                <option key={m.id} value={m.id}>{m.label}</option>
+              ))}
+            </select>
           </div>
         </header>
       ) : (
