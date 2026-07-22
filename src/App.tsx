@@ -625,12 +625,19 @@ function LockKeyGlyph() {
   )
 }
 
+/** Le header fixe de l'univers — MANAfamily centré, sur le ciel étoilé. */
+function ManaHeader() {
+  return (
+    <header className="vitrine-topbar">
+      <span className="vitrine-eyebrow vitrine-marque">MANAfamily</span>
+    </header>
+  )
+}
+
 function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
   return (
     <div className="shell vitrine-shell seuil-nuit fond-maison">
-      <header className="vitrine-topbar">
-        <span className="vitrine-eyebrow vitrine-marque">MANAfamily</span>
-      </header>
+      <ManaHeader />
       <div className="vitrine-bottombar">
         <button className="vitrine-entrer-bas" onClick={onSeConnecter} aria-label="Se connecter avec votre clé">
           <span className="vitrine-entrer-mot">Entrer</span>
@@ -742,7 +749,7 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
         <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
 
-      <section className="card">
+      <section className="card compte-card">
         {etape === 'email' ? (
           <>
             <h2>Entrer dans la maison</h2>
@@ -1134,7 +1141,8 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
     <div className="shell foyer">
       <div className="foyer-fond" aria-hidden="true" />
       {ouverture && <div className="foyer-fond-ferme" aria-hidden="true" />}
-      <header className="sky">
+      <ManaHeader />
+      <header className="sky sky-sous-header">
         <h1 className="titre-foyer">
           <button className="titre-lien" onClick={() => setRejouer((x) => x + 1)} aria-label="Relire l'état du ciel">
             <span className="mot-famille">Famille<sup className="palier-marque" title="Formule Famille — gratuite">✦</sup></span>
@@ -1178,15 +1186,15 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
 
         <div className="barre-bas">
           <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-            <span className="geste-rond geste-visage"><img src="/carnet.jpg" alt="" /><span className="geste-mot">lire</span></span>
+            <span className="geste-rond geste-visage"><img src="/carnet.jpg" alt="" /><span className="geste-mot"><span className="geste-mot-txt">lire</span></span></span>
           </button>
 
           <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-            <span className="geste-rond geste-mandala"><img src="/plume.jpg" alt="" /><span className="geste-mot">écrire</span></span>
+            <span className="geste-rond geste-mandala"><img src="/plume.jpg" alt="" /><span className="geste-mot"><span className="geste-mot-txt">écrire</span></span></span>
           </button>
 
           <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — découvrir">
-            <span className="geste-rond geste-visage"><img src="/mana-key.jpg" alt="" /><span className="geste-mot">découvrir</span></span>
+            <span className="geste-rond geste-visage"><img src="/mana-key.jpg" alt="" /><span className="geste-mot"><span className="geste-mot-txt">découvrir</span></span></span>
           </button>
         </div>
       </div>
