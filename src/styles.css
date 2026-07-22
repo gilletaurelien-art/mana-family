@@ -619,8 +619,10 @@ button:disabled { opacity: 0.35; cursor: default; }
 .sky h1.galaxie-titre { font-family: var(--cursive); font-weight: 400; letter-spacing: 0; }
 .papier .etage-nom { color: var(--etoile); }
 .papier .galaxie-rang .prenom {
-  font-family: var(--cursive);
-  font-size: 1.25rem;
+  font-family: 'Philosopher', var(--serif);
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.01em;
   color: var(--encre);
   opacity: 1;
 }
