@@ -1762,12 +1762,12 @@ button:disabled { opacity: 0.35; cursor: default; }
   margin: 2.2rem auto 0;
 }
 .vitrine-pilier {
-  background: rgba(12, 8, 24, 0.42);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(160deg, rgba(126, 74, 196, 0.12), rgba(12, 8, 24, 0.2));
+  border: 1px solid var(--filet);
   border-radius: 16px;
   padding: 1.3rem 1.2rem 1.2rem;
   text-align: center;
-  backdrop-filter: blur(3px);
+  box-shadow: 0 0 46px 3px rgba(126, 74, 196, 0.36);
 }
 /* Pleine largeur PWA : chaque tableau occupe toute la largeur de sa carte. */
 .vitrine-pilier-illus {
