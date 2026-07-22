@@ -625,9 +625,9 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         ))}
       </div>
       <header className="sky vitrine-hero">
-        <p className="vitrine-eyebrow">MANAfamily</p>
-        <h1>Votre carnet de famille</h1>
         <p className="vitrine-slogan">La Présence fait vivre.<br />La Mémoire fait durer.</p>
+        <h1>Carnet de Famille</h1>
+        <p className="vitrine-eyebrow">MANAfamily</p>
       </header>
 
       <section className="vitrine-piliers">
