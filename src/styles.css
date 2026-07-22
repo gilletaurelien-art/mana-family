@@ -1653,7 +1653,7 @@ button:disabled { opacity: 0.35; cursor: default; }
   text-align: center;
 }
 /* Trois zones : MANAfamily en haut, le titre au centre, le slogan en bas. */
-.vitrine-hero h1 { font-family: var(--cursive); font-size: 2.1rem; margin: auto 0; align-self: center; position: relative; }
+.vitrine-hero h1 { font-family: var(--cursive); font-size: 1.05rem; margin: auto 0; align-self: center; position: relative; }
 
 /* Ciel animé (vitrine) : étoiles scintillantes + une étoile filante. */
 .ciel-anime {
@@ -1721,7 +1721,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 .vitrine-eyebrow::after { bottom: -0.05em; right: -0.5em; animation-delay: 1.3s; }
 .vitrine-slogan::before { top: -0.1em; left: -0.45em; animation-delay: 0.6s; }
 .vitrine-slogan::after { bottom: -0.05em; right: -0.45em; animation-delay: 1.9s; }
-.vitrine-hero h1 { font-size: 2.1rem; } /* base de l'em des étincelles */
+.vitrine-hero h1 { font-size: 1.05rem; } /* base de l'em des étincelles */
 .vitrine-hero h1::before { top: 0.1em; right: -0.35em; animation-delay: 0.9s; }
 .vitrine-hero h1::after { bottom: 0.15em; left: -0.3em; animation-delay: 2.1s; }
 .vitrine-pilier-titre::before { top: -0.2em; left: -0.6em; animation-delay: 0.4s; }
