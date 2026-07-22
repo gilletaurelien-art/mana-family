@@ -511,7 +511,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .composer-tuile:not(.bientot):active .composer-tuile-img { transform: scale(0.97); }
 .composer-tuile-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.composer-tuile-mot { font-family: var(--cursive); font-size: 1.18rem; color: var(--etoile); }
+.composer-tuile-mot { font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1.12rem; color: var(--etoile); }
 .composer-tuile-note {
   font-size: 0.66rem; color: var(--brume); letter-spacing: 0.14em;
   text-transform: uppercase; margin-top: -0.25rem;
@@ -584,7 +584,7 @@ button:disabled { opacity: 0.35; cursor: default; }
   display: inline-flex; align-items: center; gap: 0.4rem;
   padding: 0.35rem 0.8rem 0.35rem 0.6rem; border-radius: 999px;
   border: 1px solid var(--filet); background: var(--champ);
-  color: var(--encre); font-family: var(--cursive); font-size: 1.1rem;
+  color: var(--encre); font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1.02rem;
   cursor: pointer; transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 .offrir-capsule:hover { box-shadow: 0 4px 14px rgba(70, 50, 25, 0.2); }
@@ -603,8 +603,9 @@ button:disabled { opacity: 0.35; cursor: default; }
   border: 1px solid var(--filet);
   background: var(--champ);
   color: var(--etoile);
-  font-family: var(--cursive);
-  font-size: 1.2rem;
+  font-family: 'Philosopher', var(--serif);
+  font-weight: 700;
+  font-size: 1.1rem;
   box-shadow: 0 8px 24px rgba(70, 50, 25, 0.28);
   cursor: pointer;
 }
@@ -794,9 +795,9 @@ button:disabled { opacity: 0.35; cursor: default; }
 .message-zone { position: relative; }
 .message-zone textarea {
   padding-right: 3.4rem;
-  font-family: var(--cursive);
-  font-size: 1.24rem;
-  line-height: 1.5;
+  font-family: 'Philosopher', var(--serif);
+  font-size: 1.14rem;
+  line-height: 1.55;
 }
 .dictee {
   position: absolute; right: 0.55rem; bottom: 0.7rem;
@@ -955,9 +956,8 @@ button:disabled { opacity: 0.35; cursor: default; }
 .tx.kind-souvenir { border-left-color: var(--souvenir); }
 
 .tx-head { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--brume); }
-/* Le corps du message — écrit à la main : cursive Marelle, un peu plus
-   grande et aérée pour rester douce à lire. */
-.tx-body { margin: 0.5rem 0; font-family: var(--cursive); font-size: 1.24rem; line-height: 1.55; }
+/* Le corps du message — en Philosopher, aéré pour rester doux à lire. */
+.tx-body { margin: 0.5rem 0; font-family: 'Philosopher', var(--serif); font-size: 1.14rem; line-height: 1.6; }
 .tx-foot {
   display: flex; justify-content: space-between; align-items: center;
   font-size: 0.78rem; color: var(--brume);
