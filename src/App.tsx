@@ -983,54 +983,86 @@ function Hisser({ heritage, onHisse, onRetour }: { heritage: Constellation; onHi
 
 /* ---------- Le Ciel ---------- */
 
-function etatDuCiel(c: CielData): string {
-  // L'anniversaire passe avant tout — c'est un fait du calendrier, jamais une relance.
-  const anniv = c.astres.find((a) => a.birthDate && estAnniversaire(a.birthDate))
-  if (anniv) {
-    const age = ageDe(anniv.birthDate!)
-    return `C'est l'anniversaire de ${nomIntime(anniv)} — ${age} an${age > 1 ? 's' : ''} aujourd'hui. ✦`
+/** L'État du Ciel — plusieurs états peuvent coexister et s'empiler (max 3),
+    du plus factuel (anniversaire) au plus doux (l'heure). */
+function etatsDuCiel(c: CielData): string[] {
+  const out: string[] = []
+  // Les anniversaires passent avant tout — un fait du calendrier, jamais une relance.
+  for (const a of c.astres) {
+    if (a.birthDate && estAnniversaire(a.birthDate)) {
+      const age = ageDe(a.birthDate)
+      out.push(`C'est l'anniversaire de ${nomIntime(a)} — ${age} an${age > 1 ? 's' : ''} aujourd'hui. ✦`)
+    }
   }
-  if (c.transmissions.length === 0) return 'Votre famille attend sa première page.'
+  if (c.transmissions.length === 0) {
+    if (out.length === 0) out.push('Votre famille attend sa première page.')
+    return out.slice(0, 3)
+  }
   const derniere = new Date(c.transmissions[0].createdAt).getTime()
-  if (Date.now() - derniere > 72 * 3600 * 1000) return 'La famille se repose.'
+  const repos = Date.now() - derniere > 72 * 3600 * 1000
+  // Quelqu'un est veillé
   const veillee = c.transmissions.find((t) => Object.keys(t.veilles).length > 0 && t.aboutId)
   if (veillee) {
     const astre = c.astres.find((a) => a.id === veillee.aboutId)
-    if (astre) return `La famille veille sur ${nomIntime(astre)}.`
+    if (astre) out.push(`La famille veille sur ${nomIntime(astre)}.`)
   }
-  if (c.transmissions[0].kind === 'souvenir') return 'Un souvenir a été déposé dans le cercle.'
-  const h = new Date().getHours()
-  if (h < 6) return 'La nuit veille avec vous.'
-  if (h < 12) return 'Le jour se lève sur votre famille.'
-  if (h < 18) return 'Tout est paisible à la maison.'
-  return 'Douceur sur votre famille ce soir.'
+  // Le dernier geste est un souvenir
+  if (c.transmissions[0].kind === 'souvenir') out.push('Un souvenir a été déposé dans le cercle.')
+  // À défaut d'événement, une phrase de fond (repos, puis l'heure).
+  if (out.length === 0) {
+    if (repos) out.push('La famille se repose.')
+    else {
+      const h = new Date().getHours()
+      if (h < 6) out.push('La nuit veille avec vous.')
+      else if (h < 12) out.push('Le jour se lève sur votre famille.')
+      else if (h < 18) out.push('Tout est paisible à la maison.')
+      else out.push('Douceur sur votre famille ce soir.')
+    }
+  }
+  return out.slice(0, 3)
 }
 
 // Le livre ne s'ouvre qu'une fois par session — quand on entre dans la maison,
 // pas à chaque retour à l'accueil.
 let livreDejaOuvert = false
 
-/** L'État du Ciel — la phrase se compose à la machine à écrire (SF Mono),
-    caractère par caractère, puis le curseur reste, calme, à la fin. */
-function EtatCiel({ texte, onClick }: { texte: string; onClick: () => void }) {
+/** L'État du Ciel — une à trois phrases empilées, composées à la machine
+    à écrire (SF Mono), l'une après l'autre. Le curseur suit la frappe puis
+    reste, calme, à la fin. `rejouer` (incrémenté au clic sur « Famille »)
+    relance la composition depuis le début. */
+function EtatCiel({ textes, onClick, rejouer }: { textes: string[]; onClick: () => void; rejouer: number }) {
+  const plein = textes.join('\n')
   const reduit = typeof window !== 'undefined'
     && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  const [n, setN] = useState(reduit ? texte.length : 0)
+  const [n, setN] = useState(reduit ? plein.length : 0)
   useEffect(() => {
-    if (reduit) { setN(texte.length); return }
+    if (reduit) { setN(plein.length); return }
     setN(0)
     const id = window.setInterval(() => {
       setN((k) => {
-        if (k >= texte.length) { window.clearInterval(id); return k }
+        if (k >= plein.length) { window.clearInterval(id); return k }
         return k + 1
       })
     }, 45)
     return () => window.clearInterval(id)
-  }, [texte, reduit])
+  }, [plein, reduit, rejouer])
+  // On répartit les caractères déjà tapés ligne par ligne, pour l'empilement.
+  const vues: string[] = []
+  let reste = n
+  for (const t of textes) {
+    const pris = Math.max(0, Math.min(t.length, reste))
+    vues.push(t.slice(0, pris))
+    reste -= t.length + 1 // +1 pour le saut de ligne consommé
+  }
+  const derniereVisible = vues.reduce((acc, v, i) => (v.length > 0 ? i : acc), 0)
   return (
-    <button className="etat-ciel" onClick={onClick} aria-label={texte}>
-      <span className="etat-texte">{texte.slice(0, n)}</span>
-      <span className="etat-curseur" aria-hidden="true">▋</span>
+    <button className="etat-ciel" onClick={onClick} aria-label={textes.join(' · ')}>
+      {vues.map((v, i) => (
+        <span className="etat-ligne" key={i}>
+          {v}
+          {i === derniereVisible && <span className="etat-curseur" aria-hidden="true">▋</span>}
+        </span>
+      ))}
     </button>
   )
 }
@@ -1055,12 +1087,23 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
   // Vrai au tout premier affichage de l'accueil : le livre s'ouvre en fondu.
   const [ouverture] = useState(() => { const premier = !livreDejaOuvert; livreDejaOuvert = true; return premier })
 
+  // Cliquer « Famille » relance la composition de l'État du Ciel.
+  const [rejouer, setRejouer] = useState(0)
+
   return (
     <div className="shell foyer">
       <div className="foyer-fond" aria-hidden="true" />
       {ouverture && <div className="foyer-fond-ferme" aria-hidden="true" />}
       <header className="sky">
-        <h1><button className="titre-lien" onClick={onGalaxie}><span className="mot-famille">Famille<sup className="palier-marque" title="Formule Famille — gratuite">✦</sup></span> <span className="nom-famille">{ciel.name}</span></button></h1>
+        <h1 className="titre-foyer">
+          <button className="titre-lien" onClick={() => setRejouer((x) => x + 1)} aria-label="Relire l'état du ciel">
+            <span className="mot-famille">Famille<sup className="palier-marque" title="Formule Famille — gratuite">✦</sup></span>
+          </button>
+          {' '}
+          <button className="titre-lien" onClick={onGalaxie} aria-label="Les générations">
+            <span className="nom-famille">{ciel.name}</span>
+          </button>
+        </h1>
         {horsLigne && <p className="whisper">hors réseau — les gestes attendent</p>}
       </header>
 
@@ -1090,20 +1133,22 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
         })}
       </div>
 
-      <EtatCiel texte={etatDuCiel(ciel)} onClick={onChronologie} />
+      <div className="bas-fixe">
+        <EtatCiel textes={etatsDuCiel(ciel)} onClick={onChronologie} rejouer={rejouer} />
 
-      <div className="barre-bas">
-        <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-          <span className="geste-rond geste-visage"><img src="/carnet.jpg" alt="" /><span className="geste-mot">lire</span></span>
-        </button>
+        <div className="barre-bas">
+          <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
+            <span className="geste-rond geste-visage"><img src="/carnet.jpg" alt="" /><span className="geste-mot">lire</span></span>
+          </button>
 
-        <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-          <span className="geste-rond geste-mandala"><img src="/plume.jpg" alt="" /><span className="geste-mot">écrire</span></span>
-        </button>
+          <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
+            <span className="geste-rond geste-mandala"><img src="/plume.jpg" alt="" /><span className="geste-mot">écrire</span></span>
+          </button>
 
-        <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — découvrir">
-          <span className="geste-rond geste-visage"><img src="/mana-key.jpg" alt="" /><span className="geste-mot">découvrir</span></span>
-        </button>
+          <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — découvrir">
+            <span className="geste-rond geste-visage"><img src="/mana-key.jpg" alt="" /><span className="geste-mot">découvrir</span></span>
+          </button>
+        </div>
       </div>
     </div>
   )
