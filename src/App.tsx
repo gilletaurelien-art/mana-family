@@ -1038,6 +1038,9 @@ const MEDIUMS: { id: Medium; label: string }[] = [
 ]
 function mediumDe(t: Transmission): Medium | null {
   if (t.imageUrl) return 'photo'
+  if (t.audioUrl) return 'audio'
+  if (t.videoUrl) return 'video'
+  if (t.musicUrl) return 'musique'
   return null
 }
 

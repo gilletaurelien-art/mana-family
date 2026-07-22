@@ -26,16 +26,22 @@ export function demoCiel(): Ciel {
       {
         id: 't1', authorId: 'a-moi', aboutId: 'a-jules', kind: 'souvenir',
         body: 'Jules a fait ses premiers tours de vélo sans les roulettes ce matin — immense fierté.',
+        // démo : marque « vidéo » pour illustrer le filtre médium (aucun lecteur encore).
+        videoUrl: '#demo-video',
         forMe: false, veilles: { 'a-jeanne': jours(0), 'a-rose': jours(1) }, createdAt: jours(1),
       },
       {
         id: 't2', authorId: 'a-jeanne', aboutId: 'a-moi', kind: 'emotionnel',
         body: 'Je pense fort à toi aujourd’hui. La maison est calme, le jardin fleurit.',
+        // démo : marque « audio » (message vocal).
+        audioUrl: '#demo-audio',
         forMe: true, veilles: {}, createdAt: jours(2),
       },
       {
         id: 't3', authorId: 'a-moi', aboutId: null, kind: 'ensemble',
         body: 'Repas de famille dimanche midi chez Mamie — chacun apporte un plat.',
+        // démo : marque « musique » (la chanson du repas).
+        musicUrl: '#demo-musique',
         happensOn: dans(4), forMe: false, veilles: { 'a-marc': jours(0) }, createdAt: jours(3),
       },
       {
@@ -45,7 +51,9 @@ export function demoCiel(): Ciel {
       },
       {
         id: 't5', authorId: 'a-rose', aboutId: null, kind: 'souvenir',
-        body: 'Retrouvé une photo de l’été 1974 à Crozon — je la déposerai bientôt.',
+        body: 'Retrouvé une photo de l’été 1974 à Crozon.',
+        // démo : image data: (rendue directement par TxImage) pour illustrer « photo ».
+        imageUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='260'%3E%3Crect width='420' height='260' fill='%23c9b78f'/%3E%3Ctext x='50%25' y='52%25' font-family='monospace' font-size='19' fill='%23514019' text-anchor='middle'%3E%C3%89t%C3%A9 1974 %C2%B7 Crozon%3C/text%3E%3C/svg%3E",
         forMe: false, veilles: {}, createdAt: jours(6),
       },
     ],
