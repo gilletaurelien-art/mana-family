@@ -625,15 +625,9 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         ))}
       </div>
       <header className="sky vitrine-hero">
-        <div className="vitrine-accroche">
-          <p className="vitrine-eyebrow">MANAfamily</p>
-          <h1>Votre carnet de famille</h1>
-          <p className="vitrine-phrase">
-            Un cercle privé pour prendre soin, ensemble, de ceux qu’on aime :
-            partager un moment, veiller sur les autres, garder la mémoire vivante.
-          </p>
-        </div>
-        <p className="vitrine-slogan">La Présence fait vivre. La Mémoire fait durer.</p>
+        <p className="vitrine-eyebrow">MANAfamily</p>
+        <h1>Votre carnet de famille</h1>
+        <p className="vitrine-slogan">La Présence fait vivre.<br />La Mémoire fait durer.</p>
       </header>
 
       <section className="vitrine-piliers">
