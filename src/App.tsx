@@ -626,7 +626,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       </div>
       <header className="sky vitrine-hero">
         <div className="vitrine-accroche">
-          <p className="vitrine-eyebrow">Mana Family</p>
+          <p className="vitrine-eyebrow">MANAfamily</p>
           <h1>Votre carnet de famille</h1>
           <p className="vitrine-phrase">
             Un cercle privé pour prendre soin, ensemble, de ceux qu’on aime :

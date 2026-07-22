@@ -1680,9 +1680,12 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 .vitrine-eyebrow {
   margin: 0.2rem 0 0.05rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
+  font-family: 'Philosopher', var(--serif);
+  font-weight: 700;
+  font-size: 37px;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.05;
   color: var(--or-mana);
 }
 
