@@ -5,18 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mana Family — Livre blanc v2.9</title>
 <style>
+  /* Marelle — cursive de l'Éducation nationale (SIL OFL 1.1), pour les titres. */
+  @font-face {
+    font-family: 'Marelle';
+    src: url('/fonts/Marelle-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
   :root {
-    --nuit: #0b131f;
-    --cale: #101a29;
-    --or: #e5b842;
-    --or-doux: rgba(229, 184, 66, 0.55);
-    --lin: #eae6df;
-    --encre: #edf1f6;
-    --brume: #93a3b8;
+    /* Fond Parchemin — beige à encre sombre (repris de MANA Family « papier ») */
+    --nuit: #e7d9ba;            /* le parchemin */
+    --cale: #f3e8ca;
+    --or: #9a6a1e;              /* ambre profond, lisible sur le beige */
+    --or-doux: rgba(154, 106, 30, 0.7);
+    --lin: #5a4a33;
+    --encre: #3b2f21;           /* l'encre */
+    --brume: #7c6a4e;
     --horizon: #2b5275;
-    --filet: rgba(234, 230, 223, 0.14);
+    --filet: rgba(80, 60, 35, 0.30);
     --serif: 'Iowan Old Style', 'Palatino', 'Caslon', Georgia, serif;
     --sans: 'Inter', 'Avenir Next', -apple-system, 'Segoe UI', system-ui, sans-serif;
+    --titre: 'Marelle', 'Iowan Old Style', 'Palatino', Georgia, serif;
   }
   * { box-sizing: border-box; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -28,6 +36,19 @@
     font-size: 16px;
     line-height: 1.65;
   }
+  /* Le fond Parchemin — feuille vieillie, taches douces + grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -1;
+    background-color: #e7d9ba;
+    background-image:
+      radial-gradient(ellipse 70% 55% at 26% 16%, rgba(214, 190, 142, 0.55), transparent 62%),
+      radial-gradient(ellipse 85% 62% at 80% 74%, rgba(150, 118, 74, 0.42), transparent 64%),
+      radial-gradient(ellipse 130% 80% at 50% 112%, rgba(96, 70, 40, 0.45), transparent 72%),
+      radial-gradient(ellipse 120% 85% at 50% -12%, rgba(120, 92, 55, 0.35), transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    background-blend-mode: multiply, multiply, multiply, multiply, multiply;
+  }
 
   /* ============ LA COUVERTURE ============ */
   .couverture {
@@ -38,18 +59,18 @@
     justify-content: center;
     text-align: center;
     padding: 4rem 1.5rem 3rem;
-    background: radial-gradient(ellipse at 50% 20%, #16233a, var(--nuit) 65%);
+    background: radial-gradient(ellipse at 50% 18%, rgba(247, 238, 214, 0.7), transparent 60%);
     position: relative;
     page-break-after: always;
   }
   .etoiles { color: var(--or); letter-spacing: 1.6rem; margin-left: 1.6rem; font-size: 0.9rem; opacity: 0.9; }
   .couverture h1 {
-    font-family: var(--serif);
+    font-family: var(--titre);
     font-size: clamp(2.6rem, 7vw, 4.2rem);
     font-weight: 600;
     letter-spacing: 0.06em;
     margin: 1.2rem 0 0.4rem;
-    color: #f5edd8;
+    color: #3b2f21;
   }
   .sous-titre {
     font-family: var(--serif);
@@ -59,8 +80,8 @@
     margin: 0 0 2.5rem;
   }
   .devise {
-    font-family: var(--serif);
-    font-size: 1.35rem;
+    font-family: var(--titre);
+    font-size: 1.55rem;
     color: var(--or);
     margin: 0.5rem 0 3rem;
   }
@@ -80,7 +101,7 @@
     font-family: var(--serif);
     font-size: 1.7rem;
     font-weight: 600;
-    color: #f5edd8;
+    color: #3b2f21;
     margin: 0 0 1.4rem;
     line-height: 1.3;
   }
@@ -105,7 +126,7 @@
   section + section { border-top: 1px dotted var(--filet); }
 
   p { margin: 0.9rem 0; }
-  strong { color: #f8f3e4; }
+  strong { color: #2a2013; }
   em { color: var(--lin); }
   ul { padding-left: 1.2rem; margin: 0.9rem 0; }
   li { margin: 0.4rem 0; }
@@ -119,11 +140,11 @@
     font-family: var(--serif);
     font-size: 1.3rem;
     line-height: 1.55;
-    color: #f5edd8;
-    background: rgba(234, 230, 223, 0.03);
+    color: #3b2f21;
+    background: rgba(120, 92, 55, 0.06);
     border: none;
-    border-top: 1px solid rgba(229, 184, 66, 0.35);
-    border-bottom: 1px solid rgba(229, 184, 66, 0.35);
+    border-top: 1px solid rgba(154, 106, 30, 0.4);
+    border-bottom: 1px solid rgba(154, 106, 30, 0.4);
     position: relative;
   }
   .loi::before {
@@ -148,7 +169,7 @@
   /* Cartes de formule */
   .formules { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.6rem 0; }
   .formule {
-    background: rgba(234, 230, 223, 0.035);
+    background: rgba(120, 92, 55, 0.05);
     border: 1px solid var(--filet);
     border-radius: 16px;
     padding: 1.3rem 1.5rem;
@@ -179,10 +200,10 @@
     color: var(--brume);
     text-align: left;
     padding: 0.6rem 0.8rem;
-    border-bottom: 1px solid rgba(229, 184, 66, 0.35);
+    border-bottom: 1px solid rgba(154, 106, 30, 0.4);
   }
   td { padding: 0.75rem 0.8rem; border-bottom: 1px dotted var(--filet); vertical-align: top; }
-  td:first-child { font-family: var(--serif); color: #f5edd8; white-space: nowrap; }
+  td:first-child { font-family: var(--serif); color: #3b2f21; white-space: nowrap; }
   td:nth-child(2) { color: var(--or); white-space: nowrap; }
 
   /* Listes de principes */
@@ -211,6 +232,14 @@
   }
   .colophon .sceau { font-family: var(--serif); font-size: 1rem; color: var(--or); letter-spacing: 0.08em; }
 
+  /* ============ COUVERTURE AÉRÉE — plus de souffle ============ */
+  .couverture { padding: 5.5rem 1.5rem 4.5rem; }
+  .couverture .etoiles { margin-bottom: 2.8rem; }
+  .couverture h1 { margin: 1.8rem 0 1.1rem; }
+  .couverture .sous-titre { margin: 0.5rem 0 3rem; }
+  .couverture .devise { margin: 2.4rem 0 3rem; line-height: 1.5; }
+  .couverture .cartouche { margin-top: 1.4rem; padding-top: 2rem; }
+
   @media print {
     body { font-size: 11.5pt; }
     .couverture { min-height: 96vh; }
@@ -222,7 +251,7 @@
 
 <header class="couverture">
   <div class="etoiles">✦ ✦ ✦</div>
-  <h1>MANA FAMILY</h1>
+  <h1>Mana Family</h1>
   <p class="sous-titre">Le système de la famille vivante — un seul cercle</p>
   <p class="devise">« La Présence fait vivre. La Mémoire fait durer. »</p>
   <p class="cartouche">Livre blanc · v2.9 — constitution complète · juillet 2026 (un seul cercle · formules · MANAcare)</p>
@@ -231,18 +260,10 @@
 <main>
 
 <section>
-  <h2><span class="num">I</span>Introduction — le problème</h2>
-  <p>Les familles communiquent plus que jamais, mais elles se comprennent et se structurent de moins en moins dans le temps. Les outils actuels organisent le court terme, pas la continuité :</p>
-  <ul>
-    <li><strong>messageries</strong> <span class="fleche">→</span> flux chaotique, sans mémoire structurée</li>
-    <li><strong>réseaux sociaux</strong> <span class="fleche">→</span> mémoire dispersée, publique et non familiale</li>
-    <li><strong>photos</strong> <span class="fleche">→</span> archives sans contexte</li>
-    <li><strong>notes</strong> <span class="fleche">→</span> individuelles, non partagées</li>
-  </ul>
-  <p>Résultat : la vie familiale est fragmentée, même lorsque la communication est abondante. Et un second problème, plus silencieux : <strong>la mémoire familiale meurt avec ses porteurs.</strong> Les histoires des grands-parents ne sont jamais enregistrées, les greniers débordent de photos que personne ne datera, et chaque génération recommence de zéro.</p>
-  <p>Tout le monde a déjà entendu — ou prononcé — l'une de ces phrases :</p>
+  <h2><span class="num">I</span>Introduction — la solution Mana Family</h2>
+  <p>Les familles communiquent plus que jamais, et pourtant elles se structurent de moins en moins dans le temps. Les outils d'aujourd'hui organisent le court terme, jamais la continuité — les messageries noient tout dans un flux sans mémoire, les réseaux dispersent, les photos s'entassent sans contexte, les notes restent solitaires. Résultat : la vie familiale est fragmentée même quand la communication est abondante, et, plus silencieusement, <strong>la mémoire familiale meurt avec ses porteurs.</strong> Tout le monde a déjà entendu — ou prononcé — l'une de ces phrases :</p>
   <p class="citation">« Si seulement j'avais enregistré sa voix avant qu'il parte. »<br>« On ne sait plus qui est cette personne sur cette photo. »</p>
-  <p>Mana Family existe pour que ces phrases ne soient plus jamais prononcées.</p>
+  <p><strong>Mana Family est la réponse à ce manque.</strong> Là où les autres outils empilent des messages, Mana Family donne à la famille une <strong>structure vivante</strong> : chaque proche y est présent dans la durée, chaque geste de soin y laisse une trace, et la mémoire se tisse d'elle-même — sans qu'on ait jamais à la « remplir ». On veille les uns sur les autres aujourd'hui ; ce faisant, on préserve pour demain. Ces phrases de regret ne devraient plus jamais être prononcées : Mana Family existe précisément pour cela.</p>
   <div class="loi">Mana Family vous aide aujourd'hui — et c'est précisément parce qu'il vous aide aujourd'hui qu'il préservera demain votre mémoire.</div>
   <p>Le produit vit d'abord dans les fièvres de la nuit, les réunions parents-profs, les premiers pas, les repas de Noël. La mémoire n'est pas un coffre-fort qu'on remplit : c'est la trace que laisse une famille qui veille les uns sur les autres.</p>
 </section>
@@ -278,7 +299,7 @@
 
 <section>
   <h2><span class="num">IV</span>Mana Kids — continuité protégée</h2>
-  <p>Les enfants ne sont pas des utilisateurs sociaux. <strong>Ils sont des astres continus dans le temps</strong>, présents dans un ou plusieurs Cercles.</p>
+  <p>Les enfants ne sont pas des utilisateurs sociaux. <strong>Ils sont des astres continus dans le temps</strong>, présents dans une ou plusieurs familles.</p>
   <p>Principes non négociables : accès uniquement via adultes · aucun usage public · aucun scoring · aucune gamification · aucune exposition sociale · aucune comparaison entre enfants.</p>
   <p>L'enfant est suivi dans sa continuité familiale, pas dans une logique sociale.</p>
   <h3>🎓 La remise de majorité</h3>
@@ -315,7 +336,7 @@
   </ul>
 
   <h3>🌙 Second pilier — la Mémoire <em>« Le produit de demain »</em></h3>
-  <p>Chaque membre possède une continuité : son évolution dans le temps, ses cycles de vie, son historique familial, ses liens entre Cercles. La famille devient une <strong>mémoire vivante structurée</strong>. La mémoire n'est pas une fonctionnalité séparée : elle est <strong>la trace que laisse la présence</strong>. Une famille qui veille aujourd'hui se souvient demain, sans effort supplémentaire.</p>
+  <p>Chaque membre possède une continuité : son évolution dans le temps, ses cycles de vie, son historique familial, ses liens dans la famille. La famille devient une <strong>mémoire vivante structurée</strong>. La mémoire n'est pas une fonctionnalité séparée : elle est <strong>la trace que laisse la présence</strong>. Une famille qui veille aujourd'hui se souvient demain, sans effort supplémentaire.</p>
   <div class="loi">La Présence fait vivre. La Mémoire fait durer.</div>
   <p>En lecture produit : la Présence fait venir chaque jour (utilité quotidienne, gratuite), la Mémoire fait rester et soutient le modèle (le tissage, les rituels, les artefacts).</p>
 
@@ -337,7 +358,7 @@
   <p>Le système repose sur quatre couches :</p>
   <ul>
     <li><strong>Identité des astres</strong> <span class="fleche">→</span> continuité des individus</li>
-    <li><strong>Cercle Graph</strong> <span class="fleche">→</span> structure familiale multi-niveaux, centrée personnes</li>
+    <li><strong>Graphe familial</strong> <span class="fleche">→</span> structure familiale centrée sur les personnes</li>
     <li><strong>Transmission Layer</strong> <span class="fleche">→</span> échanges contextuels structurés</li>
     <li><strong>Memory Layer</strong> <span class="fleche">→</span> archive familiale longue durée (brute + tissée)</li>
   </ul>
@@ -385,7 +406,7 @@
   <p>Des objets et des cérémonies, pas des accès :</p>
   <table>
     <tr><th>Artefact</th><th>Prix</th><th>Ce que c'est</th></tr>
-    <tr><td>Le Coffret de majorité</td><td>150–300 €</td><td>La version objet de la remise des 18 ans : livre relié de sa continuité, lettres des cercles, clé physique de ses archives</td></tr>
+    <tr><td>Le Coffret de majorité</td><td>150–300 €</td><td>La version objet de la remise des 18 ans : livre relié de sa continuité, lettres de la famille, clé physique de ses archives</td></tr>
     <tr><td>La Fresque de constellation</td><td>300–800 €</td><td>La carte du ciel familial — les astres, leurs liens — gravée ou imprimée en grand format</td></tr>
     <tr><td>La Numérisation du grenier</td><td>400–900 €</td><td>Photos papier, Super 8, VHS, lettres : collectés, numérisés, datés, réintégrés aux bonnes époques</td></tr>
     <tr><td>Le Grand Livre de la Lignée</td><td>500–1 500 €</td><td>Édition d'art reliée : l'arbre, les branches, les récits fondateurs — un exemplaire par foyer</td></tr>
@@ -441,9 +462,9 @@
 
 <section>
   <h2><span class="num">XI</span>Pourquoi maintenant</h2>
-  <p><strong>Le vent démographique.</strong> La génération la plus riche de l'histoire entre dans la décennie où « avant qu'il soit trop tard » devient une urgence physique. Ses enfants (40–55 ans) sont exactement les acheteurs du Foyer. La plus grande transmission de patrimoine de l'histoire est en cours — et personne ne s'occupe de transmettre la mémoire qui va avec.</p>
+  <p><strong>Le vent démographique.</strong> La génération la plus riche de l'histoire entre dans la décennie où « avant qu'il soit trop tard » devient une urgence physique. Ses enfants (40–55 ans) sont exactement les acheteurs du Récit. La plus grande transmission de patrimoine de l'histoire est en cours — et personne ne s'occupe de transmettre la mémoire qui va avec.</p>
   <p><strong>Le fossé défensif est émotionnel, pas technique.</strong> Une messagerie se quitte en un clic. Une constellation qui contient dix ans de frises d'enfants et la voix enregistrée d'un grand-père décédé ne se quitte jamais. C'est la rétention la plus profonde qui existe — à condition de ne jamais trahir la confiance.</p>
-  <p><strong>Un besoin universel, un produit localisable.</strong> Les rituels changent d'une culture à l'autre ; la structure — cercles, transmissions, continuité — ne change pas.</p>
+  <p><strong>Un besoin universel, un produit localisable.</strong> Les rituels changent d'une culture à l'autre ; la structure — la famille, les transmissions, la continuité — ne change pas.</p>
 </section>
 
 <section>
@@ -489,13 +510,13 @@
   </ul>
   <p>Les épreuves sont intemporelles ; les solutions, elles, évolueront — elles vivent dans le document compagnon <em>Mana Family — pistes produit</em>.</p>
   <p><strong>Avant toute ligne de code : le test du dîner.</strong> Raconter la Biographie d'un astre et le Coffret de majorité à cinq familles réelles — et regarder les yeux. Si quelqu'un demande quand ça existe, ou propose de payer d'avance, la pépite est confirmée.</p>
-  <p><strong>Premier incrément produit :</strong> la primitive transmission, dans un Cercle 1 réel, pendant un mois. Si des parents envoient spontanément des transmissions au lieu de textos, tout le reste a un sol.</p>
+  <p><strong>Premier incrément produit :</strong> la primitive transmission, dans une famille réelle, pendant un mois. Si des parents envoient spontanément des transmissions au lieu de textos, tout le reste a un sol.</p>
 </section>
 
 <section>
   <h2><span class="num">✦</span>Conclusion</h2>
   <p>Mana Family ne cherche pas à améliorer la communication familiale. Il propose un nouveau modèle :</p>
-  <div class="loi">Transformer la famille en un système de Cercles vivants, capables de préserver la continuité humaine dans le temps — et faire circuler l'argent comme la mémoire : d'une génération vers la suivante, en cadeau.</div>
+  <div class="loi">Transformer la famille en un seul cercle vivant, capable de préserver la continuité humaine dans le temps — et faire circuler l'argent comme la mémoire : d'une génération vers la suivante, en cadeau.</div>
   <p>Et derrière la technologie, une seule loi, la même qui traverse tout l'écosystème :</p>
   <div class="loi">Prendre soin, c'est aimer.<br>Mana Family est la forme que prend cette loi quand elle s'applique à une famille.</div>
 </section>
