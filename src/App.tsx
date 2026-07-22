@@ -1035,7 +1035,7 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
       <div className="foyer-fond" aria-hidden="true" />
       {ouverture && <div className="foyer-fond-ferme" aria-hidden="true" />}
       <header className="sky">
-        <h1><button className="titre-lien" onClick={onGalaxie}><span className="mot-famille">Famille<sup className="palier-marque" title="Formule Famille — gratuite">✦</sup></span> {ciel.name}</button></h1>
+        <h1><button className="titre-lien" onClick={onGalaxie}><span className="mot-famille">Famille<sup className="palier-marque" title="Formule Famille — gratuite">✦</sup></span> <span className="nom-famille">{ciel.name}</span></button></h1>
         {horsLigne && <p className="whisper">hors réseau — les gestes attendent</p>}
       </header>
 
