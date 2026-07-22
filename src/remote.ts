@@ -19,7 +19,7 @@ const CACHE = 'mana-family-ciel-cache'
 const OUTBOX = 'mana-family-outbox'
 
 type Geste =
-  | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl: string | null }
+  | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl: string | null; audioUrl: string | null; videoUrl: string | null; musicUrl: string | null }
   | { geste: 'veiller'; txId: string }
   | { geste: 'portrait'; astreId: string; url: string }
   | { geste: 'naissance'; astreId: string; date: string }
@@ -40,19 +40,49 @@ async function rpc<T>(fn: string, args?: Record<string, unknown>): Promise<T> {
   return data as T
 }
 
+const MIME_EXT: Record<string, string> = {
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp',
+  'audio/mpeg': 'mp3', 'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac',
+  'audio/ogg': 'ogg', 'audio/wav': 'wav', 'audio/webm': 'weba',
+  'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov',
+}
+
+/**
+ * Monte un médium dans le bucket privé « pieces-jointes », nommé par l'id de la
+ * transmission (« <id>.<ext> »). On n'inscrit que le chemin ; l'octet n'est
+ * lisible qu'une fois la transmission créée et le droit accordé (RLS storage).
+ * Une data-URL est téléversée ; un chemin déjà monté est renvoyé tel quel.
+ */
+async function monterMedia(id: string, val: string | null, forcedExt?: string): Promise<string | null> {
+  if (!val) return null
+  if (!val.startsWith('data:')) return val
+  const mime = val.slice(5, val.indexOf(';'))
+  const ext = forcedExt ?? MIME_EXT[mime] ?? 'bin'
+  const blob = await (await fetch(val)).blob()
+  const chemin = `${id}.${ext}`
+  const { error } = await supabase.storage.from('pieces-jointes').upload(chemin, blob, { contentType: mime, upsert: true })
+  if (error) throw error
+  return chemin
+}
+
 async function jouer(g: Geste): Promise<void> {
   if (g.geste === 'transmettre') {
-    // La pièce jointe part d'abord dans le bucket privé (nommée par l'id de la
-    // transmission) ; on n'inscrit que son chemin. L'octet n'est lisible
-    // qu'une fois la transmission créée et le droit accordé (RLS storage).
-    let chemin: string | null = g.imageUrl && !g.imageUrl.startsWith('data:') ? g.imageUrl : null
-    if (g.imageUrl && g.imageUrl.startsWith('data:')) {
-      const blob = await (await fetch(g.imageUrl)).blob()
-      chemin = `${g.id}.jpg`
-      const { error } = await supabase.storage.from('pieces-jointes').upload(chemin, blob, { contentType: 'image/jpeg', upsert: true })
-      if (error) throw error
+    // Chaque médium part d'abord dans le bucket privé ; on n'envoie que son chemin.
+    const p_image = await monterMedia(g.id, g.imageUrl, 'jpg')
+    const p_audio = await monterMedia(g.id, g.audioUrl)
+    const p_video = await monterMedia(g.id, g.videoUrl)
+    const p_music = await monterMedia(g.id, g.musicUrl)
+    // Rétrocompat : on n'ajoute p_audio/p_video/p_music QUE s'ils existent, pour
+    // que les transmissions texte/photo restent compatibles avec la RPC à 7 args
+    // tant que la migration média (10 args) n'est pas jouée.
+    const args: Record<string, unknown> = {
+      p_id: g.id, p_kind: g.kind, p_body: g.body, p_about: g.aboutId,
+      p_recipients: g.recipientIds, p_happens_on: g.happensOn, p_image,
     }
-    await rpc('transmettre', { p_id: g.id, p_kind: g.kind, p_body: g.body, p_about: g.aboutId, p_recipients: g.recipientIds, p_happens_on: g.happensOn, p_image: chemin })
+    if (p_audio) args.p_audio = p_audio
+    if (p_video) args.p_video = p_video
+    if (p_music) args.p_music = p_music
+    await rpc('transmettre', args)
   } else if (g.geste === 'veiller') {
     await rpc('veiller', { p_tx: g.txId })
   } else if (g.geste === 'naissance') {
@@ -120,7 +150,7 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
       next = {
         ...next,
         transmissions: [
-          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, imageUrl: g.imageUrl, happensOn: g.happensOn, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
+          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, imageUrl: g.imageUrl, audioUrl: g.audioUrl, videoUrl: g.videoUrl, musicUrl: g.musicUrl, happensOn: g.happensOn, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
           ...next.transmissions,
         ],
       }
@@ -172,15 +202,18 @@ export async function charger(): Promise<{ ciel: Ciel | null; horsLigne: boolean
 
 export function transmettre(
   ciel: Ciel,
-  t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null },
+  t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null; audioUrl?: string | null; videoUrl?: string | null; musicUrl?: string | null },
 ): Ciel {
   const id = crypto.randomUUID()
   const imageUrl = t.imageUrl ?? null
-  enfiler({ geste: 'transmettre', id, kind: t.kind, body: t.body, aboutId: t.aboutId, recipientIds: t.recipientIds, happensOn: t.happensOn, imageUrl })
+  const audioUrl = t.audioUrl ?? null
+  const videoUrl = t.videoUrl ?? null
+  const musicUrl = t.musicUrl ?? null
+  enfiler({ geste: 'transmettre', id, kind: t.kind, body: t.body, aboutId: t.aboutId, recipientIds: t.recipientIds, happensOn: t.happensOn, imageUrl, audioUrl, videoUrl, musicUrl })
   return {
     ...ciel,
     transmissions: [
-      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, imageUrl, happensOn: t.happensOn, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
+      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, imageUrl, audioUrl, videoUrl, musicUrl, happensOn: t.happensOn, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
       ...ciel.transmissions,
     ],
   }

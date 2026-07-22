@@ -37,6 +37,17 @@ async function preparerImage(file: File, maxDim = 1600, quality = 0.82): Promise
   return canvas.toDataURL('image/jpeg', quality)
 }
 
+/** Lit un fichier en data-URL — audio / vidéo / musique (aucune compression
+    côté client) ; ces octets partent au bucket dès la prochaine marée. */
+function lireFichierDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader()
+    r.onload = () => resolve(r.result as string)
+    r.onerror = () => reject(r.error)
+    r.readAsDataURL(file)
+  })
+}
+
 interface AstreDraft { name: string; role: Role; circle: 1 | 2 | 3; birthDate: string | null }
 
 /** Le visage — logo & future assistante. Uniquement aux seuils, jamais dans la vie de famille. */
@@ -1473,6 +1484,28 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 
 /* ---------- Composer ---------- */
 
+// Les médiums qu'on peut joindre à un moment (un seul à la fois).
+const MEDIA_TYPES: { medium: Medium; emoji: string; label: string; accept: string }[] = [
+  { medium: 'photo', emoji: '📷', label: 'Photo', accept: 'image/*' },
+  { medium: 'video', emoji: '🎬', label: 'Vidéo', accept: 'video/*' },
+  { medium: 'audio', emoji: '🎙️', label: 'Audio', accept: 'audio/*' },
+  { medium: 'musique', emoji: '🎵', label: 'Musique', accept: 'audio/*' },
+]
+// Au-delà, on refuse doucement (l'octet transite par le stockage local hors ligne).
+const MEDIA_MAX_MO = 8
+
+/** Aperçu d'un médium dans le Composer, selon son type. */
+function MediaApercu({ url, medium }: { url: string; medium: Medium }) {
+  if (medium === 'photo') return <img src={url} alt="Aperçu de la pièce jointe" />
+  if (medium === 'video') return <video className="composer-media-video" src={url} controls preload="metadata" />
+  return (
+    <div className="composer-media-son">
+      <span className="composer-media-son-icone" aria-hidden="true">{medium === 'musique' ? '🎵' : '🎙️'}</span>
+      <audio src={url} controls preload="metadata" />
+    </div>
+  )
+}
+
 // Offrir un geste : des attentions légères, silencieuses, à toucher.
 const GESTES: [string, string][] = [
   ['🤍', 'Pensée'], ['🤗', 'Câlin'], ['😘', 'Bisou'],
@@ -1492,14 +1525,45 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
   ciel: CielData
   me: Astre
   aboutId?: string | null
-  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null } | null) => void
+  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null; audioUrl?: string | null; videoUrl?: string | null; musicUrl?: string | null } | null) => void
 }) {
   const others = ciel.astres.filter((a) => a.id !== me.id)
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
   const [body, setBody] = useState('')
-  const [image, setImage] = useState<string | null>(null)
-  const [prepImage, setPrepImage] = useState(false)
+  const [media, setMedia] = useState<{ url: string; medium: Medium } | null>(null)
+  const [prepMedia, setPrepMedia] = useState(false)
+  const [mediaSheet, setMediaSheet] = useState(false)
+  const [mediaErreur, setMediaErreur] = useState<string | null>(null)
   const [offrirOuvert, setOffrirOuvert] = useState(false)
+
+  async function choisirMedia(medium: Medium, file: File | undefined) {
+    setMediaSheet(false)
+    setMediaErreur(null)
+    if (!file) return
+    if (medium !== 'photo' && file.size > MEDIA_MAX_MO * 1024 * 1024) {
+      setMediaErreur(`Ce fichier dépasse ${MEDIA_MAX_MO} Mo — choisissez un extrait plus court pour l'instant.`)
+      return
+    }
+    setPrepMedia(true)
+    try {
+      const url = medium === 'photo' ? await preparerImage(file) : await lireFichierDataUrl(file)
+      setMedia({ url, medium })
+    } catch {
+      setMediaErreur("Ce fichier n'a pas pu être préparé — réessayez avec un autre.")
+    } finally {
+      setPrepMedia(false)
+    }
+  }
+
+  const champMedia = () => {
+    if (!media) return {}
+    return {
+      imageUrl: media.medium === 'photo' ? media.url : null,
+      audioUrl: media.medium === 'audio' ? media.url : null,
+      videoUrl: media.medium === 'video' ? media.url : null,
+      musicUrl: media.medium === 'musique' ? media.url : null,
+    }
+  }
 
   const [ecoute, setEcoute] = useState(false)
   const recognitionRef = useRef<any>(null)
@@ -1561,46 +1625,63 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
 
         {/* 2. Deux options illustrées, côte à côte : pièce jointe & offrir un geste */}
         <div className="composer-tuiles">
-          {image ? (
+          {media ? (
             <div className="composer-pj-apercu">
-              <img src={image} alt="Aperçu de la pièce jointe" />
-              <button type="button" className="composer-pj-retirer" onClick={() => setImage(null)} aria-label="Retirer la photo">✕</button>
+              <MediaApercu url={media.url} medium={media.medium} />
+              <button type="button" className="composer-pj-retirer" onClick={() => setMedia(null)} aria-label="Retirer la pièce jointe">✕</button>
             </div>
           ) : (
-            <label className={`composer-tuile ${prepImage ? 'bientot' : ''}`} aria-label="Ajouter une photo">
+            <button type="button" className={`composer-tuile ${prepMedia ? 'bientot' : ''}`} onClick={() => setMediaSheet(true)} aria-label="Ajouter une pièce jointe">
               <span className="composer-tuile-img"><img src="/pj.jpg" alt="" /></span>
-              <span className="composer-tuile-mot">{prepImage ? 'Préparation…' : 'Pièce jointe'}</span>
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={async (e) => {
-                  const f = e.target.files?.[0]
-                  e.target.value = '' // permet de re-choisir le même fichier
-                  if (!f) return
-                  setPrepImage(true)
-                  try { setImage(await preparerImage(f)) } finally { setPrepImage(false) }
-                }}
-              />
-            </label>
+              <span className="composer-tuile-mot">{prepMedia ? 'Préparation…' : 'Pièce jointe'}</span>
+            </button>
           )}
           <button type="button" className="composer-tuile" onClick={() => setOffrirOuvert(true)} aria-label="Offrir un geste">
             <span className="composer-tuile-img"><img src="/cadeau.jpg" alt="" /></span>
             <span className="composer-tuile-mot">Offrir un geste</span>
           </button>
         </div>
+        {mediaErreur && <p className="whisper naissance-note composer-media-erreur">{mediaErreur}</p>}
 
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>
           <button
             className="primary"
-            disabled={(!body.trim() && !image) || prepImage}
-            onClick={() => onDone({ kind: 'souvenir', body: body.trim(), aboutId, recipientIds: others.map((a) => a.id), happensOn: null, imageUrl: image })}
+            disabled={(!body.trim() && !media) || prepMedia}
+            onClick={() => onDone({ kind: 'souvenir', body: body.trim(), aboutId, recipientIds: others.map((a) => a.id), happensOn: null, ...champMedia() })}
           >
             Transmettre
           </button>
         </div>
       </section>
+
+      {mediaSheet && (
+        <div className="offrir-veil" onClick={() => setMediaSheet(false)}>
+          <div className="offrir-sheet" role="dialog" aria-label="Ajouter une pièce jointe" onClick={(e) => e.stopPropagation()}>
+            <button className="offrir-fermer" onClick={() => setMediaSheet(false)} aria-label="Fermer">✕</button>
+            <h2 className="offrir-titre">Une pièce jointe</h2>
+            <p className="whisper offrir-mot">Une photo, une vidéo, un son ou un morceau — un seul par moment.</p>
+            <div className="media-choix">
+              {MEDIA_TYPES.map((m) => (
+                <label key={m.medium} className="media-choix-btn">
+                  <span className="media-choix-emoji" aria-hidden="true">{m.emoji}</span>
+                  <span>{m.label}</span>
+                  <input
+                    type="file"
+                    accept={m.accept}
+                    hidden
+                    onChange={(e) => {
+                      const f = e.target.files?.[0]
+                      e.target.value = '' // permet de re-choisir le même fichier
+                      choisirMedia(m.medium, f)
+                    }}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {offrirOuvert && (
         <div className="offrir-veil" onClick={() => setOffrirOuvert(false)}>
@@ -1691,6 +1772,25 @@ function TxImage({ src }: { src: string }) {
   }, [src])
   if (!url) return null
   return <img className="tx-image" src={url} alt="" loading="lazy" />
+}
+
+/** Le son ou la vidéo d'une transmission — même signature que l'image :
+    data-URL affichée telle quelle, chemin du bucket privé signé à la volée. */
+function TxMedia({ src, kind }: { src: string; kind: 'audio' | 'video' }) {
+  const [url, setUrl] = useState<string | null>(src.startsWith('data:') ? src : null)
+  useEffect(() => {
+    if (src.startsWith('data:')) { setUrl(src); return }
+    if (!src || src.startsWith('#')) { setUrl(null); return } // marqueurs de démo
+    let vivant = true
+    supabase.storage.from('pieces-jointes').createSignedUrl(src, 3600)
+      .then(({ data }) => { if (vivant) setUrl(data?.signedUrl ?? null) })
+      .catch(() => { if (vivant) setUrl(null) })
+    return () => { vivant = false }
+  }, [src])
+  if (!url) return null
+  return kind === 'video'
+    ? <video className="tx-video" src={url} controls preload="metadata" />
+    : <audio className="tx-audio" src={url} controls preload="metadata" />
 }
 
 function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait, onNaissance, onProfil, onNommer }: {
@@ -1882,6 +1982,9 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
                 </div>
                 {t.body && <p className="tx-body">{t.body}</p>}
                 {t.imageUrl && <TxImage src={t.imageUrl} />}
+                {t.videoUrl && <TxMedia src={t.videoUrl} kind="video" />}
+                {t.audioUrl && <TxMedia src={t.audioUrl} kind="audio" />}
+                {t.musicUrl && <TxMedia src={t.musicUrl} kind="audio" />}
                 <div className="tx-foot">
                   <span className="tx-meta">
                     {nameOf(t.authorId)}

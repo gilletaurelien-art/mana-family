@@ -542,6 +542,42 @@ button:disabled { opacity: 0.35; cursor: default; }
   box-shadow: 0 4px 14px rgba(70, 50, 25, 0.18);
 }
 
+/* Les lecteurs dans la carte de la transmission. */
+.tx-video {
+  display: block; width: 100%; height: auto;
+  margin: 0.55rem 0 0.2rem; border-radius: 12px; background: #000;
+  box-shadow: 0 4px 14px rgba(70, 50, 25, 0.18);
+}
+.tx-audio { display: block; width: 100%; margin: 0.55rem 0 0.2rem; }
+
+/* Aperçus vidéo & son dans le Composer. */
+.composer-pj-apercu video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.composer-pj-apercu:has(.composer-media-son) { aspect-ratio: auto; }
+.composer-media-son {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  padding: 0.9rem 0.7rem; background: var(--champ);
+}
+.composer-media-son-icone { font-size: 1.8rem; line-height: 1; }
+.composer-media-son audio { width: 100%; }
+.composer-media-erreur { color: var(--emotionnel); margin-top: 0.4rem; }
+
+/* Le choix du médium — grille 2×2 dans la feuille parchemin. */
+.media-choix {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.6rem; margin: 0.9rem 0 0.3rem;
+}
+.media-choix-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+  padding: 1rem 0.6rem; border-radius: 14px;
+  border: 1px solid var(--filet); background: var(--champ);
+  color: var(--encre); font-family: 'Philosopher', var(--serif);
+  font-weight: 700; font-size: 1.02rem; cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.media-choix-btn:hover { box-shadow: 0 4px 14px rgba(70, 50, 25, 0.2); }
+.media-choix-btn:active { transform: scale(0.97); }
+.media-choix-emoji { font-size: 1.7rem; line-height: 1; }
+
 /* Le pop-up parchemin — une feuille qui monte du bas. */
 .offrir-veil {
   position: fixed; inset: 0; z-index: 80;
