@@ -607,9 +607,27 @@ const PILIERS: { titre: string; mot: string; illus?: string }[] = [
   { titre: 'La Mémoire', illus: '/carnet.jpg', mot: 'Le carnet garde tout ce qui compte, du plus récent au plus ancien. Anniversaires, souvenirs, présences : la mémoire reste vivante.' },
 ]
 
+/** La petite clé du header — ouvre la connexion. */
+function KeyGlyph() {
+  return (
+    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="8" cy="8" r="4.4" />
+      <path d="M11.1 11.1 20 20" />
+      <path d="M16.5 16.5l2-2M18.7 18.7l1.6-1.6" />
+    </svg>
+  )
+}
+
 function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
   return (
     <div className="shell vitrine-shell seuil-nuit fond-maison">
+      <header className="vitrine-topbar">
+        <span className="vitrine-eyebrow vitrine-marque">MANAfamily</span>
+        <button className="vitrine-cle-login" onClick={onSeConnecter} aria-label="Se connecter avec votre clé">
+          <KeyGlyph />
+          <span>Entrer</span>
+        </button>
+      </header>
       <div className="ciel-anime" aria-hidden="true">
         {Array.from({ length: 16 }).map((_, i) => (
           <span
@@ -627,7 +645,6 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       <header className="sky vitrine-hero">
         <p className="vitrine-slogan">La Présence fait vivre.<br />La Mémoire fait durer.</p>
         <h1>Carnet de Famille</h1>
-        <p className="vitrine-eyebrow">MANAfamily</p>
       </header>
 
       <section className="vitrine-piliers">
