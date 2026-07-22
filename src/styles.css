@@ -263,7 +263,7 @@ body:has(.carnet-hero)::before { display: none; }
   text-transform: uppercase; color: var(--brume);
 }
 .formule-actuelle-nom {
-  font-family: var(--cursive); font-size: 1.7rem; color: var(--or-doux); line-height: 1.1;
+  font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1.5rem; color: var(--or-doux); line-height: 1.1;
 }
 .formule-actuelle-prix {
   font-family: var(--mono); font-size: 0.75rem; color: var(--brume);
@@ -302,13 +302,16 @@ body:has(.carnet-hero)::before { display: none; }
   display: block; font-weight: 400; font-size: 0.72rem; color: var(--brume);
 }
 
-/* Marelle pour les titres de « découvrir » (sections, assistance, questions). */
+/* Philosopher pour les titres de « découvrir » (sections, assistance, questions). */
 .assistante-shell h2 {
-  font-family: var(--cursive); font-size: 1.55rem; color: var(--etoile);
+  font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1.5rem; color: var(--etoile);
 }
 .assistante-shell .faq-q {
-  font-family: var(--cursive); font-size: 1.3rem; color: var(--etoile);
+  font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1.22rem; color: var(--etoile);
 }
+/* Le prénom du header de découvrir passe aussi en Philosopher
+   (l'accueil « Famille✦ » garde Marelle, hors .assistante-shell). */
+.assistante-shell .mot-famille { font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1em; }
 
 /* Les questions douces */
 .faq { display: flex; flex-direction: column; gap: 1.1rem; }
