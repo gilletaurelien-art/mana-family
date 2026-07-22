@@ -15,6 +15,23 @@
   font-display: swap;
 }
 
+/* Philosopher (SIL OFL 1.1) — réservée aux prénoms posés sur les astres :
+   une capitale claire, lisible sur la pastille noire. Voir public/fonts/. */
+@font-face {
+  font-family: 'Philosopher';
+  src: url('/fonts/Philosopher-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Philosopher';
+  src: url('/fonts/Philosopher-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Les fonds & structures — le calme */
   --noir-atlantique: #0b131f;
@@ -47,10 +64,11 @@
   --champ: #101a29;
 
   /* L'ancrage (mémoire, serif) et la transmission (présence, sans-serif) */
-  /* Charte texte réduite à DEUX familles :
+  /* Charte texte :
      — Marelle (cursive) : la main de la famille ;
-     — SF Mono (monospace) : tout le reste (titres, interface, assistance).
-     --serif et --sans redirigent donc vers --mono. */
+     — SF Mono (monospace) : tout le reste (titres, interface, assistance) ;
+     — Philosopher : réservée aux prénoms posés sur les astres.
+     --serif et --sans redirigent vers --mono. */
   --mono: 'SF Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Cascadia Code', monospace;
   --serif: var(--mono);
   --sans: var(--mono);
@@ -1258,29 +1276,31 @@ button:disabled { opacity: 0.35; cursor: default; }
 .foyer .whisper .link { color: rgba(253, 246, 227, 0.9); border-bottom-color: rgba(253, 246, 227, 0.35); }
 /* Le prénom posé SUR l'astre — écrit à la main, centré sur l'étincelle,
    sa lueur derrière le nom. */
+/* Le prénom posé SOUS l'astre — Philosopher sur pastille noire :
+   il ne cache jamais l'étoile ni le visage, et reste net sur le ciel. */
 .foyer .prenom {
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  top: auto; left: 50%; bottom: 0;
+  transform: translate(-50%, calc(100% + 4px));
   margin: 0;
   white-space: nowrap;
   pointer-events: none;
-  color: rgba(255, 253, 246, 0.98);
+  font-family: 'Philosopher', var(--serif);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: #fdf6e3;
+  background: rgba(8, 6, 12, 0.82);
+  padding: 0.11rem 0.52rem;
+  border-radius: 999px;
   opacity: 1;
-  font-family: var(--cursive);
-  font-size: 1rem;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.98), 0 0 9px rgba(0, 0, 0, 0.9);
+  text-shadow: none;
 }
-/* Familles nombreuses : l'initiale seule, un peu plus grande. */
-.foyer .prenom-initiale { font-size: 1.4rem; }
+/* Familles nombreuses : l'initiale seule. */
+.foyer .prenom-initiale { font-size: 0.95rem; padding: 0.06rem 0.5rem; }
 
-/* Photo d'astre : petit rond dans le ciel. Le prénom se pose DESSOUS
-   (et non dessus) pour ne pas cacher le visage. */
+/* Photo d'astre : petit rond dans le ciel (le prénom se pose dessous, comme l'étoile). */
 .foyer .astre-photo { width: 40px; height: 40px; }
-.foyer .astre-avec-photo .prenom {
-  top: auto; bottom: 0;
-  transform: translate(-50%, calc(100% + 1px));
-}
 
 /* L'astre prend la forme d'une étoile légèrement dorée — cœur clair,
    pointes dorées, lueur douce (drop-shadow qui suit la forme). */

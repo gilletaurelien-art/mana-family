@@ -1,0 +1,9 @@
+Philosopher
+Designed by Jovanny Lemonad.
+Licensed under the SIL Open Font License, Version 1.1.
+https://fonts.google.com/specimen/Philosopher/about
+https://scripts.sil.org/OFL
+
+Sous-ensemble « latin » auto-hébergé (woff2) pour Mana Family — usage
+réservé aux prénoms posés sur les astres. Fichiers récupérés depuis
+Google Fonts (fonts.gstatic.com), non modifiés.
