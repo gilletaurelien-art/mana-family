@@ -1654,11 +1654,6 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 /* Trois zones : MANAfamily en haut, le titre au centre, le slogan en bas. */
 .vitrine-hero h1 { font-family: var(--cursive); font-size: 2.1rem; margin: auto 0; }
-.vitrine-slogan {
-  font-family: var(--cursive); font-size: 1.2rem; font-style: normal;
-  color: #ffffff; margin: 0; line-height: 1.5;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.75);
-}
 
 /* Ciel animé (vitrine) : étoiles scintillantes + une étoile filante. */
 .ciel-anime {
@@ -1680,18 +1675,14 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* Pleine largeur PWA : un tableau occupe toute la colonne de l'app. */
 .vitrine-tableau.cadre-or { display: block; width: 100%; margin: 0.4rem 0 0.3rem; }
 
-/* MANAfamily — or vivant traversé d'une lumière blanche, avec des étincelles.
-   Magique et magnifique : un dégradé doré balayé par un éclat blanc + halo. */
-.vitrine-eyebrow {
+/* Effet « or vivant » partagé — MANAfamily & le slogan : dégradé doré balayé
+   d'une lumière blanche (magique et magnifique), halo, et étincelles. */
+.vitrine-eyebrow, .vitrine-slogan {
   align-self: center;
   position: relative;
-  margin: 0.2rem 0 0.05rem;
   font-family: 'Philosopher', var(--serif);
   font-weight: 700;
-  font-size: 37px;
-  letter-spacing: 0;
   text-transform: none;
-  line-height: 1.05;
   background: linear-gradient(100deg,
     var(--or-sombre) 0%, var(--or-mana) 26%, #fff7e0 46%, #ffffff 50%,
     #fff7e0 54%, var(--or-mana) 74%, var(--or-sombre) 100%);
@@ -1703,12 +1694,15 @@ button:disabled { opacity: 0.35; cursor: default; }
     drop-shadow(0 0 3px rgba(255, 255, 255, 0.7));
   animation: manafamily-lumiere 5s ease-in-out infinite;
 }
+.vitrine-eyebrow { margin: 0.2rem 0 0.05rem; font-size: 37px; letter-spacing: 0; line-height: 1.05; }
+.vitrine-slogan { margin: 0; font-size: 1.35rem; line-height: 1.5; }
 @keyframes manafamily-lumiere {
   0% { background-position: 130% 0; }
   100% { background-position: -30% 0; }
 }
-/* Les étincelles — deux éclats blancs qui scintillent aux abords du mot. */
-.vitrine-eyebrow::before, .vitrine-eyebrow::after {
+/* Les étincelles — des éclats blancs qui scintillent aux abords du texte. */
+.vitrine-eyebrow::before, .vitrine-eyebrow::after,
+.vitrine-slogan::before, .vitrine-slogan::after {
   content: '✦';
   position: absolute;
   font-size: 0.42em;
@@ -1720,13 +1714,16 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .vitrine-eyebrow::before { top: -0.15em; left: -0.55em; }
 .vitrine-eyebrow::after { bottom: -0.05em; right: -0.5em; animation-delay: 1.3s; }
+.vitrine-slogan::before { top: -0.1em; left: -0.45em; animation-delay: 0.6s; }
+.vitrine-slogan::after { bottom: -0.05em; right: -0.45em; animation-delay: 1.9s; }
 @keyframes etincelle-mana {
   0%, 100% { opacity: 0.15; transform: scale(0.6) rotate(0deg); }
   50% { opacity: 1; transform: scale(1.15) rotate(90deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .vitrine-eyebrow { animation: none; background-position: 50% 0; }
-  .vitrine-eyebrow::before, .vitrine-eyebrow::after { animation: none; opacity: 0.7; }
+  .vitrine-eyebrow, .vitrine-slogan { animation: none; background-position: 50% 0; }
+  .vitrine-eyebrow::before, .vitrine-eyebrow::after,
+  .vitrine-slogan::before, .vitrine-slogan::after { animation: none; opacity: 0.7; }
 }
 
 .vitrine-pitch { text-align: center; margin: 1.4rem auto 0; max-width: 30rem; }
