@@ -666,7 +666,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         <span className="vitrine-livre-etiquette">Le Livre blanc</span>
         <p className="vitrine-livre-mot">
           Notre vision, en clair : ce que nous protégeons, et ce que nous
-          ne ferons jamais.
+          vous offrons.
         </p>
         <a className="vitrine-livre-lien" href="/livre-blanc.html" target="_blank" rel="noopener">
           Lire le Livre blanc →
