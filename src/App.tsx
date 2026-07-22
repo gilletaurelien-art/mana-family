@@ -603,17 +603,18 @@ const PROMESSES: { glyphe: string; mot: string }[] = [
 /** Les deux piliers — la doctrine Présence / Mémoire, dite simplement,
     chacune portée par son illustration dorée. */
 const PILIERS: { titre: string; mot: string; illus?: string }[] = [
-  { titre: 'La Présence', illus: '/plume.jpg', mot: 'Partagez un moment en quelques mots. La famille veille sur vous — jamais de relance, jamais de reproche. Le silence aussi vous appartient.' },
-  { titre: 'La Mémoire', illus: '/carnet.jpg', mot: 'Le carnet garde tout ce qui compte, du plus récent au plus ancien. Anniversaires, souvenirs, présences : la mémoire reste vivante.' },
+  { titre: 'La Présence fait vivre.\nLa Mémoire fait durer.', illus: '/plume.jpg', mot: '' },
+  { titre: '', illus: '/carnet.jpg', mot: '' },
 ]
 
-/** La petite clé du header — ouvre la connexion. */
-function KeyGlyph() {
+/** La clé-cadenas de « Entrer » — le verrou de la maison, où se glisse la clé. */
+function LockKeyGlyph() {
   return (
-    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="8" cy="8" r="4.4" />
-      <path d="M11.1 11.1 20 20" />
-      <path d="M16.5 16.5l2-2M18.7 18.7l1.6-1.6" />
+    <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2.4" />
+      <path d="M8 10.5V7.4a4 4 0 0 1 8 0v3.1" />
+      <circle cx="12" cy="14.7" r="1.5" fill="currentColor" stroke="none" />
+      <path d="M12 16.2v2.1" />
     </svg>
   )
 }
@@ -623,11 +624,13 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
     <div className="shell vitrine-shell seuil-nuit fond-maison">
       <header className="vitrine-topbar">
         <span className="vitrine-eyebrow vitrine-marque">MANAfamily</span>
-        <button className="vitrine-cle-login" onClick={onSeConnecter} aria-label="Se connecter avec votre clé">
-          <KeyGlyph />
-          <span>Entrer</span>
-        </button>
       </header>
+      <div className="vitrine-bottombar">
+        <button className="vitrine-entrer-bas" onClick={onSeConnecter} aria-label="Se connecter avec votre clé">
+          <span className="vitrine-entrer-mot">Entrer</span>
+          <LockKeyGlyph />
+        </button>
+      </div>
       <div className="ciel-anime" aria-hidden="true">
         {Array.from({ length: 16 }).map((_, i) => (
           <span
@@ -643,16 +646,15 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         ))}
       </div>
       <header className="sky vitrine-hero">
-        <p className="vitrine-slogan">La Présence fait vivre.<br />La Mémoire fait durer.</p>
-        <h1>Carnet de Famille</h1>
+        <img className="vitrine-hero-cle" src="/mana-key.jpg" alt="La clef de la maison Mana" />
       </header>
 
       <section className="vitrine-piliers">
         {PILIERS.map((p) => (
-          <div className="vitrine-pilier" key={p.titre}>
+          <div className="vitrine-pilier" key={p.illus}>
             {p.illus && <img className="vitrine-pilier-illus" src={p.illus} alt="" aria-hidden="true" />}
-            <span className="vitrine-pilier-titre">{p.titre}</span>
-            <p>{p.mot}</p>
+            {p.titre && <span className="vitrine-pilier-titre">{p.titre}</span>}
+            {p.mot && <p>{p.mot}</p>}
           </div>
         ))}
       </section>
