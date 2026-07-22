@@ -1648,8 +1648,8 @@ button:disabled { opacity: 0.35; cursor: default; }
    et le slogan se pose tout en bas de l'écran. */
 .vitrine-hero {
   min-height: 100svh;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding-top: 0; padding-bottom: 1.6rem;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  padding-top: max(1.6rem, env(safe-area-inset-top, 1.6rem)); padding-bottom: 1.6rem;
 }
 .vitrine-hero h1 { font-family: var(--cursive); font-size: 2.1rem; margin-top: 0.15rem; }
 .vitrine-slogan {
