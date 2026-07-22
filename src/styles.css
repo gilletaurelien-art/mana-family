@@ -1575,6 +1575,18 @@ button:disabled { opacity: 0.35; cursor: default; }
   }
 }
 
+/* La landing (vitrine) prend le livre fermé pour fond — la porte du carnet,
+   avant d'entrer. Les autres écrans « seuil » gardent la maison de nuit. */
+.vitrine-shell.fond-maison.seuil-nuit::before {
+  background:
+    linear-gradient(180deg,
+      rgba(12, 8, 24, 0.55) 0%,
+      rgba(12, 8, 24, 0.20) 26%,
+      rgba(12, 8, 24, 0.48) 56%,
+      rgba(12, 8, 24, 0.88) 100%),
+    url('/livre-ferme.jpg') center / cover no-repeat;
+}
+
 /* La clef-emblème sur l'écran d'entrée (la vitrine a sa propre variante). */
 .clef-embleme {
   display: inline-block;
