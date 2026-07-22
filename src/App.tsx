@@ -1073,6 +1073,24 @@ function mediumDe(t: Transmission): Medium | null {
   return null
 }
 
+// Les périodes pour trier/filtrer le carnet (jours = null → tout).
+type Periode = 'tout' | 'semaine' | 'mois' | 'annee'
+const PERIODES: { id: Periode; label: string; jours: number | null }[] = [
+  { id: 'tout', label: 'Tout', jours: null },
+  { id: 'semaine', label: 'Cette semaine', jours: 7 },
+  { id: 'mois', label: 'Ce mois', jours: 31 },
+  { id: 'annee', label: 'Cette année', jours: 365 },
+]
+
+// Recherche précise d'un moment : un jour, un mois ou une année donnés.
+type RechMode = 'aucune' | 'jour' | 'mois' | 'annee'
+const RECH_MODES: { m: RechMode; label: string }[] = [
+  { m: 'aucune', label: 'Aucune' },
+  { m: 'jour', label: 'Un jour' },
+  { m: 'mois', label: 'Un mois' },
+  { m: 'annee', label: 'Une année' },
+]
+
 /** L'État du Ciel — une à trois phrases empilées, composées à la machine
     à écrire (SF Mono), l'une après l'autre. Le curseur suit la frappe puis
     reste, calme, à la fin. `rejouer` (incrémenté au clic sur « Famille »)
@@ -1832,15 +1850,31 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
   const [auteurFiltre, setAuteurFiltre] = useState('')
   const [sujetFiltre, setSujetFiltre] = useState('')
   const [mediumFiltre, setMediumFiltre] = useState<'' | Medium>('')
+  const [periode, setPeriode] = useState<Periode>('tout')
+  const [rechMode, setRechMode] = useState<RechMode>('aucune')
+  const [rechVal, setRechVal] = useState('')
+  const [reglagesOuvert, setReglagesOuvert] = useState(false)
   const nameOf = (id: string | null) => {
     const a = ciel.astres.find((x) => x.id === id)
     return a ? nomIntime(a) : null
+  }
+  const bornePeriode = PERIODES.find((p) => p.id === periode)?.jours ?? null
+  const rechActive = rechMode !== 'aucune' && Boolean(rechVal)
+  const filtresActifs = [auteurFiltre, sujetFiltre, mediumFiltre].filter(Boolean).length + (periode !== 'tout' ? 1 : 0) + (rechActive ? 1 : 0)
+  const dansRecherche = (t: Transmission) => {
+    if (!rechActive) return true
+    const iso = new Date(t.createdAt).toISOString().slice(0, 10)
+    if (rechMode === 'jour') return iso === rechVal
+    if (rechMode === 'mois') return iso.slice(0, 7) === rechVal
+    return iso.slice(0, 4) === rechVal
   }
   const txs = ciel.transmissions
     .filter((t) => aboutId === null || t.aboutId === aboutId || t.authorId === aboutId)
     .filter((t) => !auteurFiltre || t.authorId === auteurFiltre)
     .filter((t) => !sujetFiltre || t.aboutId === sujetFiltre)
     .filter((t) => !mediumFiltre || mediumDe(t) === mediumFiltre)
+    .filter((t) => !bornePeriode || (Date.now() - new Date(t.createdAt).getTime()) <= bornePeriode * 864e5)
+    .filter(dansRecherche)
     .slice()
     .sort((a, b) => (ordre === 'recent' ? b.createdAt.localeCompare(a.createdAt) : a.createdAt.localeCompare(b.createdAt)))
 
@@ -1850,50 +1884,11 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
       {!sujet ? (
         <header className="sky carnet-hero-lire">
           <div className="carnet-filtre-barre">
-            <button
-              className="carnet-filtre-btn"
-              onClick={() => setOrdre((o) => (o === 'recent' ? 'ancien' : 'recent'))}
-              aria-label="Changer l'ordre par date"
-            >
+            <button className="carnet-reglages-btn" onClick={() => setReglagesOuvert(true)} aria-label="Réglages du carnet">
               <span className="filtre-glyph"><FiltreGlyph /></span>
-              {ordre === 'recent' ? 'Du plus récent' : 'Du plus ancien'}
+              <span>{ordre === 'recent' ? 'Du plus récent' : 'Du plus ancien'}</span>
+              {filtresActifs > 0 && <span className="carnet-reglages-badge">{filtresActifs}</span>}
             </button>
-
-            <select
-              className="carnet-filtre-select"
-              value={auteurFiltre}
-              onChange={(e) => setAuteurFiltre(e.target.value)}
-              aria-label="Filtrer par auteur"
-            >
-              <option value="">Auteur · tous</option>
-              {ciel.astres.map((a) => (
-                <option key={a.id} value={a.id}>{nomIntime(a)}</option>
-              ))}
-            </select>
-
-            <select
-              className="carnet-filtre-select"
-              value={sujetFiltre}
-              onChange={(e) => setSujetFiltre(e.target.value)}
-              aria-label="Filtrer par sujet"
-            >
-              <option value="">Sujet · tous</option>
-              {ciel.astres.map((a) => (
-                <option key={a.id} value={a.id}>{nomIntime(a)}</option>
-              ))}
-            </select>
-
-            <select
-              className="carnet-filtre-select"
-              value={mediumFiltre}
-              onChange={(e) => setMediumFiltre(e.target.value as '' | Medium)}
-              aria-label="Filtrer par médium"
-            >
-              <option value="">Médium · tous</option>
-              {MEDIUMS.map((m) => (
-                <option key={m.id} value={m.id}>{m.label}</option>
-              ))}
-            </select>
           </div>
         </header>
       ) : (
@@ -2028,6 +2023,83 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
           <span className="fiche-ecrire-plume"><img src="/plume.jpg" alt="" /></span>
           <span>écrire</span>
         </button>
+      )}
+
+      {reglagesOuvert && (
+        <div className="offrir-veil" onClick={() => setReglagesOuvert(false)}>
+          <div className="offrir-sheet reglages-sheet" role="dialog" aria-label="Réglages du carnet" onClick={(e) => e.stopPropagation()}>
+            <button className="offrir-fermer" onClick={() => setReglagesOuvert(false)} aria-label="Fermer">✕</button>
+            <h2 className="offrir-titre">Réglages</h2>
+
+            <div className="reglages-groupe">
+              <span className="reglages-label">Ordre</span>
+              <div className="reglages-segment">
+                <button className={ordre === 'recent' ? 'on' : ''} onClick={() => setOrdre('recent')}>Du plus récent</button>
+                <button className={ordre === 'ancien' ? 'on' : ''} onClick={() => setOrdre('ancien')}>Du plus ancien</button>
+              </div>
+            </div>
+
+            <div className="reglages-groupe">
+              <span className="reglages-label">Période</span>
+              <div className="reglages-chips">
+                {PERIODES.map((p) => (
+                  <button key={p.id} className={`reglages-chip ${periode === p.id ? 'on' : ''}`} onClick={() => setPeriode(p.id)}>{p.label}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="reglages-groupe">
+              <span className="reglages-label">Recherche précise</span>
+              <div className="reglages-chips">
+                {RECH_MODES.map((r) => (
+                  <button key={r.m} className={`reglages-chip ${rechMode === r.m ? 'on' : ''}`} onClick={() => { setRechMode(r.m); setRechVal('') }}>{r.label}</button>
+                ))}
+              </div>
+              {rechMode === 'jour' && (
+                <input className="carnet-filtre-select reglages-date" type="date" value={rechVal} onChange={(e) => setRechVal(e.target.value)} aria-label="Choisir un jour" />
+              )}
+              {rechMode === 'mois' && (
+                <input className="carnet-filtre-select reglages-date" type="month" value={rechVal} onChange={(e) => setRechVal(e.target.value)} aria-label="Choisir un mois" />
+              )}
+              {rechMode === 'annee' && (
+                <input className="carnet-filtre-select reglages-date" type="number" min="1990" max="2100" placeholder="Ex. 2026" value={rechVal} onChange={(e) => setRechVal(e.target.value)} aria-label="Choisir une année" />
+              )}
+            </div>
+
+            <div className="reglages-groupe">
+              <span className="reglages-label">Auteur</span>
+              <select className="carnet-filtre-select" value={auteurFiltre} onChange={(e) => setAuteurFiltre(e.target.value)} aria-label="Filtrer par auteur">
+                <option value="">Tous</option>
+                {ciel.astres.map((a) => (<option key={a.id} value={a.id}>{nomIntime(a)}</option>))}
+              </select>
+            </div>
+
+            <div className="reglages-groupe">
+              <span className="reglages-label">Sujet</span>
+              <select className="carnet-filtre-select" value={sujetFiltre} onChange={(e) => setSujetFiltre(e.target.value)} aria-label="Filtrer par sujet">
+                <option value="">Tous</option>
+                {ciel.astres.map((a) => (<option key={a.id} value={a.id}>{nomIntime(a)}</option>))}
+              </select>
+            </div>
+
+            <div className="reglages-groupe">
+              <span className="reglages-label">Médium</span>
+              <select className="carnet-filtre-select" value={mediumFiltre} onChange={(e) => setMediumFiltre(e.target.value as '' | Medium)} aria-label="Filtrer par médium">
+                <option value="">Tous</option>
+                {MEDIUMS.map((m) => (<option key={m.id} value={m.id}>{m.label}</option>))}
+              </select>
+            </div>
+
+            <div className="reglages-actions">
+              {filtresActifs > 0 && (
+                <button className="reglages-reset" onClick={() => { setAuteurFiltre(''); setSujetFiltre(''); setMediumFiltre(''); setPeriode('tout'); setRechMode('aucune'); setRechVal('') }}>Réinitialiser</button>
+              )}
+              <button className="primary reglages-appliquer" onClick={() => setReglagesOuvert(false)}>
+                Voir {txs.length} message{txs.length > 1 ? 's' : ''}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

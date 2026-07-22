@@ -622,17 +622,17 @@ button:disabled { opacity: 0.35; cursor: default; }
   background: rgba(20, 12, 6, 0.5); backdrop-filter: blur(2px);
 }
 .offrir-sheet {
-  --encre: #3b2f21; --brume: #7c6a4e; --etoile: #6a4a22;
-  --champ: #f3e8ca; --filet: rgba(80, 60, 35, 0.3);
+  --encre: #efeaff; --brume: #a99fcf; --etoile: #f5edd8;
+  --champ: #171233; --filet: rgba(198, 178, 255, 0.16);
   position: relative;
   width: 100%; max-width: 480px; max-height: 82vh; overflow-y: auto;
   padding: 1.5rem 1.2rem 2.2rem; border-radius: 22px 22px 0 0;
   color: var(--encre);
   background:
-    radial-gradient(ellipse 90% 45% at 28% 10%, rgba(214, 190, 142, 0.5), transparent 60%),
-    radial-gradient(ellipse 95% 55% at 78% 92%, rgba(150, 118, 74, 0.42), transparent 62%),
-    #e8dbbb;
-  box-shadow: 0 -14px 44px rgba(0, 0, 0, 0.45);
+    radial-gradient(ellipse 90% 45% at 28% 10%, rgba(96, 66, 168, 0.28), transparent 60%),
+    radial-gradient(ellipse 95% 55% at 78% 92%, rgba(44, 52, 132, 0.30), transparent 62%),
+    #0a0818;
+  box-shadow: 0 -14px 44px rgba(0, 0, 0, 0.6);
   animation: offrir-monte 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes offrir-monte { from { transform: translateY(24%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -737,6 +737,62 @@ button:disabled { opacity: 0.35; cursor: default; }
   max-width: 100%;
 }
 .carnet-filtre-select:focus-visible { outline: 2px solid var(--or-mana); outline-offset: 1px; }
+
+/* Le bouton Réglages — remplace la barre de filtres. */
+.carnet-reglages-btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 1rem; border-radius: 999px;
+  border: 1px solid rgba(229, 184, 66, 0.4); background: var(--champ);
+  color: var(--encre); font-family: var(--mono);
+  font-size: 0.82rem; letter-spacing: -0.01em; cursor: pointer;
+}
+.carnet-reglages-btn:hover { border-color: var(--or-mana); }
+.carnet-reglages-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.15rem; height: 1.15rem; padding: 0 0.3rem;
+  border-radius: 999px; background: var(--or-mana); color: #1a1206;
+  font-size: 0.68rem; font-weight: 700;
+}
+
+/* Le menu Réglages — ergonomique, groupé, sur la feuille parchemin nocturne. */
+.reglages-sheet { text-align: left; }
+.reglages-groupe { margin: 1rem 0 0; }
+.reglages-label {
+  display: block; margin-bottom: 0.45rem;
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--brume);
+}
+.reglages-segment {
+  display: flex; gap: 0.4rem;
+}
+.reglages-segment button {
+  flex: 1; padding: 0.55rem 0.5rem; border-radius: 12px;
+  border: 1px solid var(--filet); background: var(--champ);
+  color: var(--brume); font-family: var(--mono); font-size: 0.78rem; cursor: pointer;
+}
+.reglages-segment button.on {
+  border-color: var(--or-mana); color: var(--etoile);
+  background: color-mix(in srgb, var(--or-mana) 12%, transparent);
+}
+.reglages-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.reglages-chip {
+  padding: 0.45rem 0.85rem; border-radius: 999px;
+  border: 1px solid var(--filet); background: var(--champ);
+  color: var(--brume); font-family: var(--mono); font-size: 0.76rem; cursor: pointer;
+}
+.reglages-chip.on {
+  border-color: var(--or-mana); color: var(--etoile);
+  background: color-mix(in srgb, var(--or-mana) 12%, transparent);
+}
+.reglages-groupe .carnet-filtre-select { width: 100%; font-size: 0.82rem; padding: 0.55rem 0.7rem; }
+.reglages-date { margin-top: 0.5rem; }
+.reglages-actions { display: flex; gap: 0.6rem; align-items: center; margin-top: 1.3rem; }
+.reglages-reset {
+  flex: 0 0 auto; padding: 0.6rem 1rem; border-radius: 12px;
+  border: 1px solid var(--filet); background: transparent; color: var(--brume);
+  font-family: var(--mono); font-size: 0.78rem; cursor: pointer;
+}
+.reglages-appliquer { flex: 1; margin-top: 0; width: auto; }
 .carnet-filtre-btn .filtre-glyph { display: inline-flex; transition: transform 0.2s ease; }
 .carnet-filtre-btn.ouvert { border-color: var(--or-mana); color: var(--etoile); }
 .carnet-filtre-btn.ouvert .filtre-glyph { transform: rotate(180deg); }

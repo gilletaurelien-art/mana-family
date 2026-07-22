@@ -59,6 +59,8 @@ export interface Transmission {
   audioUrl?: string | null
   videoUrl?: string | null
   musicUrl?: string | null
+  /** Un lien joint (URL) — jamais dans le corps du message, toujours en pièce jointe. */
+  linkUrl?: string | null
   /** Le moment que la transmission CONCERNE (facultatif). Passé = souvenir, futur = organiser. */
   happensOn?: string | null
   /** Projection publique : ce que l'appareil doit savoir, pas toute l'audience. */
