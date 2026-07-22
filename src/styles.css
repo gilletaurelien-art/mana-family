@@ -1677,7 +1677,8 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 /* Effet « or vivant » partagé — MANAfamily & le slogan : dégradé doré balayé
    d'une lumière blanche (magique et magnifique), halo, et étincelles. */
-.vitrine-eyebrow, .vitrine-slogan {
+.vitrine-eyebrow, .vitrine-slogan,
+.vitrine-pilier-titre, .vitrine-livre-etiquette, .vitrine-livre-lien {
   align-self: center;
   position: relative;
   font-family: 'Philosopher', var(--serif);
@@ -1703,7 +1704,10 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* Les étincelles — des éclats blancs qui scintillent aux abords du texte. */
 .vitrine-eyebrow::before, .vitrine-eyebrow::after,
 .vitrine-slogan::before, .vitrine-slogan::after,
-.vitrine-hero h1::before, .vitrine-hero h1::after {
+.vitrine-hero h1::before, .vitrine-hero h1::after,
+.vitrine-pilier-titre::before, .vitrine-pilier-titre::after,
+.vitrine-livre-etiquette::before, .vitrine-livre-etiquette::after,
+.vitrine-livre-lien::before, .vitrine-livre-lien::after {
   content: '✦';
   position: absolute;
   font-size: 0.42em;
@@ -1720,15 +1724,25 @@ button:disabled { opacity: 0.35; cursor: default; }
 .vitrine-hero h1 { font-size: 2.1rem; } /* base de l'em des étincelles */
 .vitrine-hero h1::before { top: 0.1em; right: -0.35em; animation-delay: 0.9s; }
 .vitrine-hero h1::after { bottom: 0.15em; left: -0.3em; animation-delay: 2.1s; }
+.vitrine-pilier-titre::before { top: -0.2em; left: -0.6em; animation-delay: 0.4s; }
+.vitrine-pilier-titre::after { bottom: -0.1em; right: -0.55em; animation-delay: 1.6s; }
+.vitrine-livre-etiquette::before { top: -0.2em; left: -0.6em; animation-delay: 0.8s; }
+.vitrine-livre-etiquette::after { bottom: -0.1em; right: -0.55em; animation-delay: 2s; }
+.vitrine-livre-lien::before { top: -0.35em; left: -0.5em; animation-delay: 1.1s; }
+.vitrine-livre-lien::after { bottom: -0.25em; right: -0.5em; animation-delay: 2.3s; }
 @keyframes etincelle-mana {
   0%, 100% { opacity: 0.15; transform: scale(0.6) rotate(0deg); }
   50% { opacity: 1; transform: scale(1.15) rotate(90deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .vitrine-eyebrow, .vitrine-slogan { animation: none; background-position: 50% 0; }
+  .vitrine-eyebrow, .vitrine-slogan,
+  .vitrine-pilier-titre, .vitrine-livre-etiquette, .vitrine-livre-lien { animation: none; background-position: 50% 0; }
   .vitrine-eyebrow::before, .vitrine-eyebrow::after,
   .vitrine-slogan::before, .vitrine-slogan::after,
-  .vitrine-hero h1::before, .vitrine-hero h1::after { animation: none; opacity: 0.7; }
+  .vitrine-hero h1::before, .vitrine-hero h1::after,
+  .vitrine-pilier-titre::before, .vitrine-pilier-titre::after,
+  .vitrine-livre-etiquette::before, .vitrine-livre-etiquette::after,
+  .vitrine-livre-lien::before, .vitrine-livre-lien::after { animation: none; opacity: 0.7; }
 }
 
 .vitrine-pitch { text-align: center; margin: 1.4rem auto 0; max-width: 30rem; }
@@ -1748,11 +1762,12 @@ button:disabled { opacity: 0.35; cursor: default; }
   margin: 2.2rem auto 0;
 }
 .vitrine-pilier {
-  background: var(--carte);
-  border: 1px solid var(--filet);
+  background: rgba(12, 8, 24, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;
   padding: 1.3rem 1.2rem 1.2rem;
   text-align: center;
+  backdrop-filter: blur(3px);
 }
 /* Pleine largeur PWA : chaque tableau occupe toute la largeur de sa carte. */
 .vitrine-pilier-illus {
@@ -1760,24 +1775,19 @@ button:disabled { opacity: 0.35; cursor: default; }
   width: 100%;
   height: auto;
   margin: 0 auto 0.9rem;
-  background: #08050e;
-  border: 1.2px solid var(--or-doux);
-  border-radius: 3px;
-  padding: 6px;
-  box-shadow:
-    inset 0 0 0 1px #0a0712,
-    inset 0 0 0 2px rgba(229, 184, 66, 0.45),
-    0 0 14px rgba(126, 74, 196, 0.25),
-    0 6px 18px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 .vitrine-pilier-titre {
-  display: block;
-  font-family: var(--cursive);
+  display: inline-block;
   font-size: 1.45rem;
-  color: var(--or-mana);
   margin-bottom: 0.4rem;
 }
-.vitrine-pilier p { margin: 0; color: var(--brume); font-size: 0.92rem; line-height: 1.55; }
+.vitrine-pilier p {
+  margin: 0; color: #ffffff; font-size: 0.95rem; line-height: 1.55;
+  font-family: 'Philosopher', var(--serif);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
 
 .vitrine-promesses {
   margin: 1.8rem auto 0;
@@ -1807,30 +1817,26 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .vitrine-livre-etiquette {
   display: inline-block;
-  font-family: var(--cursive);
   font-size: 1.45rem;
   letter-spacing: 0;
-  text-transform: none;
-  color: var(--or-mana);
   margin-bottom: 0.5rem;
 }
 .vitrine-livre-mot {
-  font-family: var(--serif);
+  font-family: 'Philosopher', var(--serif);
   font-size: 1rem;
   line-height: 1.6;
-  color: var(--encre);
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
   margin: 0 0 1rem;
 }
 .vitrine-livre-lien {
   display: inline-block;
-  font-family: var(--serif);
-  font-size: 0.95rem;
-  color: var(--or-mana);
+  font-size: 1rem;
   text-decoration: none;
   border-bottom: 1px solid rgba(229, 184, 66, 0.4);
   padding-bottom: 1px;
 }
-.vitrine-livre-lien:hover { color: var(--etoile); border-color: var(--or-mana); }
+.vitrine-livre-lien:hover { border-color: var(--or-mana); }
 
 /* Entrer dans la maison — le ciel familial derrière la déesse, invitation chaleureuse */
 .vitrine-pied {
