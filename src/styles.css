@@ -1984,6 +1984,48 @@ button:disabled { opacity: 0.35; cursor: default; }
 .vitrine-pied-mot { margin-top: 0.8rem; }
 .vitrine-pied .vitrine-promesses { margin-top: 1.6rem; text-align: left; }
 
+/* Le serment — carte noire cerclée d'un liseré de lumière qui la balaie. */
+.vitrine-serment {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 1.7rem 1.5rem;
+  margin: 1.8rem auto 0;
+  max-width: 32rem;
+  text-align: center;
+}
+.vitrine-serment::before {
+  content: '';
+  position: absolute; z-index: -2;
+  left: 50%; top: 50%;
+  width: 220%; height: 220%;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(from 0deg,
+    transparent 0turn, transparent 0.70turn,
+    rgba(229, 184, 66, 0.45) 0.82turn, #ffffff 0.90turn, rgba(229, 184, 66, 0.45) 0.98turn,
+    transparent 1turn);
+  animation: serment-balayage 5s linear infinite;
+}
+.vitrine-serment::after {
+  content: '';
+  position: absolute; z-index: -1;
+  inset: 1.5px;
+  border-radius: 19px;
+  background: #05040b;
+}
+@keyframes serment-balayage { to { transform: translate(-50%, -50%) rotate(1turn); } }
+@media (prefers-reduced-motion: reduce) { .vitrine-serment::before { animation: none; } }
+
+.vitrine-serment-titre {
+  font-family: var(--cursive);
+  font-size: 1.7rem;
+  color: var(--etoile);
+  margin: 0 0 1.1rem;
+}
+.vitrine-pied .vitrine-serment .vitrine-promesses { margin: 0; text-align: left; }
+.vitrine-serment .vitrine-promesse { color: #ffffff; }
+
 /* Badge de pied de page — propulsé par TEMPOsystem. */
 .vitrine-footer {
   text-align: center;

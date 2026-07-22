@@ -596,8 +596,8 @@ export default function App() {
 /** Ce que la maison promet — trois lignes de confiance, pas des arguments de vente. */
 const PROMESSES: { glyphe: string; mot: string }[] = [
   { glyphe: '🔒', mot: 'Rien n’est public. Seulement votre famille voit vos moments.' },
-  { glyphe: '🌱', mot: 'Rien n’est vendu. Vos souvenirs ne servent à rien d’autre qu’à vous relier.' },
-  { glyphe: '✦', mot: 'Rien ne s’efface. Ce qui est transmis reste, gardé pour ceux qui viennent.' },
+  { glyphe: '🔒', mot: 'Rien n’est vendu. Vos souvenirs ne servent à rien d’autre qu’à vous relier.' },
+  { glyphe: '🔒', mot: 'Rien ne s’efface. Ce qui est transmis reste, gardé pour ceux qui viennent.' },
 ]
 
 /** Les deux piliers — la doctrine Présence / Mémoire, dite simplement,
@@ -678,17 +678,16 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         <div className="vitrine-pied-clef cadre-or">
           <img src="/mana-key.jpg" alt="La clef de la maison Mana" />
         </div>
-        <button className="primary" onClick={onSeConnecter}>Entrer dans la maison</button>
-        <p className="whisper vitrine-pied-mot">
-          Un proche vous a confié une clé&nbsp;? <button className="link" onClick={onSeConnecter}>Se connecter</button>, puis rejoignez la famille.
-        </p>
-        <div className="vitrine-promesses">
-          {PROMESSES.map((p) => (
-            <p className="vitrine-promesse" key={p.mot}>
-              <span className="vitrine-promesse-glyphe" aria-hidden="true">{p.glyphe}</span>
-              <span>{p.mot}</span>
-            </p>
-          ))}
+        <div className="vitrine-serment">
+          <h2 className="vitrine-serment-titre">Votre Carnet de Famille</h2>
+          <div className="vitrine-promesses">
+            {PROMESSES.map((p) => (
+              <p className="vitrine-promesse" key={p.mot}>
+                <span className="vitrine-promesse-glyphe" aria-hidden="true">{p.glyphe}</span>
+                <span>{p.mot}</span>
+              </p>
+            ))}
+          </div>
         </div>
       </section>
 
