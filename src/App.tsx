@@ -737,7 +737,7 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
         <div className="clef-embleme cadre-or">
           <img src="/mana-key.jpg" alt="La clef de la maison Mana" />
         </div>
-        <h1>Mana Family</h1>
+        <h1 className="compte-marque">MANAfamily</h1>
         <p className="whisper">La Présence fait vivre. La Mémoire fait durer.</p>
       </header>
 

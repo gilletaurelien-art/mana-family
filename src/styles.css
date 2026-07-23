@@ -1485,6 +1485,33 @@ button:disabled { opacity: 0.35; cursor: default; }
   font-size: 0.95rem; color: #f5edd8;
 }
 
+/* Le titre MANAfamily de la connexion — effet « or vivant » de la landing. */
+.sky h1.compte-marque {
+  position: relative;
+  font-family: 'Philosopher', var(--serif);
+  font-weight: 700; font-size: 2.3rem; letter-spacing: 0; text-transform: none;
+  background: linear-gradient(100deg,
+    var(--or-sombre) 0%, var(--or-mana) 26%, #fff7e0 46%, #ffffff 50%,
+    #fff7e0 54%, var(--or-mana) 74%, var(--or-sombre) 100%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 10px rgba(229, 184, 66, 0.55)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+  animation: manafamily-lumiere 5s ease-in-out infinite;
+}
+.compte-marque::before, .compte-marque::after {
+  content: '✦'; position: absolute; font-size: 0.42em;
+  color: #ffffff; -webkit-text-fill-color: #ffffff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.95), 0 0 12px var(--or-mana);
+  animation: etincelle-mana 2.6s ease-in-out infinite; pointer-events: none;
+}
+.compte-marque::before { top: -0.1em; left: -0.4em; }
+.compte-marque::after { bottom: -0.05em; right: -0.4em; animation-delay: 1.3s; }
+@media (prefers-reduced-motion: reduce) {
+  .sky h1.compte-marque { animation: none; background-position: 50% 0; }
+  .compte-marque::before, .compte-marque::after { animation: none; opacity: 0.7; }
+}
+
 /* La zone de connexion — toute en Philosopher. */
 .compte-card,
 .compte-card h2,
