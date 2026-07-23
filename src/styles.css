@@ -1468,7 +1468,10 @@ button:disabled { opacity: 0.35; cursor: default; }
   border: 1px solid rgba(229, 184, 66, 0.45);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
-.geste-mot-txt { font-size: 0.95rem; }
+.geste-mot-txt {
+  font-family: 'Philosopher', var(--serif); font-weight: 700;
+  font-size: 0.95rem; color: #f5edd8;
+}
 
 /* La zone de connexion — toute en Philosopher. */
 .compte-card,
@@ -1482,7 +1485,31 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* « Famille » écrit à la main, à demi-taille — le nom prend la vedette. */
 .mot-famille { font-family: var(--cursive); font-style: normal; font-size: 0.5em; }
 /* Le nom de la famille — Philosopher, en majuscules. */
-.nom-famille { font-family: 'Philosopher', var(--serif); text-transform: uppercase; }
+/* Le nom de famille — Philosopher majuscule, effet « or vivant » de MANAfamily. */
+.nom-famille {
+  position: relative;
+  font-family: 'Philosopher', var(--serif); text-transform: uppercase;
+  background: linear-gradient(100deg,
+    var(--or-sombre) 0%, var(--or-mana) 26%, #fff7e0 46%, #ffffff 50%,
+    #fff7e0 54%, var(--or-mana) 74%, var(--or-sombre) 100%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 10px rgba(229, 184, 66, 0.5)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+  animation: manafamily-lumiere 5s ease-in-out infinite;
+}
+.nom-famille::before, .nom-famille::after {
+  content: '✦'; position: absolute; font-size: 0.42em;
+  color: #ffffff; -webkit-text-fill-color: #ffffff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.95), 0 0 12px var(--or-mana);
+  animation: etincelle-mana 2.6s ease-in-out infinite; pointer-events: none;
+}
+.nom-famille::before { top: -0.1em; left: -0.5em; }
+.nom-famille::after { bottom: -0.05em; right: -0.5em; animation-delay: 1.3s; }
+@media (prefers-reduced-motion: reduce) {
+  .nom-famille { animation: none; background-position: 50% 0; }
+  .nom-famille::before, .nom-famille::after { animation: none; opacity: 0.7; }
+}
 
 /* « La clé de la maison » en Marelle. */
 .inviter-shell h1 { font-family: var(--cursive); font-size: 1.9rem; }
@@ -1596,53 +1623,93 @@ button:disabled { opacity: 0.35; cursor: default; }
    sa lueur derrière le nom. */
 /* Le prénom posé SOUS l'astre — Philosopher sur pastille noire :
    il ne cache jamais l'étoile ni le visage, et reste net sur le ciel. */
+/* Le prénom SOUS l'étoile, avec l'effet « or vivant » de MANAfamily
+   (dégradé doré balayé de lumière blanche + étincelles). */
 .foyer .prenom {
   position: absolute;
   top: auto; left: 50%; bottom: 0;
-  transform: translate(-50%, calc(100% + 4px));
+  transform: translate(-50%, calc(100% - 3px));
   margin: 0;
   white-space: nowrap;
   pointer-events: none;
   font-family: 'Philosopher', var(--serif);
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 1rem;
   letter-spacing: 0.02em;
-  color: #fdf6e3;
-  background: rgba(8, 6, 12, 0.82);
-  padding: 0.11rem 0.52rem;
-  border-radius: 999px;
+  background: linear-gradient(100deg,
+    var(--or-sombre) 0%, var(--or-mana) 26%, #fff7e0 46%, #ffffff 50%,
+    #fff7e0 54%, var(--or-mana) 74%, var(--or-sombre) 100%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  -webkit-text-stroke: 0.9px rgba(0, 0, 0, 0.72);
+  filter:
+    drop-shadow(0 0 8px rgba(229, 184, 66, 0.5))
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 1))
+    drop-shadow(0 0 3px rgba(0, 0, 0, 0.95));
+  animation: manafamily-lumiere 5s ease-in-out infinite;
   opacity: 1;
-  text-shadow: none;
+}
+/* Les étincelles autour du prénom — comme MANAfamily. */
+.foyer .prenom::before, .foyer .prenom::after {
+  content: '✦';
+  position: absolute;
+  font-size: 0.42em;
+  color: #ffffff; -webkit-text-fill-color: #ffffff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.95), 0 0 12px var(--or-mana);
+  animation: etincelle-mana 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.foyer .prenom::before { top: -0.15em; left: -0.6em; }
+.foyer .prenom::after { bottom: -0.05em; right: -0.6em; animation-delay: 1.3s; }
+@media (prefers-reduced-motion: reduce) {
+  .foyer .prenom { animation: none; background-position: 50% 0; }
+  .foyer .prenom::before, .foyer .prenom::after { animation: none; opacity: 0.7; }
 }
 /* Familles nombreuses : l'initiale seule. */
-.foyer .prenom-initiale { font-size: 0.95rem; padding: 0.06rem 0.5rem; }
+.foyer .prenom-initiale { font-size: 1.1rem; }
 
-/* Photo d'astre : petit rond dans le ciel (le prénom se pose dessous, comme l'étoile). */
-.foyer .astre-photo { width: 40px; height: 40px; }
-
-/* L'astre prend la forme d'une étoile légèrement dorée — cœur clair,
-   pointes dorées, lueur douce (drop-shadow qui suit la forme). */
+/* Toutes les étoiles brillent — chacun veille. Grande étoile dorée (×3),
+   nom posé dessus. */
 .foyer .astre-pure-light {
-  width: 17px; height: 17px;
+  width: 40px; height: 40px;
   border-radius: 0;
-  background: radial-gradient(circle at 50% 42%, #fffdf3 22%, #f3dfa4 58%, var(--or-mana) 100%);
+  background: linear-gradient(100deg,
+    var(--or-sombre) 0%, var(--or-mana) 26%, #fff7e0 44%, #ffffff 50%,
+    #fff7e0 56%, var(--or-mana) 74%, var(--or-sombre) 100%);
+  background-size: 240% 100%;
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  filter: drop-shadow(0 0 4px rgba(229, 184, 66, 0.85)) drop-shadow(0 0 9px rgba(255, 245, 210, 0.4));
+  filter: drop-shadow(0 0 7px rgba(229, 184, 66, 1)) drop-shadow(0 0 20px rgba(255, 224, 130, 0.55));
   box-shadow: none;
-  animation: scintille 5.5s ease-in-out infinite;
+  animation: manafamily-lumiere 5s ease-in-out infinite, scintille 5.5s ease-in-out infinite;
 }
 @keyframes scintille {
-  0%, 100% { opacity: 0.78; }
+  0%, 100% { opacity: 0.9; }
   50%      { opacity: 1; }
 }
-/* Veillé, l'étoile grandit et brille plus fort. */
-.foyer .halo .astre-pure-light {
-  width: 24px; height: 24px;
-  background: radial-gradient(circle at 50% 42%, #fff6d8 20%, var(--or-mana) 78%);
-  filter: drop-shadow(0 0 6px rgba(229, 184, 66, 1)) drop-shadow(0 0 15px rgba(255, 224, 130, 0.6));
+/* Photo d'astre : rond plus grand ; le nom se pose dessous. */
+.foyer .astre-photo { width: 52px; height: 52px; }
+.foyer .astre-avec-photo .prenom {
+  top: auto; bottom: 0;
+  transform: translate(-50%, calc(100% + 2px));
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.98);
+}
+/* La lueur gazeuse — pour TOUTES les étoiles (chacun veille). */
+.foyer .astre-core::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(229, 184, 66, 0.32) 0%, rgba(11, 19, 31, 0) 70%);
+  z-index: -1;
+  pointer-events: none;
+  animation: respiration-gazeuse 12s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .foyer .astre-pure-light { animation: none; }
+  .foyer .astre-core::before { animation: none; }
 }
 .foyer .etat-ciel {
   color: #fdf6e3;
@@ -1944,7 +2011,7 @@ button:disabled { opacity: 0.35; cursor: default; }
    d'une lumière blanche (magique et magnifique), halo, et étincelles. */
 .vitrine-eyebrow, .vitrine-slogan,
 .vitrine-pilier-titre, .vitrine-livre-etiquette, .vitrine-livre-lien,
-.vitrine-entrer-mot, .geste-mot-txt {
+.vitrine-entrer-mot {
   align-self: center;
   position: relative;
   font-family: 'Philosopher', var(--serif);

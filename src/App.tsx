@@ -5,7 +5,7 @@ import { archiverHeritage, chargerHeritage } from './store'
 import { demoCiel } from './demo'
 import { connexionMotDePasse, envoyerLien, monEmail, seDeconnecter, sessionCertifiee, supabase } from './lib/supabase'
 import {
-  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre, veiller,
+  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre,
   type Ciel as CielData, type Galaxie,
 } from './remote'
 
@@ -491,7 +491,6 @@ export default function App() {
         aboutId={phase.aboutId}
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onEcrire={() => setPhase({ ecran: 'composer', aboutId: phase.aboutId })}
-        onVeiller={(txId) => setCiel(veiller(ciel, txId))}
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
         onProfil={(astreId, nom, surnom, date, role, pays, codePostal) => setCiel(modifierProfil(ciel, astreId, nom, surnom, date, role, pays, codePostal))}
@@ -1954,13 +1953,12 @@ function TxLien({ url }: { url: string }) {
   )
 }
 
-function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait, onNaissance, onProfil, onNommer }: {
+function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissance, onProfil, onNommer }: {
   ciel: CielData
   me: Astre
   aboutId: string | null
   onRetour: () => void
   onEcrire: () => void
-  onVeiller: (txId: string) => void
   onPortrait: (astreId: string, dataUrl: string) => void
   onNaissance: (astreId: string, date: string) => void
   onProfil: (astreId: string, nom: string, surnom: string, date: string | null, role: Role, pays: string, codePostal: string) => void
@@ -2104,9 +2102,6 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
       ) : (
         <ul className="frise">
           {txs.map((t) => {
-            const mine = t.authorId === me.id
-            const forMe = t.forMe
-            const iVeilled = Boolean(t.veilles[me.id])
             const lueurs = Object.keys(t.veilles).map((id) => nameOf(id)).filter(Boolean) as string[]
 
             return (
@@ -2132,11 +2127,6 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
                   {/* La lueur, asymétrique : on montre qui a veillé, jamais qui manque. */}
                   {lueurs.length > 0 && <span className="lueur">✦ {lueurs.join(', ')}</span>}
                 </div>
-                {forMe && !mine && !iVeilled && (
-                  <button className="veiller" onClick={() => onVeiller(t.id)}>
-                    J'ai veillé
-                  </button>
-                )}
               </li>
             )
           })}
