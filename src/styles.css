@@ -276,22 +276,54 @@ body:has(.carnet-hero)::before { display: none; }
   font-size: 1rem; line-height: 1.5; margin: 0.4rem 0 0.9rem;
 }
 
-.assistante-bloc { margin: 1.8rem 0; }
-.assistante-bloc h2 {
-  font-family: var(--serif); color: var(--etoile);
-  border-bottom: 1px dotted var(--filet); padding-bottom: 0.4rem; margin-bottom: 0.9rem;
+/* Les sections de découvrir — mêmes cartes que le reste de la maison :
+   voile translucide sur le ciel étoilé, filet lumineux, coins arrondis. */
+.assistante-bloc {
+  margin: 1.1rem 0 0;
+  padding: 1.15rem 1.2rem;
+  border-radius: 18px;
+  border: 1px solid var(--filet);
+  background: var(--carte);
+  backdrop-filter: blur(8px);
+  animation: onde 0.45s ease-out;
 }
+@media (prefers-reduced-motion: reduce) { .assistante-bloc { animation: none; } }
+.assistante-bloc h2 {
+  color: var(--etoile);
+  margin: 0 0 0.9rem;
+}
+/* La barre de liens (jardin · paramètres · inviter) — centrée sous le titre MANAfamily. */
+.assistante-nav { text-align: center; }
 
 /* Le tableau des formules (découvrir). */
 .formules-intro { margin: -0.4rem 0 0.8rem; }
 
 /* Formule actuelle — la carte de statut de l'abonnement */
 .formule-actuelle {
+  position: relative; isolation: isolate; overflow: hidden;
   display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
-  padding: 1rem 1rem 0.9rem; margin: 0 0 0.9rem;
-  border: 1px solid var(--or-sombre); border-radius: 14px;
-  background: color-mix(in srgb, var(--or-mana) 8%, transparent);
+  padding: 1.1rem 1rem 1rem; margin: 0 0 0.9rem;
+  border: none; border-radius: 16px;
+  background: transparent;
 }
+.formule-actuelle::before {
+  content: '';
+  position: absolute; z-index: -2;
+  left: 50%; top: 50%; width: 240%; height: 240%;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(from 0deg,
+    transparent 0turn, transparent 0.70turn,
+    rgba(229, 184, 66, 0.45) 0.82turn, #ffffff 0.90turn, rgba(229, 184, 66, 0.45) 0.98turn,
+    transparent 1turn);
+  animation: serment-balayage 5s linear infinite;
+}
+.formule-actuelle::after {
+  content: '';
+  position: absolute; z-index: -1;
+  inset: 1.5px; border-radius: 15px;
+  background: #05040b;
+}
+@media (prefers-reduced-motion: reduce) { .formule-actuelle::before { animation: none; } }
 .formule-actuelle-label {
   font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--brume);
@@ -1483,6 +1515,22 @@ button:disabled { opacity: 0.35; cursor: default; }
 .geste-mot-txt {
   font-family: 'Philosopher', var(--serif); font-weight: 700;
   font-size: 0.95rem; color: #f5edd8;
+}
+
+/* Tuiles-boutons illustrées (Lire · Écrire · Définir) : l'image EST le bouton —
+   cadre, fond étoilé, icône dorée et libellé sont déjà gravés dedans. On la
+   pose telle quelle, sans cadre ni recadrage, à son ratio naturel. */
+.geste-rond.geste-tuile-img {
+  aspect-ratio: auto;
+  border: none;
+  background: none;
+  border-radius: 22px;
+  overflow: visible;
+}
+.geste-rond.geste-tuile-img img {
+  width: 100%; height: auto;
+  object-fit: contain;
+  border-radius: 22px;
 }
 
 /* Le titre MANAfamily de la connexion — effet « or vivant » de la landing. */

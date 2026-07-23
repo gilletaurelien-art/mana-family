@@ -143,14 +143,15 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
   return (
     <div className="shell assistante-shell papier">
       <RetourNav onRetour={onRetour} />
-      <header className="sky carnet-hero-lire">
-        <p className="whisper">
+      <ManaHeader />
+      <header className="sky sky-sous-header">
+        <p className="whisper assistante-nav">
           <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
         </p>
       </header>
 
       <section className="assistante-bloc">
-        <h2>MANAfamily</h2>
+        <h2>Nos formules</h2>
         <p className="whisper formules-intro">La Famille est gratuite et sans limite de membres. Le Récit et La Lignée sont à venir.</p>
 
         <div className="formule-actuelle">
@@ -554,6 +555,7 @@ export default function App() {
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onCalendriers={(calendarIds) => setCiel(modifierCalendriers(ciel, me.id, calendarIds))}
         onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
+        onUnivers={() => setPhase({ ecran: 'assistante' })}
       />
     )
   }
@@ -578,7 +580,7 @@ export default function App() {
       onTransmettre={() => setPhase({ ecran: 'composer' })}
       onGalaxie={() => setPhase({ ecran: 'galaxie' })}
       onChronologie={() => setPhase({ ecran: 'chronologie' })}
-      onAssistante={() => setPhase({ ecran: 'assistante' })}
+      onParametres={() => setPhase({ ecran: 'parametres' })}
     />
   )
 }
@@ -1226,14 +1228,14 @@ function EtatCiel({ textes, onClick, rejouer }: { textes: string[]; onClick: () 
   )
 }
 
-function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onChronologie, onAssistante }: {
+function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onChronologie, onParametres }: {
   ciel: CielData
   horsLigne: boolean
   onOuvrirFrise: (aboutId: string | null) => void
   onTransmettre: () => void
   onGalaxie: () => void
   onChronologie: () => void
-  onAssistante: () => void
+  onParametres: () => void
 }) {
   const n = ciel.astres.length
   // Familles nombreuses : au-delà de 12 astres, on n'affiche que l'initiale
@@ -1323,15 +1325,15 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
 
         <div className="barre-bas">
           <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-            <span className="geste-rond geste-visage"><img src="/carnet.jpg" alt="" /><span className="geste-mot"><span className="geste-mot-txt">lire</span></span></span>
+            <span className="geste-rond geste-tuile-img"><img src="/btn-lire.png" alt="Lire" /></span>
           </button>
 
           <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-            <span className="geste-rond geste-mandala"><img src="/plume.jpg" alt="" /><span className="geste-mot"><span className="geste-mot-txt">écrire</span></span></span>
+            <span className="geste-rond geste-tuile-img"><img src="/btn-ecrire.png" alt="Écrire" /></span>
           </button>
 
-          <button className="geste" onClick={onAssistante} aria-label="L'univers Mana — découvrir">
-            <span className="geste-rond geste-visage"><img src="/mana-key.jpg" alt="" /><span className="geste-mot"><span className="geste-mot-txt">découvrir</span></span></span>
+          <button className="geste" onClick={onParametres} aria-label="Paramètres — définir">
+            <span className="geste-rond geste-tuile-img"><img src="/btn-definir.png" alt="Définir" /></span>
           </button>
         </div>
       </div>
@@ -1341,11 +1343,12 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
 
 /* ---------- Paramètres personnels ---------- */
 
-function ParametresVue({ me, onRetour, onCalendriers, onDeconnexion }: {
+function ParametresVue({ me, onRetour, onCalendriers, onDeconnexion, onUnivers }: {
   me: Astre
   onRetour: () => void
   onCalendriers: (calendarIds: CalendarLayerId[]) => void
   onDeconnexion: () => void
+  onUnivers: () => void
 }) {
   const actifs = new Set(me.calendarIds ?? [])
   const [email, setEmail] = useState<string | null>(null)
@@ -1368,6 +1371,12 @@ function ParametresVue({ me, onRetour, onCalendriers, onDeconnexion }: {
         <h2>Mon compte</h2>
         <p className="whisper">Connecté{email ? <> en tant que <b>{email}</b></> : ''} — votre accès à la famille vous suit d'un appareil à l'autre.</p>
         <button onClick={onDeconnexion} style={{ marginTop: '0.6rem' }}>Se déconnecter</button>
+      </section>
+
+      <section className="card">
+        <h2>L'univers Mana</h2>
+        <p className="whisper">Les formules, le jardin, les invitations et les réponses aux questions courantes.</p>
+        <button onClick={onUnivers} style={{ marginTop: '0.6rem' }}>Découvrir l'univers Mana →</button>
       </section>
 
       <section className="card">
