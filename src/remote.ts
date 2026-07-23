@@ -19,7 +19,7 @@ const CACHE = 'mana-family-ciel-cache'
 const OUTBOX = 'mana-family-outbox'
 
 type Geste =
-  | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl: string | null; audioUrl: string | null; videoUrl: string | null; musicUrl: string | null }
+  | { geste: 'transmettre'; id: string; kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl: string | null; audioUrl: string | null; videoUrl: string | null; musicUrl: string | null; linkUrl: string | null }
   | { geste: 'veiller'; txId: string }
   | { geste: 'portrait'; astreId: string; url: string }
   | { geste: 'naissance'; astreId: string; date: string }
@@ -82,6 +82,7 @@ async function jouer(g: Geste): Promise<void> {
     if (p_audio) args.p_audio = p_audio
     if (p_video) args.p_video = p_video
     if (p_music) args.p_music = p_music
+    if (g.linkUrl) args.p_link = g.linkUrl
     await rpc('transmettre', args)
   } else if (g.geste === 'veiller') {
     await rpc('veiller', { p_tx: g.txId })
@@ -150,7 +151,7 @@ function surcoucheOutbox(ciel: Ciel): Ciel {
       next = {
         ...next,
         transmissions: [
-          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, imageUrl: g.imageUrl, audioUrl: g.audioUrl, videoUrl: g.videoUrl, musicUrl: g.musicUrl, happensOn: g.happensOn, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
+          { id: g.id, authorId: next.meId, aboutId: g.aboutId, kind: g.kind, body: g.body, imageUrl: g.imageUrl, audioUrl: g.audioUrl, videoUrl: g.videoUrl, musicUrl: g.musicUrl, linkUrl: g.linkUrl, happensOn: g.happensOn, forMe: g.recipientIds.includes(next.meId), veilles: {}, createdAt: new Date().toISOString() },
           ...next.transmissions,
         ],
       }
@@ -202,18 +203,19 @@ export async function charger(): Promise<{ ciel: Ciel | null; horsLigne: boolean
 
 export function transmettre(
   ciel: Ciel,
-  t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null; audioUrl?: string | null; videoUrl?: string | null; musicUrl?: string | null },
+  t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null; audioUrl?: string | null; videoUrl?: string | null; musicUrl?: string | null; linkUrl?: string | null },
 ): Ciel {
   const id = crypto.randomUUID()
   const imageUrl = t.imageUrl ?? null
   const audioUrl = t.audioUrl ?? null
   const videoUrl = t.videoUrl ?? null
   const musicUrl = t.musicUrl ?? null
-  enfiler({ geste: 'transmettre', id, kind: t.kind, body: t.body, aboutId: t.aboutId, recipientIds: t.recipientIds, happensOn: t.happensOn, imageUrl, audioUrl, videoUrl, musicUrl })
+  const linkUrl = t.linkUrl ?? null
+  enfiler({ geste: 'transmettre', id, kind: t.kind, body: t.body, aboutId: t.aboutId, recipientIds: t.recipientIds, happensOn: t.happensOn, imageUrl, audioUrl, videoUrl, musicUrl, linkUrl })
   return {
     ...ciel,
     transmissions: [
-      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, imageUrl, audioUrl, videoUrl, musicUrl, happensOn: t.happensOn, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
+      { id, authorId: ciel.meId, aboutId: t.aboutId, kind: t.kind, body: t.body, imageUrl, audioUrl, videoUrl, musicUrl, linkUrl, happensOn: t.happensOn, forMe: t.recipientIds.includes(ciel.meId), veilles: {}, createdAt: new Date().toISOString() },
       ...ciel.transmissions,
     ],
   }

@@ -273,18 +273,6 @@ function KindGlyph({ kind }: { kind: TransmissionKind }) {
   }
 }
 
-/** Le micro de la dictée — s'éveille quand il écoute. */
-function MicGlyph({ actif }: { actif: boolean }) {
-  return (
-    <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="9" y="3" width="6" height="11" rx="3" fill={actif ? 'currentColor' : 'none'} />
-      <path d="M6 11a6 6 0 0 0 12 0" />
-      <path d="M12 17v4" />
-      <path d="M9 21h6" />
-    </svg>
-  )
-}
-
 /** Le sablier — les archives du carnet (réglages, tri, recherche). */
 function SablierGlyph() {
   return (
@@ -1061,18 +1049,20 @@ let livreDejaOuvert = false
 /* Le médium d'une transmission — pour le filtre du carnet. Aujourd'hui seule
    la photo existe dans les données ; audio/vidéo/musique sont prêts à filtrer
    dès que ces pièces jointes arriveront. */
-type Medium = 'photo' | 'audio' | 'video' | 'musique'
+type Medium = 'photo' | 'audio' | 'video' | 'musique' | 'lien'
 const MEDIUMS: { id: Medium; label: string }[] = [
   { id: 'photo', label: 'Photo' },
   { id: 'audio', label: 'Audio' },
   { id: 'video', label: 'Vidéo' },
   { id: 'musique', label: 'Musique' },
+  { id: 'lien', label: 'Lien' },
 ]
 function mediumDe(t: Transmission): Medium | null {
   if (t.imageUrl) return 'photo'
   if (t.audioUrl) return 'audio'
   if (t.videoUrl) return 'video'
   if (t.musicUrl) return 'musique'
+  if (t.linkUrl) return 'lien'
   return null
 }
 
@@ -1524,13 +1514,6 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
 
 /* ---------- Composer ---------- */
 
-// Les médiums qu'on peut joindre à un moment (un seul à la fois).
-const MEDIA_TYPES: { medium: Medium; emoji: string; label: string; accept: string }[] = [
-  { medium: 'photo', emoji: '📷', label: 'Photo', accept: 'image/*' },
-  { medium: 'video', emoji: '🎬', label: 'Vidéo', accept: 'video/*' },
-  { medium: 'audio', emoji: '🎙️', label: 'Audio', accept: 'audio/*' },
-  { medium: 'musique', emoji: '🎵', label: 'Musique', accept: 'audio/*' },
-]
 // Au-delà, on refuse doucement (l'octet transite par le stockage local hors ligne).
 const MEDIA_MAX_MO = 8
 
@@ -1561,75 +1544,168 @@ const GESTES: [string, string][] = [
   ['🎉', 'Félicitations'],
 ]
 
+/* ---------- Les 6 symboles de pièce jointe ---------- */
+const ISVG = { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
+function IconPhoto() { return <svg {...ISVG}><path d="M3 8h3l1.6-2h8.8L18 8h3v11H3z" /><circle cx="12" cy="13" r="3.3" /></svg> }
+function IconVideo() { return <svg {...ISVG}><rect x="3" y="5" width="18" height="14" rx="2.4" /><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none" /></svg> }
+function IconAudio() { return <svg {...ISVG}><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M6 11a6 6 0 0 0 12 0" /><path d="M12 17v4" /><path d="M9 21h6" /></svg> }
+function IconMusique() { return <svg {...ISVG}><path d="M9 18V5l10-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="16" cy="16" r="3" /></svg> }
+function IconLien() { return <svg {...ISVG}><path d="M9.5 14.5l5-5" /><path d="M10.8 6.6l1.6-1.6a4 4 0 0 1 5.7 5.7l-2.3 2.3" /><path d="M13.2 17.4l-1.6 1.6a4 4 0 0 1-5.7-5.7l2.3-2.3" /></svg> }
+function IconGeste() { return <svg {...ISVG}><rect x="4" y="9" width="16" height="11" rx="1.6" /><path d="M2.5 9h19M12 9v11" /><path d="M12 9C10 9 7.5 8.2 7.5 6.3A2 2 0 0 1 11.5 6M12 9c2 0 4.5-.8 4.5-2.7A2 2 0 0 0 12.5 6" /></svg> }
+
+/** Nettoie le HTML du message : on ne garde que la mise en forme (gras,
+    italique, souligné, listes, taille), jamais de script, d'attribut actif,
+    ni de lien/image dans le corps (les liens sont des pièces jointes). */
+function assainirHtml(html: string): string {
+  if (typeof window === 'undefined') return html
+  const doc = new DOMParser().parseFromString(html, 'text/html')
+  doc.querySelectorAll('script,style,iframe,object,embed,link,meta,img,a').forEach((e) => e.replaceWith(...Array.from(e.childNodes)))
+  doc.querySelectorAll('*').forEach((el) => {
+    Array.from(el.attributes).forEach((a) => {
+      const n = a.name.toLowerCase()
+      const keepStyle = n === 'style' && /^font-size:\s*[\d.]+em;?$/i.test(a.value.trim())
+      if (n.startsWith('on') || n === 'src' || n === 'href' || n === 'srcdoc' || (n === 'style' && !keepStyle)) el.removeAttribute(a.name)
+    })
+  })
+  return doc.body.innerHTML
+}
+
+function blobDataUrl(blob: Blob): Promise<string> {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result as string); r.onerror = () => rej(r.error); r.readAsDataURL(blob) })
+}
+
+/** L'enregistreur de voix — la pièce jointe « audio », enregistrée directement. */
+function EnregistreurAudio({ onFini, onErreur, onFermer }: { onFini: (url: string) => void; onErreur: (m: string) => void; onFermer: () => void }) {
+  const [etat, setEtat] = useState<'idle' | 'enreg' | 'apercu'>('idle')
+  const [secondes, setSecondes] = useState(0)
+  const [apercu, setApercu] = useState<string | null>(null)
+  const recRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
+  const timerRef = useRef<number | null>(null)
+  const stopTimer = () => { if (timerRef.current) { window.clearInterval(timerRef.current); timerRef.current = null } }
+  useEffect(() => () => { stopTimer(); recRef.current?.stream?.getTracks?.().forEach((t) => t.stop()) }, [])
+
+  async function demarrer() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const rec = new MediaRecorder(stream)
+      chunksRef.current = []
+      rec.ondataavailable = (e) => { if (e.data.size) chunksRef.current.push(e.data) }
+      rec.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop())
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || 'audio/webm' })
+        if (blob.size > MEDIA_MAX_MO * 1024 * 1024) { onErreur(`L'enregistrement dépasse ${MEDIA_MAX_MO} Mo — plus court la prochaine fois.`); return }
+        setApercu(await blobDataUrl(blob)); setEtat('apercu')
+      }
+      rec.start(); recRef.current = rec; setEtat('enreg'); setSecondes(0)
+      timerRef.current = window.setInterval(() => setSecondes((s) => {
+        if (s + 1 >= 180) { rec.stop(); stopTimer() } // plafond 3 min
+        return s + 1
+      }), 1000)
+    } catch { onErreur("Micro indisponible — autorisez l'accès, ou joignez un fichier audio.") }
+  }
+  function arreter() { stopTimer(); recRef.current?.stop() }
+  const mmss = `${String(Math.floor(secondes / 60)).padStart(2, '0')}:${String(secondes % 60).padStart(2, '0')}`
+
+  return (
+    <div className="offrir-veil" onClick={onFermer}>
+      <div className="offrir-sheet enreg-sheet" role="dialog" aria-label="Enregistrer un audio" onClick={(e) => e.stopPropagation()}>
+        <button className="offrir-fermer" onClick={onFermer} aria-label="Fermer">✕</button>
+        <h2 className="offrir-titre">Enregistrer</h2>
+        {etat !== 'apercu' ? (
+          <>
+            <div className={`enreg-pastille ${etat === 'enreg' ? 'on' : ''}`} aria-hidden="true"><IconAudio /></div>
+            <p className="enreg-minuteur">{mmss}</p>
+            {etat === 'idle'
+              ? <button className="primary" style={{ width: '100%' }} onClick={demarrer}>Commencer</button>
+              : <button className="primary enreg-stop" style={{ width: '100%' }} onClick={arreter}>Arrêter</button>}
+          </>
+        ) : (
+          <>
+            {apercu && <audio src={apercu} controls style={{ width: '100%' }} />}
+            <div className="row" style={{ marginTop: '0.8rem' }}>
+              <button onClick={() => { setApercu(null); setEtat('idle'); setSecondes(0) }}>Recommencer</button>
+              <button className="primary" onClick={() => apercu && onFini(apercu)}>Joindre</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Composer({ ciel, me, aboutId = null, onDone }: {
   ciel: CielData
   me: Astre
   aboutId?: string | null
-  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null; audioUrl?: string | null; videoUrl?: string | null; musicUrl?: string | null } | null) => void
+  onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null; audioUrl?: string | null; videoUrl?: string | null; musicUrl?: string | null; linkUrl?: string | null } | null) => void
 }) {
   const others = ciel.astres.filter((a) => a.id !== me.id)
   const sujet = aboutId ? ciel.astres.find((a) => a.id === aboutId) : null
-  const [body, setBody] = useState('')
-  const [media, setMedia] = useState<{ url: string; medium: Medium } | null>(null)
-  const [prepMedia, setPrepMedia] = useState(false)
-  const [mediaSheet, setMediaSheet] = useState(false)
-  const [mediaErreur, setMediaErreur] = useState<string | null>(null)
-  const [offrirOuvert, setOffrirOuvert] = useState(false)
 
-  async function choisirMedia(medium: Medium, file: File | undefined) {
-    setMediaSheet(false)
-    setMediaErreur(null)
+  // Le message — éditeur riche (contenteditable, mise en forme + retours à la ligne).
+  const editorRef = useRef<HTMLDivElement>(null)
+  const [vide, setVide] = useState(true)
+  const [grand, setGrand] = useState(false)
+  const majVide = () => setVide(!editorRef.current?.textContent?.trim())
+  const format = (cmd: string) => { document.execCommand(cmd); editorRef.current?.focus(); majVide() }
+
+  // Pièces jointes : un médium OU un lien à la fois.
+  const [media, setMedia] = useState<{ url: string; medium: Medium } | null>(null)
+  const [lien, setLien] = useState<string | null>(null)
+  const [prepMedia, setPrepMedia] = useState(false)
+  const [erreur, setErreur] = useState<string | null>(null)
+  const [offrirOuvert, setOffrirOuvert] = useState(false)
+  const [lienOuvert, setLienOuvert] = useState(false)
+  const [lienSaisie, setLienSaisie] = useState('')
+  const [enregOuvert, setEnregOuvert] = useState(false)
+
+  const poserMedia = (url: string, medium: Medium) => { setLien(null); setMedia({ url, medium }); setErreur(null) }
+  const retirerPj = () => { setMedia(null); setLien(null) }
+
+  async function choisirFichier(medium: Medium, file: File | undefined) {
+    setErreur(null)
     if (!file) return
     if (medium !== 'photo' && file.size > MEDIA_MAX_MO * 1024 * 1024) {
-      setMediaErreur(`Ce fichier dépasse ${MEDIA_MAX_MO} Mo — choisissez un extrait plus court pour l'instant.`)
+      setErreur(`Ce fichier dépasse ${MEDIA_MAX_MO} Mo — choisissez un extrait plus court pour l'instant.`)
       return
     }
     setPrepMedia(true)
     try {
       const url = medium === 'photo' ? await preparerImage(file) : await lireFichierDataUrl(file)
-      setMedia({ url, medium })
+      poserMedia(url, medium)
     } catch {
-      setMediaErreur("Ce fichier n'a pas pu être préparé — réessayez avec un autre.")
-    } finally {
-      setPrepMedia(false)
-    }
+      setErreur("Ce fichier n'a pas pu être préparé — réessayez avec un autre.")
+    } finally { setPrepMedia(false) }
   }
 
-  const champMedia = () => {
-    if (!media) return {}
-    return {
-      imageUrl: media.medium === 'photo' ? media.url : null,
-      audioUrl: media.medium === 'audio' ? media.url : null,
-      videoUrl: media.medium === 'video' ? media.url : null,
-      musicUrl: media.medium === 'musique' ? media.url : null,
-    }
+  function validerLien() {
+    let u = lienSaisie.trim()
+    if (!u) return
+    if (!/^https?:\/\//i.test(u)) u = 'https://' + u
+    setMedia(null); setLien(u); setLienSaisie(''); setLienOuvert(false); setErreur(null)
   }
 
-  const [ecoute, setEcoute] = useState(false)
-  const recognitionRef = useRef<any>(null)
-
-  // La dictée — la voix devient mémoire (reconnaissance du navigateur, hors ligne quand dispo)
-  const dicter = () => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SR) return
-    if (ecoute) { recognitionRef.current?.stop(); return }
-    const rec = new SR()
-    rec.lang = 'fr-FR'
-    rec.interimResults = true
-    rec.continuous = true
-    const base = body ? body.trimEnd() + ' ' : ''
-    rec.onresult = (e: any) => {
-      let txt = ''
-      for (let i = e.resultIndex; i < e.results.length; i++) txt += e.results[i][0].transcript
-      setBody(base + txt)
+  const champPj = () => {
+    const c: Record<string, string | null> = {}
+    if (media) {
+      c.imageUrl = media.medium === 'photo' ? media.url : null
+      c.audioUrl = media.medium === 'audio' ? media.url : null
+      c.videoUrl = media.medium === 'video' ? media.url : null
+      c.musicUrl = media.medium === 'musique' ? media.url : null
     }
-    rec.onend = () => setEcoute(false)
-    rec.onerror = () => setEcoute(false)
-    recognitionRef.current = rec
-    rec.start()
-    setEcoute(true)
+    if (lien) c.linkUrl = lien
+    return c
   }
-  const dicteeDispo = typeof window !== 'undefined' && ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
+
+  function transmettre() {
+    const brut = editorRef.current?.innerHTML ?? ''
+    let corps = assainirHtml(brut).trim()
+    if (corps && grand) corps = `<div style="font-size:1.25em">${corps}</div>`
+    onDone({ kind: 'souvenir', body: corps, aboutId, recipientIds: others.map((a) => a.id), happensOn: null, ...champPj() })
+  }
+
+  const pret = !vide || !!media || !!lien
 
   return (
     <div className="shell papier">
@@ -1639,86 +1715,90 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
       </header>
 
       <section className="card composer-card">
-        {/* 1. Le message */}
-        <div className="message-zone">
-          <textarea
-            placeholder="On a ri tous ensemble après le dîner — un petit bonheur simple qui a rempli la maison."
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            rows={4}
-          />
-          {dicteeDispo && (
-            <button
-              type="button"
-              className={`dictee ${ecoute ? 'on' : ''}`}
-              onClick={dicter}
-              aria-label={ecoute ? 'Arrêter la dictée' : 'Dicter le message'}
-              title={ecoute ? 'Arrêter la dictée' : 'Dicter — la voix devient mémoire'}
-            >
-              <MicGlyph actif={ecoute} />
-            </button>
-          )}
+        {/* 1. Le message — éditeur riche */}
+        <div className="rt-barre">
+          <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('bold')} aria-label="Gras"><b>G</b></button>
+          <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('italic')} aria-label="Italique"><i>I</i></button>
+          <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('underline')} aria-label="Souligner"><u>S</u></button>
+          <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('insertUnorderedList')} aria-label="Puce">•</button>
+          <span className="rt-sep" aria-hidden="true" />
+          <button type="button" className={`rt-btn rt-taille ${grand ? 'on' : ''}`} onMouseDown={(e) => e.preventDefault()} onClick={() => setGrand((g) => !g)} aria-label="Taille du texte">{grand ? 'A' : 'a'}</button>
         </div>
-        <p className="whisper naissance-note message-aide">
-          {ecoute ? 'Je vous écoute…' : 'Écrivez, ou touchez le micro pour dicter.'}
-        </p>
+        <div
+          ref={editorRef}
+          className={`rt-editeur ${grand ? 'rt-grand' : ''} ${vide ? 'rt-vide' : ''}`}
+          contentEditable
+          role="textbox"
+          aria-multiline="true"
+          aria-label="Votre message"
+          data-placeholder="On a ri tous ensemble après le dîner — un petit bonheur simple qui a rempli la maison."
+          onInput={majVide}
+        />
 
-        {/* 2. Deux options illustrées, côte à côte : pièce jointe & offrir un geste */}
-        <div className="composer-tuiles">
-          {media ? (
-            <div className="composer-pj-apercu">
-              <MediaApercu url={media.url} medium={media.medium} />
-              <button type="button" className="composer-pj-retirer" onClick={() => setMedia(null)} aria-label="Retirer la pièce jointe">✕</button>
-            </div>
-          ) : (
-            <button type="button" className={`composer-tuile ${prepMedia ? 'bientot' : ''}`} onClick={() => setMediaSheet(true)} aria-label="Ajouter une pièce jointe">
-              <span className="composer-tuile-img"><img src="/pj.jpg" alt="" /></span>
-              <span className="composer-tuile-mot">{prepMedia ? 'Préparation…' : 'Pièce jointe'}</span>
-            </button>
-          )}
-          <button type="button" className="composer-tuile" onClick={() => setOffrirOuvert(true)} aria-label="Offrir un geste">
-            <span className="composer-tuile-img"><img src="/cadeau.jpg" alt="" /></span>
-            <span className="composer-tuile-mot">Offrir un geste</span>
+        {/* 2. Aperçu de la pièce jointe (médium ou lien) */}
+        {media && (
+          <div className="composer-pj-apercu">
+            <MediaApercu url={media.url} medium={media.medium} />
+            <button type="button" className="composer-pj-retirer" onClick={retirerPj} aria-label="Retirer la pièce jointe">✕</button>
+          </div>
+        )}
+        {lien && (
+          <div className="composer-lien-apercu">
+            <span className="composer-lien-ico" aria-hidden="true"><IconLien /></span>
+            <a href={lien} target="_blank" rel="noopener">{lien}</a>
+            <button type="button" className="composer-lien-retirer" onClick={retirerPj} aria-label="Retirer le lien">✕</button>
+          </div>
+        )}
+        {prepMedia && <p className="whisper naissance-note">Préparation…</p>}
+        {erreur && <p className="whisper naissance-note composer-media-erreur">{erreur}</p>}
+
+        {/* 3. Les 6 symboles de pièce jointe */}
+        <div className="composer-attach">
+          <label className="attach-btn" aria-label="Joindre une photo">
+            <IconPhoto /><span>Photo</span>
+            <input type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; choisirFichier('photo', f) }} />
+          </label>
+          <label className="attach-btn" aria-label="Joindre une vidéo">
+            <IconVideo /><span>Vidéo</span>
+            <input type="file" accept="video/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; choisirFichier('video', f) }} />
+          </label>
+          <button type="button" className="attach-btn" onClick={() => { setErreur(null); setEnregOuvert(true) }} aria-label="Enregistrer un audio">
+            <IconAudio /><span>Audio</span>
+          </button>
+          <label className="attach-btn" aria-label="Joindre une musique">
+            <IconMusique /><span>Musique</span>
+            <input type="file" accept="audio/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; choisirFichier('musique', f) }} />
+          </label>
+          <button type="button" className="attach-btn" onClick={() => { setLienSaisie(lien ?? ''); setLienOuvert(true) }} aria-label="Joindre un lien">
+            <IconLien /><span>Lien</span>
+          </button>
+          <button type="button" className="attach-btn" onClick={() => setOffrirOuvert(true)} aria-label="Offrir un geste">
+            <IconGeste /><span>Un geste</span>
           </button>
         </div>
-        {mediaErreur && <p className="whisper naissance-note composer-media-erreur">{mediaErreur}</p>}
 
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>
-          <button
-            className="primary"
-            disabled={(!body.trim() && !media) || prepMedia}
-            onClick={() => onDone({ kind: 'souvenir', body: body.trim(), aboutId, recipientIds: others.map((a) => a.id), happensOn: null, ...champMedia() })}
-          >
-            Transmettre
-          </button>
+          <button className="primary" disabled={!pret || prepMedia} onClick={transmettre}>Transmettre</button>
         </div>
       </section>
 
-      {mediaSheet && (
-        <div className="offrir-veil" onClick={() => setMediaSheet(false)}>
-          <div className="offrir-sheet" role="dialog" aria-label="Ajouter une pièce jointe" onClick={(e) => e.stopPropagation()}>
-            <button className="offrir-fermer" onClick={() => setMediaSheet(false)} aria-label="Fermer">✕</button>
-            <h2 className="offrir-titre">Une pièce jointe</h2>
-            <p className="whisper offrir-mot">Une photo, une vidéo, un son ou un morceau — un seul par moment.</p>
-            <div className="media-choix">
-              {MEDIA_TYPES.map((m) => (
-                <label key={m.medium} className="media-choix-btn">
-                  <span className="media-choix-emoji" aria-hidden="true">{m.emoji}</span>
-                  <span>{m.label}</span>
-                  <input
-                    type="file"
-                    accept={m.accept}
-                    hidden
-                    onChange={(e) => {
-                      const f = e.target.files?.[0]
-                      e.target.value = '' // permet de re-choisir le même fichier
-                      choisirMedia(m.medium, f)
-                    }}
-                  />
-                </label>
-              ))}
-            </div>
+      {enregOuvert && (
+        <EnregistreurAudio
+          onFini={(url) => { poserMedia(url, 'audio'); setEnregOuvert(false) }}
+          onErreur={(m) => { setErreur(m); setEnregOuvert(false) }}
+          onFermer={() => setEnregOuvert(false)}
+        />
+      )}
+
+      {lienOuvert && (
+        <div className="offrir-veil" onClick={() => setLienOuvert(false)}>
+          <div className="offrir-sheet" role="dialog" aria-label="Joindre un lien" onClick={(e) => e.stopPropagation()}>
+            <button className="offrir-fermer" onClick={() => setLienOuvert(false)} aria-label="Fermer">✕</button>
+            <h2 className="offrir-titre">Un lien</h2>
+            <p className="whisper offrir-mot">Collez l'adresse — elle est jointe au message, jamais dans le texte.</p>
+            <input className="composer-lien-input" type="url" inputMode="url" placeholder="https://…" value={lienSaisie} autoFocus onChange={(e) => setLienSaisie(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') validerLien() }} aria-label="Adresse du lien" />
+            <button className="primary" style={{ width: '100%', marginTop: '0.8rem' }} disabled={!lienSaisie.trim()} onClick={validerLien}>Joindre le lien</button>
           </div>
         </div>
       )}
@@ -1727,7 +1807,6 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
         <div className="offrir-veil" onClick={() => setOffrirOuvert(false)}>
           <div className="offrir-sheet" role="dialog" aria-label="Offrir un geste" onClick={(e) => e.stopPropagation()}>
             <button className="offrir-fermer" onClick={() => setOffrirOuvert(false)} aria-label="Fermer">✕</button>
-            <div className="offrir-cadeau" aria-hidden="true"><img src="/cadeau.jpg" alt="" /></div>
             <h2 className="offrir-titre">Offrir un geste</h2>
             <p className="whisper offrir-mot">
               Une attention {sujet ? <>pour <b>{nomIntime(sujet)}</b></> : <>pour toute la famille</>} — touchez pour l'offrir.
@@ -1831,6 +1910,18 @@ function TxMedia({ src, kind }: { src: string; kind: 'audio' | 'video' }) {
   return kind === 'video'
     ? <video className="tx-video" src={url} controls preload="metadata" />
     : <audio className="tx-audio" src={url} controls preload="metadata" />
+}
+
+/** Un lien joint — une pastille cliquable (jamais dans le corps du texte). */
+function TxLien({ url }: { url: string }) {
+  let hote = url
+  try { hote = new URL(url).hostname.replace(/^www\./, '') } catch { /* garde l'url brute */ }
+  return (
+    <a className="tx-lien" href={url} target="_blank" rel="noopener">
+      <span className="tx-lien-ico" aria-hidden="true"><IconLien /></span>
+      <span className="tx-lien-txt">{hote}</span>
+    </a>
+  )
 }
 
 function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait, onNaissance, onProfil, onNommer }: {
@@ -1997,11 +2088,12 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
                       : new Date(t.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
                   </span>
                 </div>
-                {t.body && <p className="tx-body">{t.body}</p>}
+                {t.body && <div className="tx-body" dangerouslySetInnerHTML={{ __html: assainirHtml(t.body) }} />}
                 {t.imageUrl && <TxImage src={t.imageUrl} />}
                 {t.videoUrl && <TxMedia src={t.videoUrl} kind="video" />}
                 {t.audioUrl && <TxMedia src={t.audioUrl} kind="audio" />}
                 {t.musicUrl && <TxMedia src={t.musicUrl} kind="audio" />}
+                {t.linkUrl && <TxLien url={t.linkUrl} />}
                 <div className="tx-foot">
                   <span className="tx-meta">
                     {nameOf(t.authorId)}

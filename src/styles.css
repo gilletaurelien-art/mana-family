@@ -598,6 +598,101 @@ button:disabled { opacity: 0.35; cursor: default; }
 .composer-media-son audio { width: 100%; }
 .composer-media-erreur { color: var(--emotionnel); margin-top: 0.4rem; }
 
+/* ---- L'éditeur riche du Composer ---- */
+.rt-barre {
+  display: flex; align-items: center; gap: 0.3rem;
+  padding: 0.35rem; margin-bottom: 0.5rem;
+  border: 1px solid var(--filet); border-radius: 12px; background: var(--champ);
+}
+.rt-btn {
+  min-width: 2rem; height: 2rem; padding: 0 0.5rem; border-radius: 8px;
+  border: 1px solid transparent; background: transparent; color: var(--encre);
+  font-family: var(--mono); font-size: 0.95rem; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.rt-btn:hover { background: color-mix(in srgb, var(--or-mana) 14%, transparent); }
+.rt-btn.on { border-color: var(--or-mana); color: var(--etoile); }
+.rt-btn.rt-taille { font-family: 'Philosopher', var(--serif); font-weight: 700; }
+.rt-sep { width: 1px; height: 1.3rem; background: var(--filet); margin: 0 0.15rem; }
+.rt-editeur {
+  min-height: 6.5rem; padding: 0.8rem 0.9rem;
+  border: 1px solid var(--filet); border-radius: 14px; background: var(--champ);
+  color: var(--encre); font-family: 'Philosopher', var(--serif);
+  font-size: 1.08rem; line-height: 1.55; outline: none;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.rt-editeur:focus { border-color: var(--or-mana); }
+.rt-editeur.rt-grand { font-size: 1.32rem; }
+.rt-editeur.rt-vide::before {
+  content: attr(data-placeholder); color: var(--brume); pointer-events: none;
+}
+.rt-editeur ul { margin: 0.3rem 0; padding-left: 1.4rem; }
+
+/* ---- Les 6 symboles de pièce jointe ---- */
+.composer-attach {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0.55rem; margin: 0.9rem 0 0.2rem;
+}
+.attach-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  padding: 0.75rem 0.4rem; border-radius: 14px;
+  border: 1px solid var(--filet); background: var(--champ);
+  color: var(--etoile); cursor: pointer;
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: -0.01em;
+  transition: transform 0.15s ease, border-color 0.2s ease;
+}
+.attach-btn:hover { border-color: var(--or-mana); }
+.attach-btn:active { transform: scale(0.96); }
+.attach-btn svg { width: 24px; height: 24px; }
+.attach-btn span { color: var(--brume); }
+
+/* Le lien joint — aperçu dans le Composer. */
+.composer-lien-apercu {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.6rem 0.7rem; margin-top: 0.6rem;
+  border: 1px solid var(--filet); border-radius: 12px; background: var(--champ);
+}
+.composer-lien-apercu a { color: var(--etoile); text-decoration: none; word-break: break-all; flex: 1; font-size: 0.9rem; }
+.composer-lien-ico { color: var(--or-mana); display: inline-flex; }
+.composer-lien-ico svg { width: 20px; height: 20px; }
+.composer-lien-retirer {
+  border: none; background: transparent; color: var(--brume);
+  font-size: 0.95rem; cursor: pointer; padding: 0.2rem;
+}
+.composer-lien-input {
+  width: 100%; margin-top: 0.4rem; padding: 0.7rem 0.8rem;
+  border: 1px solid var(--filet); border-radius: 12px; background: var(--champ);
+  color: var(--encre); font-family: var(--mono); font-size: 0.95rem;
+}
+
+/* ---- L'enregistreur audio ---- */
+.enreg-sheet { text-align: center; }
+.enreg-pastille {
+  width: 84px; height: 84px; margin: 1rem auto 0.6rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(229, 184, 66, 0.5); color: var(--or-mana);
+  background: color-mix(in srgb, var(--or-mana) 8%, transparent);
+}
+.enreg-pastille svg { width: 40px; height: 40px; }
+.enreg-pastille.on { border-color: var(--emotionnel); color: var(--emotionnel); animation: enreg-battement 1.2s ease-in-out infinite; }
+@keyframes enreg-battement { 0%, 100% { box-shadow: 0 0 0 0 rgba(216, 90, 90, 0.5); } 50% { box-shadow: 0 0 0 12px rgba(216, 90, 90, 0); } }
+@media (prefers-reduced-motion: reduce) { .enreg-pastille.on { animation: none; } }
+.enreg-minuteur { font-family: var(--mono); font-size: 1.6rem; color: var(--etoile); margin: 0.2rem 0 1rem; letter-spacing: 0.08em; }
+.enreg-stop { background: var(--emotionnel); }
+
+/* Le lien joint, dans la carte de la transmission. */
+.tx-lien {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  margin: 0.55rem 0 0.2rem; padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(229, 184, 66, 0.4); border-radius: 999px;
+  background: rgba(8, 6, 14, 0.4); color: var(--etoile);
+  text-decoration: none; font-family: var(--mono); font-size: 0.82rem; max-width: 100%;
+}
+.tx-lien:hover { border-color: var(--or-mana); }
+.tx-lien-ico { color: var(--or-mana); display: inline-flex; }
+.tx-lien-ico svg { width: 17px; height: 17px; }
+.tx-lien-txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* Le choix du médium — grille 2×2 dans la feuille parchemin. */
 .media-choix {
   display: grid; grid-template-columns: 1fr 1fr;

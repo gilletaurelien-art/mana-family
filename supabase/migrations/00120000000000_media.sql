@@ -16,6 +16,8 @@
 alter table transmissions add column if not exists audio_url text;
 alter table transmissions add column if not exists video_url text;
 alter table transmissions add column if not exists music_url text;
+-- Un lien joint (URL) — jamais dans le corps, toujours en pièce jointe.
+alter table transmissions add column if not exists link_url text;
 
 -- Un seul médium par transmission (photo, audio, vidéo OU musique).
 alter table transmissions drop constraint if exists transmissions_un_seul_medium;
@@ -50,7 +52,8 @@ drop function if exists transmettre(uuid, text, text, uuid, uuid[], date, text);
 create or replace function transmettre(
   p_id uuid, p_kind text, p_body text, p_about uuid, p_recipients uuid[],
   p_happens_on date, p_image text default null,
-  p_audio text default null, p_video text default null, p_music text default null
+  p_audio text default null, p_video text default null, p_music text default null,
+  p_link text default null
 )
 returns jsonb
 language plpgsql security definer set search_path = public, pg_temp as $$
@@ -59,9 +62,9 @@ begin
   v := mf_lien();
   if v is null then raise exception 'appareil non relié'; end if;
   insert into transmissions(id, constellation_id, author_astre_id, about_astre_id, kind, body, happens_on,
-                            image_url, audio_url, video_url, music_url)
+                            image_url, audio_url, video_url, music_url, link_url)
     values (p_id, v.constellation_id, v.astre_id, p_about, p_kind, p_body, p_happens_on,
-            p_image, p_audio, p_video, p_music)
+            p_image, p_audio, p_video, p_music, p_link)
     on conflict (id) do nothing;
   insert into transmission_grants(transmission_id, astre_id)
     select p_id, m.astre_id from members m
@@ -70,8 +73,10 @@ begin
   return jsonb_build_object('ok', true);
 end $$;
 
-revoke execute on function transmettre(uuid, text, text, uuid, uuid[], date, text, text, text, text) from public, anon;
-grant  execute on function transmettre(uuid, text, text, uuid, uuid[], date, text, text, text, text) to authenticated;
+-- On remplace la version à 10 args par celle à 11 (p_link) : on la retire d'abord.
+drop function if exists transmettre(uuid, text, text, uuid, uuid[], date, text, text, text, text);
+revoke execute on function transmettre(uuid, text, text, uuid, uuid[], date, text, text, text, text, text) from public, anon;
+grant  execute on function transmettre(uuid, text, text, uuid, uuid[], date, text, text, text, text, text) to authenticated;
 
 -- ------------------------------------------------------------
 -- 3. ma_constellation projette aussi audioUrl / videoUrl / musicUrl.
