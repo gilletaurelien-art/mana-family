@@ -2043,7 +2043,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissan
       ) : (
       <header className="sky">
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
-        <h1>{sujet ? nomIntime(sujet) : 'Le carnet de famille'}</h1>
+        <h1 className="fiche-nom">{sujet ? nomIntime(sujet) : 'Le carnet de famille'}</h1>
         <p className="whisper">
           {sujet && (
             <>
@@ -2091,8 +2091,8 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissan
           ) : (
             <p className="naissance nom-doux-ligne">
               {sujet.nomDoux ? <>je l'appelle <b>{sujet.nomDoux}</b></> : 'lui donner un petit nom'}{' '}
-              <button className="link" onClick={() => { setNomDouxVal(sujet.nomDoux ?? ''); setNomDouxEdit(true) }}>
-                {sujet.nomDoux ? 'changer' : '＋'}
+              <button className="link nom-doux-btn" onClick={() => { setNomDouxVal(sujet.nomDoux ?? ''); setNomDouxEdit(true) }}>
+                {sujet.nomDoux ? 'changer' : '＋ ajouter'}
               </button>
             </p>
           )
@@ -2162,8 +2162,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissan
 
       {sujet && (
         <button className="fiche-ecrire" onClick={onEcrire} aria-label={`Écrire au sujet de ${nomIntime(sujet)}`}>
-          <span className="fiche-ecrire-plume"><img src="/plume.jpg" alt="" /></span>
-          <span>écrire</span>
+          écrire <span aria-hidden="true">→</span>
         </button>
       )}
 
