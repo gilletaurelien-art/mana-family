@@ -699,7 +699,45 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
 
 /* ---------- Le compte — e-mail certifié par code, identité durable ---------- */
 
+// L'ouverture de la maison : le solstice d'hiver 2026. Avant, une barrière douce.
+const OUVERTURE = new Date('2026-12-21T00:00:00')
+const CODE_ACCES = 'solstice' // mot de passe d'avant-première (à changer au besoin)
+
+/** Le compte à rebours jusqu'à l'ouverture (solstice d'hiver 2026). */
+function Compteur() {
+  const [reste, setReste] = useState(OUVERTURE.getTime() - Date.now())
+  useEffect(() => {
+    const id = window.setInterval(() => setReste(OUVERTURE.getTime() - Date.now()), 1000)
+    return () => window.clearInterval(id)
+  }, [])
+  if (reste <= 0) return <p className="compte-rebours-fini">La maison est ouverte. ✦</p>
+  const j = Math.floor(reste / 86400000)
+  const h = Math.floor(reste / 3600000) % 24
+  const m = Math.floor(reste / 60000) % 60
+  const s = Math.floor(reste / 1000) % 60
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return (
+    <div className="compte-rebours" aria-label="Compte à rebours jusqu'au solstice d'hiver 2026">
+      <span className="cr-bloc"><b>{j}</b><span>jours</span></span>
+      <span className="cr-bloc"><b>{pad(h)}</b><span>h</span></span>
+      <span className="cr-bloc"><b>{pad(m)}</b><span>min</span></span>
+      <span className="cr-bloc"><b>{pad(s)}</b><span>s</span></span>
+    </div>
+  )
+}
+
 function CompteVue({ onRetour }: { onRetour: () => void }) {
+  const [deverrouille, setDeverrouille] = useState(() => {
+    try { return localStorage.getItem('mf_acces_ok') === '1' } catch { return false }
+  })
+  const [codeAcces, setCodeAcces] = useState('')
+  const [codeErreur, setCodeErreur] = useState(false)
+  const verifierCode = () => {
+    if (codeAcces.trim().toLowerCase() === CODE_ACCES) {
+      try { localStorage.setItem('mf_acces_ok', '1') } catch { /* ignore */ }
+      setDeverrouille(true); setCodeErreur(false)
+    } else setCodeErreur(true)
+  }
   const [etape, setEtape] = useState<'email' | 'envoye'>('email')
   const [mode, setMode] = useState<'lien' | 'motdepasse'>('lien')
   const [email, setEmail] = useState('')
@@ -741,7 +779,25 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
       </header>
 
       <section className="card compte-card">
-        {etape === 'email' ? (
+        {!deverrouille ? (
+          <>
+            <h2>Bientôt — le solstice d'hiver</h2>
+            <p className="whisper compte-mot">La maison de MANAfamily ouvre ses portes au solstice d'hiver 2026.</p>
+            <Compteur />
+            <p className="whisper compte-mot compte-acces-invite">Un mot de passe d'accès vous a été confié&nbsp;?</p>
+            <input
+              type="password"
+              placeholder="Mot de passe d'accès"
+              value={codeAcces}
+              autoFocus
+              onChange={(e) => { setCodeAcces(e.target.value); setCodeErreur(false) }}
+              onKeyDown={(e) => { if (e.key === 'Enter') verifierCode() }}
+              aria-label="Mot de passe d'accès"
+            />
+            {codeErreur && <p className="whisper compte-erreur">Mot de passe incorrect.</p>}
+            <button className="primary" disabled={!codeAcces.trim()} onClick={verifierCode}>Entrer</button>
+          </>
+        ) : etape === 'email' ? (
           <>
             <h2>Entrer dans la maison</h2>
             <p className="whisper compte-mot">Votre e-mail — pour créer votre accès, ou vous reconnecter. Nous vous envoyons un lien : un clic, et vous êtes chez vous.</p>
