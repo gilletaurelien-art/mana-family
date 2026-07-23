@@ -63,3 +63,20 @@ export async function connexionMotDePasse(email: string, motDePasse: string): Pr
 export async function seDeconnecter(): Promise<void> {
   await supabase.auth.signOut()
 }
+
+/** Suppression définitive du compte. Tente l'effacement côté serveur via la
+    fonction `supprimer_compte` (SECURITY DEFINER, à créer côté base), puis
+    déconnecte dans tous les cas. Tant que la fonction serveur n'existe pas,
+    l'utilisateur est au moins déconnecté et ses appareils déliés. */
+export async function supprimerCompte(): Promise<void> {
+  try { await supabase.rpc('supprimer_compte') } catch { /* fonction serveur à venir */ }
+  await supabase.auth.signOut()
+}
+
+/** Quitter la famille active : on garde son compte, on quitte cette maison.
+    Tente `quitter_famille` côté serveur (à créer, pose `ended_at` sur le
+    membre). L'app rafraîchit ensuite pour retrouver une autre famille ou
+    l'écran d'accueil. */
+export async function quitterFamille(): Promise<void> {
+  try { await supabase.rpc('quitter_famille') } catch { /* fonction serveur à venir */ }
+}

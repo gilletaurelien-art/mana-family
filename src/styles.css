@@ -277,6 +277,42 @@ body:has(.carnet-hero)::before { display: none; }
 /* La barre de liens (jardin · paramètres · inviter) — centrée sous le titre MANAfamily. */
 .assistante-nav { text-align: center; }
 
+/* Découvrir — bloc « Mon compte » : déconnexion + suppression. */
+.compte-deco, .compte-supprimer {
+  display: block; width: 100%; margin-top: 0.7rem;
+  border-radius: 12px; padding: 0.7rem 1rem; cursor: pointer;
+  font-family: var(--mono); font-size: 0.9rem; letter-spacing: 0.02em;
+}
+.compte-deco { border: 1px solid var(--filet); background: var(--champ); color: var(--etoile); }
+.compte-deco:hover { border-color: var(--or-mana); }
+.compte-quitter { border: 1px solid var(--filet); background: var(--champ); color: var(--etoile); }
+.compte-quitter:hover { border-color: var(--or-mana); }
+.compte-quitter-box { margin-top: 0.7rem; text-align: left; }
+.compte-quitter-box .whisper { margin: 0 0 0.6rem; }
+.compte-quitter-oui { background: #b8863a; border-color: #b8863a; color: #fff; }
+.compte-supprimer { border: 1px solid rgba(214, 108, 98, 0.5); background: transparent; color: #e8938a; }
+.compte-supprimer:hover { border-color: #e8938a; background: rgba(214, 108, 98, 0.1); }
+
+/* Badge « propulsé par TEMPOsystem » en pied de la page découvrir. */
+.assistante-footer {
+  text-align: center; margin: 1.8rem 0 0; padding: 1.4rem 0 0.4rem;
+  border-top: 1px dotted var(--filet);
+  display: flex; flex-direction: column; gap: 0.3rem;
+  color: var(--brume); font-size: 0.8rem; letter-spacing: 0.04em; font-family: var(--mono);
+}
+.tempo-badge { color: inherit; text-decoration: none; }
+.tempo-badge b { color: var(--etoile); }
+.tempo-legal { font-size: 0.72rem; opacity: 0.8; }
+
+/* Page « Suppression définitive ». */
+.supprimer-confirme {
+  display: flex; align-items: flex-start; gap: 0.6rem; margin: 1.1rem 0;
+  color: var(--encre); font-size: 0.95rem; line-height: 1.5; cursor: pointer;
+}
+.supprimer-confirme input { margin-top: 0.25rem; flex: none; }
+.supprimer-valider { background: #c0564d; border-color: #c0564d; color: #fff; }
+.supprimer-valider:disabled { opacity: 0.5; }
+
 /* Le tableau des formules (découvrir). */
 .formules-intro { margin: -0.4rem 0 0.8rem; }
 
@@ -1273,7 +1309,9 @@ button:disabled { opacity: 0.35; cursor: default; }
    respire sur un cycle de 12 s, le rythme d'un sommeil paisible.
    ============================================================ */
 
-.ciel { position: relative; height: 50vh; min-height: 330px; margin-top: 0.4rem; }
+/* Le ciel remplit toute la hauteur : « moi » (centre à 47%) tombe au milieu de l'écran. */
+.shell.foyer { display: flex; flex-direction: column; min-height: 100vh; padding-top: 0; padding-bottom: 0; }
+.ciel { position: relative; flex: 1 1 auto; min-height: 330px; margin: 0; }
 
 .astre-ciel {
   position: absolute;
@@ -1608,12 +1646,21 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 /* Le code de la clé (Inviter) — en noir, mono, sur le parchemin. */
 .inviter-code {
+  display: inline-block;
   font-family: var(--mono);
   font-size: 2rem; font-weight: 700;
   letter-spacing: 0.16em;
-  color: #111111;
   margin: 0.6rem 0;
+  background: linear-gradient(100deg,
+    var(--or-sombre) 0%, var(--or-mana) 26%, #fff7e0 46%, #ffffff 50%,
+    #fff7e0 54%, var(--or-mana) 74%, var(--or-sombre) 100%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 10px rgba(229, 184, 66, 0.55)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+  animation: manafamily-lumiere 5s ease-in-out infinite;
 }
+@media (prefers-reduced-motion: reduce) { .inviter-code { animation: none; } }
 
 /* Slogan et boutons en Marelle (Porte / Fondation). */
 .slogan-marelle { font-family: var(--cursive); font-style: normal; font-size: 1.15rem; }
@@ -1730,36 +1777,14 @@ button:disabled { opacity: 0.35; cursor: default; }
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: 0.02em;
-  background: linear-gradient(100deg,
-    var(--or-sombre) 0%, var(--or-mana) 26%, #fff7e0 46%, #ffffff 50%,
-    #fff7e0 54%, var(--or-mana) 74%, var(--or-sombre) 100%);
-  background-size: 240% 100%;
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent; color: transparent;
-  -webkit-text-stroke: 0.9px rgba(0, 0, 0, 0.72);
-  filter:
-    drop-shadow(0 0 8px rgba(229, 184, 66, 0.5))
-    drop-shadow(0 1px 2px rgba(0, 0, 0, 1))
-    drop-shadow(0 0 3px rgba(0, 0, 0, 0.95));
-  animation: manafamily-lumiere 5s ease-in-out infinite;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95), 0 0 10px rgba(0, 0, 0, 0.55);
   opacity: 1;
 }
-/* Les étincelles autour du prénom — comme MANAfamily. */
-.foyer .prenom::before, .foyer .prenom::after {
-  content: '✦';
-  position: absolute;
-  font-size: 0.42em;
-  color: #ffffff; -webkit-text-fill-color: #ffffff;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.95), 0 0 12px var(--or-mana);
-  animation: etincelle-mana 2.6s ease-in-out infinite;
-  pointer-events: none;
-}
-.foyer .prenom::before { top: -0.15em; left: -0.6em; }
-.foyer .prenom::after { bottom: -0.05em; right: -0.6em; animation-delay: 1.3s; }
-@media (prefers-reduced-motion: reduce) {
-  .foyer .prenom { animation: none; background-position: 50% 0; }
-  .foyer .prenom::before, .foyer .prenom::after { animation: none; opacity: 0.7; }
-}
+/* Prénoms sobres : plus d'étincelles. */
+.foyer .prenom::before, .foyer .prenom::after { content: none; }
 /* Familles nombreuses : l'initiale seule. */
 .foyer .prenom-initiale { font-size: 1.1rem; }
 

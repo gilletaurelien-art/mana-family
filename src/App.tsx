@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Astre, CalendarLayerId, Constellation, Role, Transmission, TransmissionKind } from './types'
-import { CALENDAR_LAYERS, ROLES, nomIntime } from './types'
+import type { Astre, Constellation, Role, Transmission, TransmissionKind } from './types'
+import { ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import { demoCiel } from './demo'
-import { connexionMotDePasse, envoyerLien, monEmail, seDeconnecter, sessionCertifiee, supabase } from './lib/supabase'
+import { connexionMotDePasse, envoyerLien, monEmail, quitterFamille, seDeconnecter, sessionCertifiee, supabase, supprimerCompte } from './lib/supabase'
 import {
-  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierCalendriers, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre,
+  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre,
   type Ciel as CielData, type Galaxie,
 } from './remote'
 
@@ -90,60 +90,22 @@ const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boo
 /** L'univers Mana — pleine page : l'assistante, les questions douces, les portes de la maison. */
 /** Nous écrire — formulaire de contact (Web3Forms → contact@manahome.org).
     Éléments natifs de l'app → thème jour/nuit automatique. */
-function NousEcrire() {
-  const [sending, setSending] = useState(false)
-  const [status, setStatus] = useState<{ msg: string; ok?: boolean }>({ msg: '' })
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const form = e.currentTarget
-    setSending(true)
-    setStatus({ msg: 'Envoi…' })
-    const data = Object.fromEntries(new FormData(form).entries())
-    try {
-      const res = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(data),
-      })
-      const r = await res.json()
-      if (r.success) { setStatus({ msg: 'Merci ! Votre message est envoyé. 🌱', ok: true }); form.reset() }
-      else setStatus({ msg: 'Oups — une erreur est survenue.' })
-    } catch { setStatus({ msg: 'Erreur réseau, réessayez.' }) }
-    finally { setSending(false) }
-  }
-  return (
-    <section className="assistante-bloc">
-      <h2>Nous écrire</h2>
-      <p className="faq-r">Une question, une idée, un souci&nbsp;? Écrivez-nous — nous lisons tout.</p>
-      <form onSubmit={onSubmit}>
-        <input type="hidden" name="access_key" value="6b87a2f3-2183-40e6-befe-23fd66944144" />
-        <input type="hidden" name="subject" value="Message via Mana Family (l'app)" />
-        <input type="checkbox" name="botcheck" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
-        <input name="name" required placeholder="Votre nom" />
-        <input name="email" type="email" required placeholder="Votre e-mail" style={{ marginTop: '0.8rem' }} />
-        <textarea name="message" required placeholder="Votre message…" />
-        <button type="submit" className="primary" disabled={sending} style={{ marginTop: '0.8rem', width: '100%' }}>
-          {sending ? 'Envoi…' : 'Envoyer'}
-        </button>
-        {status.msg && (
-          <p className="faq-r" style={{ marginTop: '0.6rem', color: status.ok ? 'var(--ensemble)' : 'var(--emotionnel)' }}>{status.msg}</p>
-        )}
-      </form>
-    </section>
-  )
-}
 
-function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
+function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeconnexion, onQuitter, onSupprimer }: {
   me: Astre
   onJardin: () => void
   onParametres: () => void
   onInviter: () => void
   onRetour: () => void
+  onDeconnexion: () => void
+  onQuitter: () => void
+  onSupprimer: () => void
 }) {
+  const [confirmQuit, setConfirmQuit] = useState(false)
   return (
     <div className="shell assistante-shell papier">
       <RetourNav onRetour={onRetour} />
-      <ManaHeader onReglages={onParametres} />
+      <ManaHeader />
       <header className="sky sky-sous-header">
         <p className="whisper assistante-nav">
           <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
@@ -226,7 +188,63 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
         </ul>
       </section>
 
-      <NousEcrire />
+      <section className="assistante-bloc">
+        <h2>Mon compte</h2>
+        <p className="whisper">Connecté en tant que <span className="mot-famille">{nomIntime(me)}</span> — votre accès à la famille vous suit d'un appareil à l'autre.</p>
+        <button className="compte-deco" onClick={onDeconnexion}>Se déconnecter</button>
+        {!confirmQuit ? (
+          <button className="compte-quitter" onClick={() => setConfirmQuit(true)}>Quitter la famille</button>
+        ) : (
+          <div className="compte-quitter-box">
+            <p className="whisper">Vous gardez votre compte, mais vous perdez l'accès au carnet partagé de cette famille.</p>
+            <div className="row">
+              <button onClick={() => setConfirmQuit(false)}>Annuler</button>
+              <button className="compte-quitter-oui" onClick={onQuitter}>Oui, quitter</button>
+            </div>
+          </div>
+        )}
+        <button className="compte-supprimer" onClick={onSupprimer}>Supprimer mon compte</button>
+      </section>
+
+      <footer className="assistante-footer">
+        <a href="https://temposystem.eu" target="_blank" rel="noopener noreferrer" className="tempo-badge" aria-label="propulsé par TEMPOsystem">
+          propulsé par <b>TEMPOsystem</b>
+        </a>
+        <span className="tempo-legal">© 2026 · Tous droits réservés</span>
+      </footer>
+    </div>
+  )
+}
+
+/* ---------- Suppression définitive du compte ---------- */
+
+function SupprimerCompteVue({ onRetour, onConfirmer }: { onRetour: () => void; onConfirmer: () => void }) {
+  const [confirme, setConfirme] = useState(false)
+  const [enCours, setEnCours] = useState(false)
+  return (
+    <div className="shell papier">
+      <RetourNav onRetour={onRetour} />
+      <ManaHeader />
+      <header className="sky sky-sous-header">
+        <h1>Suppression définitive</h1>
+      </header>
+      <section className="assistante-bloc supprimer-bloc">
+        <p className="faq-r">
+          Supprimer votre compte efface définitivement votre accès et vos données personnelles.
+          Cette action est <strong>irréversible</strong>. Les transmissions déjà partagées peuvent
+          subsister dans le carnet des autres membres de la famille.
+        </p>
+        <label className="supprimer-confirme">
+          <input type="checkbox" checked={confirme} onChange={(e) => setConfirme(e.target.checked)} />
+          <span>Je comprends que cette suppression est <strong>définitive</strong>.</span>
+        </label>
+        <div className="row">
+          <button onClick={onRetour}>Annuler</button>
+          <button className="primary supprimer-valider" disabled={!confirme || enCours} onClick={() => { setEnCours(true); onConfirmer() }}>
+            {enCours ? 'Suppression…' : 'Supprimer définitivement'}
+          </button>
+        </div>
+      </section>
     </div>
   )
 }
@@ -302,6 +320,7 @@ type Phase =
   | { ecran: 'inviter' }
   | { ecran: 'parametres' }
   | { ecran: 'assistante' }
+  | { ecran: 'supprimer-compte' }
   | { ecran: 'frise'; aboutId: string | null }
   | { ecran: 'composer'; aboutId?: string | null }
 
@@ -477,7 +496,7 @@ export default function App() {
         ciel={ciel}
         me={me}
         aboutId={phase.aboutId ?? null}
-        onReglages={() => setPhase({ ecran: 'parametres' })}
+        onReglages={() => setPhase({ ecran: 'assistante' })}
         onDone={(t) => {
           if (t) setCiel(transmettre(ciel, t))
           setPhase({ ecran: 'ciel' })
@@ -493,7 +512,7 @@ export default function App() {
         me={me}
         aboutId={phase.aboutId}
         onRetour={() => setPhase({ ecran: 'ciel' })}
-        onReglages={() => setPhase({ ecran: 'parametres' })}
+        onReglages={() => setPhase({ ecran: 'assistante' })}
         onEcrire={() => setPhase({ ecran: 'composer', aboutId: phase.aboutId })}
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
@@ -508,7 +527,7 @@ export default function App() {
       <GalaxieVue
         ciel={ciel}
         onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
-        onReglages={() => setPhase({ ecran: 'parametres' })}
+        onReglages={() => setPhase({ ecran: 'assistante' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
@@ -519,7 +538,7 @@ export default function App() {
       <ChronologieVue
         ciel={ciel}
         onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
-        onReglages={() => setPhase({ ecran: 'parametres' })}
+        onReglages={() => setPhase({ ecran: 'assistante' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
@@ -530,7 +549,7 @@ export default function App() {
       <JardinVue
         onActiver={(id) => tenter(() => activerGalaxie(id))}
         onRejoindreAutre={() => setPhase({ ecran: 'rejoindre', retour: 'jardin' })}
-        onReglages={() => setPhase({ ecran: 'parametres' })}
+        onReglages={() => setPhase({ ecran: 'assistante' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
@@ -540,14 +559,7 @@ export default function App() {
     return (
       <Inviter
         ciel={ciel}
-        me={me}
-        onChangerAstre={async (astreId) => {
-          setPhase({ ecran: 'chargement' })
-          await rejoindre(ciel.inviteCode, astreId)
-          await rafraichir()
-          setPhase({ ecran: 'ciel' })
-        }}
-        onReglages={() => setPhase({ ecran: 'parametres' })}
+        onReglages={() => setPhase({ ecran: 'assistante' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
@@ -556,9 +568,7 @@ export default function App() {
   if (phase.ecran === 'parametres') {
     return (
       <ParametresVue
-        me={me}
         onRetour={() => setPhase({ ecran: 'ciel' })}
-        onCalendriers={(calendarIds) => setCiel(modifierCalendriers(ciel, me.id, calendarIds))}
         onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
         onUnivers={() => setPhase({ ecran: 'assistante' })}
       />
@@ -573,6 +583,23 @@ export default function App() {
         onParametres={() => setPhase({ ecran: 'parametres' })}
         onInviter={() => setPhase({ ecran: 'inviter' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
+        onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
+        onQuitter={async () => { setPhase({ ecran: 'chargement' }); await quitterFamille(); setCiel(null); setPhase({ ecran: 'porte' }) }}
+        onSupprimer={() => setPhase({ ecran: 'supprimer-compte' })}
+      />
+    )
+  }
+
+  if (phase.ecran === 'supprimer-compte') {
+    return (
+      <SupprimerCompteVue
+        onRetour={() => setPhase({ ecran: 'assistante' })}
+        onConfirmer={async () => {
+          setPhase({ ecran: 'chargement' })
+          await supprimerCompte()
+          setCiel(null)
+          setPhase({ ecran: 'vitrine' })
+        }}
       />
     )
   }
@@ -584,7 +611,7 @@ export default function App() {
       onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
       onGalaxie={() => setPhase({ ecran: 'galaxie' })}
       onChronologie={() => setPhase({ ecran: 'chronologie' })}
-      onParametres={() => setPhase({ ecran: 'parametres' })}
+      onParametres={() => setPhase({ ecran: 'assistante' })}
     />
   )
 }
@@ -618,7 +645,7 @@ function ManaHeader({ onReglages }: { onReglages?: () => void }) {
   return (
     <header className="vitrine-topbar">
       {onReglages ? (
-        <button type="button" className="vitrine-eyebrow vitrine-marque marque-btn" onClick={onReglages} aria-label="Ouvrir les réglages">MANAfamily</button>
+        <button type="button" className="vitrine-eyebrow vitrine-marque marque-btn" onClick={onReglages} aria-label="Ouvrir la page Découvrir">MANAfamily</button>
       ) : (
         <span className="vitrine-eyebrow vitrine-marque">MANAfamily</span>
       )}
@@ -1310,22 +1337,13 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onGalaxie, onChronologie, onP
 
 /* ---------- Paramètres personnels ---------- */
 
-function ParametresVue({ me, onRetour, onCalendriers, onDeconnexion, onUnivers }: {
-  me: Astre
+function ParametresVue({ onRetour, onDeconnexion, onUnivers }: {
   onRetour: () => void
-  onCalendriers: (calendarIds: CalendarLayerId[]) => void
   onDeconnexion: () => void
   onUnivers: () => void
 }) {
-  const actifs = new Set(me.calendarIds ?? [])
   const [email, setEmail] = useState<string | null>(null)
   useEffect(() => { monEmail().then(setEmail) }, [])
-  const toggle = (id: CalendarLayerId) => {
-    const next = new Set(actifs)
-    if (next.has(id)) next.delete(id)
-    else next.add(id)
-    onCalendriers(CALENDAR_LAYERS.filter((c) => next.has(c.id)).map((c) => c.id))
-  }
 
   return (
     <div className="shell papier">
@@ -1344,25 +1362,6 @@ function ParametresVue({ me, onRetour, onCalendriers, onDeconnexion, onUnivers }
         <h2>L'univers Mana</h2>
         <p className="whisper">Les formules, le jardin, les invitations et les réponses aux questions courantes.</p>
         <button onClick={onUnivers} style={{ marginTop: '0.6rem' }}>Découvrir l'univers Mana →</button>
-      </section>
-
-      <section className="card">
-        <h2>Mes calendriers</h2>
-        <p className="calendar-principle">Le temps est commun. Les calendriers sont personnels. MANA n’impose aucune tradition.</p>
-        <p className="whisper">Ces calendriers sont des couches personnelles : ils n'activent rien pour la famille et ne changent pas le protocole MANA.</p>
-
-        <div className="calendar-list">
-          {CALENDAR_LAYERS.map((layer) => (
-            <label key={layer.id} className="calendar-option">
-              <input
-                type="checkbox"
-                checked={actifs.has(layer.id)}
-                onChange={() => toggle(layer.id)}
-              />
-              <span>{layer.label}</span>
-            </label>
-          ))}
-        </div>
       </section>
     </div>
   )
@@ -1571,10 +1570,8 @@ function JardinVue({ onActiver, onRejoindreAutre, onReglages, onRetour }: {
 
 /* ---------- Inviter — la clé de la maison ---------- */
 
-function Inviter({ ciel, me, onChangerAstre, onReglages, onRetour }: {
+function Inviter({ ciel, onReglages, onRetour }: {
   ciel: CielData
-  me: Astre
-  onChangerAstre: (astreId: string) => void
   onReglages: () => void
   onRetour: () => void
 }) {
@@ -1606,15 +1603,6 @@ function Inviter({ ciel, me, onChangerAstre, onReglages, onRetour }: {
         <div className="row">
           <input type="email" inputMode="email" placeholder="e-mail du proche" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="E-mail du proche" />
           <button className="primary" style={{ width: 'auto', marginTop: 0 }} disabled={!emailValide} onClick={envoyerParEmail}>Envoyer</button>
-        </div>
-
-        <h2>Cet appareil est {nomIntime(me)}</h2>
-        <div className="chips" style={{ justifyContent: 'center' }}>
-          {ciel.astres.map((a) => (
-            <button key={a.id} className={`chip ${a.id === me.id ? 'on' : ''}`} onClick={() => a.id !== me.id && onChangerAstre(a.id)}>
-              {nomIntime(a)}
-            </button>
-          ))}
         </div>
       </section>
     </div>
