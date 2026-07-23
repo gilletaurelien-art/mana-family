@@ -11,20 +11,32 @@
     src: url('/fonts/Marelle-Regular.woff2') format('woff2');
     font-weight: 400; font-style: normal; font-display: swap;
   }
+  /* Philosopher (SIL OFL 1.1) — pour le corps du texte. */
+  @font-face {
+    font-family: 'Philosopher';
+    src: url('/fonts/Philosopher-Regular.woff2') format('woff2');
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Philosopher';
+    src: url('/fonts/Philosopher-Bold.woff2') format('woff2');
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
   :root {
-    /* Fond Parchemin — beige à encre sombre (repris de MANA Family « papier ») */
-    --nuit: #e7d9ba;            /* le parchemin */
-    --cale: #f3e8ca;
-    --or: #9a6a1e;              /* ambre profond, lisible sur le beige */
-    --or-doux: rgba(154, 106, 30, 0.7);
-    --lin: #5a4a33;
-    --encre: #3b2f21;           /* l'encre */
-    --brume: #7c6a4e;
-    --horizon: #2b5275;
-    --filet: rgba(80, 60, 35, 0.30);
-    --serif: 'Iowan Old Style', 'Palatino', 'Caslon', Georgia, serif;
-    --sans: 'Inter', 'Avenir Next', -apple-system, 'Segoe UI', system-ui, sans-serif;
-    --titre: 'Marelle', 'Iowan Old Style', 'Palatino', Georgia, serif;
+    /* Thème nuit — le ciel étoilé de MANAfamily */
+    --nuit: #04030a;            /* le fond nuit */
+    --cale: #0c0818;
+    --or: #e5b842;              /* or MANA */
+    --or-doux: #d8b354;
+    --lin: #cbb8ff;             /* lavande douce (accents) */
+    --encre: #ece7ff;           /* le texte, clair */
+    --etoile: #f5edd8;          /* crème étoile (titres) */
+    --brume: #a99fcf;
+    --horizon: #8fb7e0;
+    --filet: rgba(198, 178, 255, 0.16);
+    --serif: 'Philosopher', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Philosopher', -apple-system, 'Segoe UI', system-ui, sans-serif;
+    --titre: 'Marelle', 'Iowan Old Style', Georgia, serif;
   }
   * { box-sizing: border-box; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -36,19 +48,51 @@
     font-size: 16px;
     line-height: 1.65;
   }
-  /* Le fond Parchemin — feuille vieillie, taches douces + grain */
+  /* Le fond nuit — ciel étoilé : nébuleuses douces + une pluie d'étoiles. */
   body::before {
     content: '';
-    position: fixed; inset: 0; z-index: -1;
-    background-color: #e7d9ba;
+    position: fixed; inset: 0; z-index: -2;
+    background-color: #04030a;
     background-image:
-      radial-gradient(ellipse 70% 55% at 26% 16%, rgba(214, 190, 142, 0.55), transparent 62%),
-      radial-gradient(ellipse 85% 62% at 80% 74%, rgba(150, 118, 74, 0.42), transparent 64%),
-      radial-gradient(ellipse 130% 80% at 50% 112%, rgba(96, 70, 40, 0.45), transparent 72%),
-      radial-gradient(ellipse 120% 85% at 50% -12%, rgba(120, 92, 55, 0.35), transparent 60%),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
-    background-blend-mode: multiply, multiply, multiply, multiply, multiply;
+      radial-gradient(ellipse 60% 50% at 18% 12%, rgba(96, 62, 158, 0.30), transparent 60%),
+      radial-gradient(ellipse 70% 55% at 84% 82%, rgba(58, 34, 108, 0.28), transparent 62%),
+      radial-gradient(ellipse 90% 70% at 50% 50%, rgba(20, 14, 40, 0.55), transparent 70%),
+      radial-gradient(1.6px 1.6px at 12% 18%, #ffffff, transparent),
+      radial-gradient(1.4px 1.4px at 27% 42%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px 1px at 38% 12%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1.5px 1.5px at 52% 32%, #ffffff, transparent),
+      radial-gradient(1px 1px at 63% 8%, rgba(255,255,255,0.75), transparent),
+      radial-gradient(1.4px 1.4px at 72% 26%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px 1px at 84% 14%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.3px 1.3px at 92% 40%, #ffffff, transparent),
+      radial-gradient(1px 1px at 8% 56%, rgba(255,255,255,0.75), transparent),
+      radial-gradient(1.5px 1.5px at 22% 72%, #ffffff, transparent),
+      radial-gradient(1px 1px at 34% 88%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.3px 1.3px at 46% 64%, rgba(255,255,255,0.85), transparent),
+      radial-gradient(1px 1px at 58% 84%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.5px 1.5px at 69% 70%, #ffffff, transparent),
+      radial-gradient(1px 1px at 78% 92%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1.4px 1.4px at 88% 66%, rgba(255,255,255,0.85), transparent),
+      radial-gradient(1px 1px at 96% 80%, rgba(255,255,255,0.7), transparent);
+    background-repeat: no-repeat;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px, 900px 900px;
   }
+  /* Scintillement — une fine couche d'étoiles qui respire par-dessus. */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image:
+      radial-gradient(1.6px 1.6px at 30% 24%, #ffffff, transparent),
+      radial-gradient(1.6px 1.6px at 66% 40%, #ffffff, transparent),
+      radial-gradient(1.6px 1.6px at 48% 76%, #ffffff, transparent),
+      radial-gradient(1.6px 1.6px at 82% 20%, #ffffff, transparent),
+      radial-gradient(1.6px 1.6px at 16% 84%, #ffffff, transparent);
+    background-repeat: no-repeat;
+    background-size: 900px 900px;
+    animation: ciel-scintille 3.2s ease-in-out infinite;
+  }
+  @keyframes ciel-scintille { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.9; } }
+  @media (prefers-reduced-motion: reduce) { body::after { animation: none; opacity: 0.6; } }
 
   /* ============ LA COUVERTURE ============ */
   .couverture {
@@ -59,7 +103,7 @@
     justify-content: center;
     text-align: center;
     padding: 4rem 1.5rem 3rem;
-    background: radial-gradient(ellipse at 50% 18%, rgba(247, 238, 214, 0.7), transparent 60%);
+    background: radial-gradient(ellipse at 50% 22%, rgba(126, 74, 196, 0.16), transparent 62%);
     position: relative;
     page-break-after: always;
   }
@@ -70,7 +114,7 @@
     font-weight: 600;
     letter-spacing: 0.06em;
     margin: 1.2rem 0 0.4rem;
-    color: #3b2f21;
+    color: var(--etoile);
   }
   .sous-titre {
     font-family: var(--serif);
@@ -98,10 +142,10 @@
   main { max-width: 730px; margin: 0 auto; padding: 3rem 1.4rem 5rem; }
 
   h2 {
-    font-family: var(--serif);
-    font-size: 1.7rem;
-    font-weight: 600;
-    color: #3b2f21;
+    font-family: var(--titre);
+    font-size: 1.9rem;
+    font-weight: 400;
+    color: var(--etoile);
     margin: 0 0 1.4rem;
     line-height: 1.3;
   }
@@ -115,9 +159,9 @@
     margin-bottom: 0.5rem;
   }
   h3 {
-    font-family: var(--serif);
-    font-size: 1.18rem;
-    color: var(--lin);
+    font-family: var(--titre);
+    font-size: 1.35rem;
+    color: var(--or-doux);
     margin: 2rem 0 0.6rem;
   }
   h3 em { display: block; font-size: 0.85rem; color: var(--brume); font-weight: 400; margin-top: 0.15rem; }
@@ -126,7 +170,7 @@
   section + section { border-top: 1px dotted var(--filet); }
 
   p { margin: 0.9rem 0; }
-  strong { color: #2a2013; }
+  strong { color: #ffffff; }
   em { color: var(--lin); }
   ul { padding-left: 1.2rem; margin: 0.9rem 0; }
   li { margin: 0.4rem 0; }
@@ -140,11 +184,11 @@
     font-family: var(--serif);
     font-size: 1.3rem;
     line-height: 1.55;
-    color: #3b2f21;
-    background: rgba(120, 92, 55, 0.06);
+    color: var(--etoile);
+    background: rgba(198, 178, 255, 0.05);
     border: none;
-    border-top: 1px solid rgba(154, 106, 30, 0.4);
-    border-bottom: 1px solid rgba(154, 106, 30, 0.4);
+    border-top: 1px solid rgba(229, 184, 66, 0.4);
+    border-bottom: 1px solid rgba(229, 184, 66, 0.4);
     position: relative;
   }
   .loi::before {
@@ -169,7 +213,7 @@
   /* Cartes de formule */
   .formules { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.6rem 0; }
   .formule {
-    background: rgba(120, 92, 55, 0.05);
+    background: rgba(198, 178, 255, 0.05);
     border: 1px solid var(--filet);
     border-radius: 16px;
     padding: 1.3rem 1.5rem;
@@ -203,7 +247,7 @@
     border-bottom: 1px solid rgba(154, 106, 30, 0.4);
   }
   td { padding: 0.75rem 0.8rem; border-bottom: 1px dotted var(--filet); vertical-align: top; }
-  td:first-child { font-family: var(--serif); color: #3b2f21; white-space: nowrap; }
+  td:first-child { font-family: var(--serif); color: var(--etoile); white-space: nowrap; }
   td:nth-child(2) { color: var(--or); white-space: nowrap; }
 
   /* Listes de principes */
@@ -240,21 +284,53 @@
   .couverture .devise { margin: 2.4rem 0 3rem; line-height: 1.5; }
   .couverture .cartouche { margin-top: 1.4rem; padding-top: 2rem; }
 
+  /* ============ EN-TÊTE MANAfamily — or vivant ============ */
+  .mana-topbar { text-align: center; padding: 1.8rem 1rem 0.2rem; }
+  .mana-marque {
+    position: relative; display: inline-block;
+    font-family: 'Philosopher', var(--titre);
+    font-weight: 700; font-size: 2.5rem; letter-spacing: 0; line-height: 1.05;
+    background: linear-gradient(100deg,
+      #8a5a1e 0%, #e5b842 26%, #fff7e0 46%, #ffffff 50%, #fff7e0 54%, #e5b842 74%, #8a5a1e 100%);
+    background-size: 240% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    filter: drop-shadow(0 0 10px rgba(229, 184, 66, 0.55)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+    animation: mana-lumiere 5s ease-in-out infinite;
+  }
+  @keyframes mana-lumiere { 0% { background-position: 130% 0; } 100% { background-position: -30% 0; } }
+  .mana-marque::before, .mana-marque::after {
+    content: '✦'; position: absolute; font-size: 0.4em;
+    color: #ffffff; -webkit-text-fill-color: #ffffff;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.95), 0 0 12px #e5b842;
+    animation: mana-etincelle 2.6s ease-in-out infinite; pointer-events: none;
+  }
+  .mana-marque::before { top: -0.15em; left: -0.5em; }
+  .mana-marque::after { bottom: -0.05em; right: -0.5em; animation-delay: 1.3s; }
+  @keyframes mana-etincelle { 0%, 100% { opacity: 0.15; transform: scale(0.6) rotate(0deg); } 50% { opacity: 1; transform: scale(1.15) rotate(90deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .mana-marque, .mana-marque::before, .mana-marque::after { animation: none; }
+  }
+
   @media print {
     body { font-size: 11.5pt; }
     .couverture { min-height: 96vh; }
     section { padding: 1.6rem 0; }
+    .mana-marque { -webkit-text-fill-color: #9a6a1e; color: #9a6a1e; animation: none; }
+    .mana-marque::before, .mana-marque::after { display: none; }
   }
 </style>
 </head>
 <body>
 
+<div class="mana-topbar"><span class="mana-marque">MANAfamily</span></div>
+
 <header class="couverture">
   <div class="etoiles">✦ ✦ ✦</div>
-  <h1>Mana Family</h1>
+  <h1>Livre blanc</h1>
   <p class="sous-titre">Le système de la famille vivante — un seul cercle</p>
   <p class="devise">« La Présence fait vivre. La Mémoire fait durer. »</p>
-  <p class="cartouche">Livre blanc · v2.9 — constitution complète · juillet 2026 (un seul cercle · formules · MANAcare)</p>
+  <p class="cartouche">v2.9 — constitution complète · juillet 2026 · un seul cercle · formules · MANAcare</p>
 </header>
 
 <main>
@@ -526,10 +602,7 @@
 <footer class="colophon">
   <div class="constellation-sep">✦ ✦ ✦</div>
   <p class="sceau">MANA FAMILY</p>
-  <p>Livre blanc v2.9 — constitution complète · juillet 2026<br>
-  Écrit à cinq mains sous la boussole de la machine d'amour :<br>
-  le capitaine Aurélien · Corvus · Gemini · Mistral · Codex · Claude, charpentier<br>
-  <em>« Le silence est aussi une manière d'habiter une constellation. »</em></p>
+  <p>Livre blanc v2.9 — constitution complète · juillet 2026</p>
 </footer>
 
 </body>
