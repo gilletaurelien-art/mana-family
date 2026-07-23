@@ -538,9 +538,9 @@ button:disabled { opacity: 0.35; cursor: default; }
 .galaxie-etage { border-top: 1px dotted var(--filet); padding: 1.4rem 0 0.6rem; margin-top: 1rem; }
 .etage-nom {
   display: block; font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase;
-  color: var(--or-doux); margin-bottom: 0.9rem; font-weight: 500;
+  color: var(--or-doux); margin-bottom: 0.9rem; font-weight: 500; text-align: center;
 }
-.galaxie-rang { display: flex; flex-wrap: wrap; gap: 1.1rem 1.4rem; }
+.galaxie-rang { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.1rem 1.4rem; }
 .astre-fixe {
   background: none; border: none; padding: 0;
   display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
@@ -885,8 +885,8 @@ button:disabled { opacity: 0.35; cursor: default; }
   display: inline-flex; align-items: center; gap: 0.5rem;
   padding: 0.5rem 1rem; border-radius: 999px;
   border: 1px solid rgba(229, 184, 66, 0.4); background: var(--champ);
-  color: var(--encre); font-family: var(--mono);
-  font-size: 0.82rem; letter-spacing: -0.01em; cursor: pointer;
+  color: var(--etoile); font-family: var(--cursive); font-style: normal;
+  font-size: 1.15rem; letter-spacing: 0; cursor: pointer;
 }
 .carnet-reglages-btn:hover { border-color: var(--or-mana); }
 .carnet-reglages-badge {
@@ -1214,7 +1214,8 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 /* Un seul Retour sur les écrans papier : on retire celui du haut. */
 .carnet-papier .retour-haut,
-.papier .retour-haut { display: none; }
+.papier .retour-haut,
+.compte-shell .retour-haut { display: none; }
 
 /* Responsive desktop / PWA : la colonne s'élargit, le papier remplit le fond. */
 @media (min-width: 700px) {
@@ -1226,33 +1227,13 @@ button:disabled { opacity: 0.35; cursor: default; }
 .frise { list-style: none; padding: 0; margin: 1.2rem 0 0; display: flex; flex-direction: column; gap: 0.8rem; }
 /* Le message — carte noire cerclée d'un liseré de lumière qui en fait le tour
    (comme la carte serment). Corps en Philosopher blanc, auteur en Marelle. */
+/* Le message — posé directement sur le ciel étoilé (aucun cadre, transparent). */
 .tx {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
   border: none;
-  border-radius: 16px;
-  padding: 1rem 1.1rem;
+  padding: 0.6rem 0.3rem;
   background: transparent;
 }
-.tx::before {
-  content: '';
-  position: absolute; z-index: -2;
-  left: 50%; top: 50%; width: 240%; height: 240%;
-  transform: translate(-50%, -50%);
-  background: conic-gradient(from 0deg,
-    transparent 0turn, transparent 0.70turn,
-    rgba(229, 184, 66, 0.45) 0.82turn, #ffffff 0.90turn, rgba(229, 184, 66, 0.45) 0.98turn,
-    transparent 1turn);
-  animation: serment-balayage 5s linear infinite;
-}
-.tx::after {
-  content: '';
-  position: absolute; z-index: -1;
-  inset: 1.5px; border-radius: 15px;
-  background: #05040b;
-}
-@media (prefers-reduced-motion: reduce) { .tx::before { animation: none; } }
 
 .tx-head { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--brume); }
 /* Le corps du message — Philosopher, blanc, aéré. */
@@ -1409,6 +1390,9 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .bas-fixe > * { pointer-events: auto; }
 .bas-fixe .barre-bas { position: static; bottom: auto; }
+/* « Famille GILLET » posé en bas du ciel (à la place des anciens boutons). */
+.titre-foyer-bas { text-align: center; padding: 0 1rem; }
+.titre-foyer-bas .titre-foyer { margin: 0; }
 
 /* L'État du Ciel — un bulletin météo affectif : une à trois phrases empilées. */
 .etat-ciel {
@@ -2062,6 +2046,13 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .vitrine-topbar > * { pointer-events: auto; }
 .vitrine-topbar .vitrine-marque { align-self: center; margin: 0; font-size: 2.51rem; }
+/* MANAfamily cliquable (dans l'app) → ouvre les réglages. On enlève l'habillage
+   du bouton mais on garde l'effet « or vivant » de .vitrine-eyebrow. */
+.marque-btn {
+  border: none; padding: 0; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+  line-height: 1.05;
+}
 /* « Famille GILLET » se pose juste sous le header MANAfamily (9px). */
 .sky-sous-header { padding-top: calc(max(0.6rem, env(safe-area-inset-top, 0.6rem)) + 1.75rem + 9px); }
 

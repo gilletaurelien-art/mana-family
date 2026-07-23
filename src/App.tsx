@@ -143,7 +143,7 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
   return (
     <div className="shell assistante-shell papier">
       <RetourNav onRetour={onRetour} />
-      <ManaHeader />
+      <ManaHeader onReglages={onParametres} />
       <header className="sky sky-sous-header">
         <p className="whisper assistante-nav">
           <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
@@ -477,6 +477,7 @@ export default function App() {
         ciel={ciel}
         me={me}
         aboutId={phase.aboutId ?? null}
+        onReglages={() => setPhase({ ecran: 'parametres' })}
         onDone={(t) => {
           if (t) setCiel(transmettre(ciel, t))
           setPhase({ ecran: 'ciel' })
@@ -492,6 +493,7 @@ export default function App() {
         me={me}
         aboutId={phase.aboutId}
         onRetour={() => setPhase({ ecran: 'ciel' })}
+        onReglages={() => setPhase({ ecran: 'parametres' })}
         onEcrire={() => setPhase({ ecran: 'composer', aboutId: phase.aboutId })}
         onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
@@ -506,6 +508,7 @@ export default function App() {
       <GalaxieVue
         ciel={ciel}
         onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
+        onReglages={() => setPhase({ ecran: 'parametres' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
@@ -516,6 +519,7 @@ export default function App() {
       <ChronologieVue
         ciel={ciel}
         onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
+        onReglages={() => setPhase({ ecran: 'parametres' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
@@ -526,6 +530,7 @@ export default function App() {
       <JardinVue
         onActiver={(id) => tenter(() => activerGalaxie(id))}
         onRejoindreAutre={() => setPhase({ ecran: 'rejoindre', retour: 'jardin' })}
+        onReglages={() => setPhase({ ecran: 'parametres' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
@@ -542,6 +547,7 @@ export default function App() {
           await rafraichir()
           setPhase({ ecran: 'ciel' })
         }}
+        onReglages={() => setPhase({ ecran: 'parametres' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
       />
     )
@@ -576,7 +582,6 @@ export default function App() {
       ciel={ciel}
       horsLigne={horsLigne}
       onOuvrirFrise={(aboutId) => setPhase({ ecran: 'frise', aboutId })}
-      onTransmettre={() => setPhase({ ecran: 'composer' })}
       onGalaxie={() => setPhase({ ecran: 'galaxie' })}
       onChronologie={() => setPhase({ ecran: 'chronologie' })}
       onParametres={() => setPhase({ ecran: 'parametres' })}
@@ -609,10 +614,14 @@ function LockKeyGlyph() {
 }
 
 /** Le header fixe de l'univers — MANAfamily centré, sur le ciel étoilé. */
-function ManaHeader() {
+function ManaHeader({ onReglages }: { onReglages?: () => void }) {
   return (
     <header className="vitrine-topbar">
-      <span className="vitrine-eyebrow vitrine-marque">MANAfamily</span>
+      {onReglages ? (
+        <button type="button" className="vitrine-eyebrow vitrine-marque marque-btn" onClick={onReglages} aria-label="Ouvrir les réglages">MANAfamily</button>
+      ) : (
+        <span className="vitrine-eyebrow vitrine-marque">MANAfamily</span>
+      )}
     </header>
   )
 }
@@ -667,7 +676,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
           <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🔐</span> Chiffré</span>
           <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🚫</span> Sans publicité</span>
         </div>
-        <span>propulsé par <b>TEMPOsystem</b></span>
+        <a href="https://temposystem.eu" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }} aria-label="propulsé par TEMPOsystem">propulsé par <b>TEMPOsystem</b></a>
         <span className="vitrine-footer-legal">© 2026 · Tous droits réservés</span>
       </footer>
     </div>
@@ -768,7 +777,7 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
   }
 
   return (
-    <div className="shell seuil-nuit fond-maison">
+    <div className="shell seuil-nuit fond-maison compte-shell">
       <RetourNav onRetour={onRetour} />
       <header className="sky porte-sky">
         <h1 className="compte-marque">MANAfamily</h1>
@@ -1200,11 +1209,10 @@ function EtatCiel({ textes, onClick, rejouer }: { textes: string[]; onClick: () 
   )
 }
 
-function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onChronologie, onParametres }: {
+function CielVue({ ciel, horsLigne, onOuvrirFrise, onGalaxie, onChronologie, onParametres }: {
   ciel: CielData
   horsLigne: boolean
   onOuvrirFrise: (aboutId: string | null) => void
-  onTransmettre: () => void
   onGalaxie: () => void
   onChronologie: () => void
   onParametres: () => void
@@ -1246,7 +1254,7 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
   const [ouverture] = useState(() => { const premier = !livreDejaOuvert; livreDejaOuvert = true; return premier })
 
   // Cliquer « Famille » relance la composition de l'État du Ciel.
-  const [rejouer, setRejouer] = useState(0)
+  const [rejouer] = useState(0)
   // Mode initiales : un premier tap révèle le prénom (bulle), le second ouvre le carnet.
   const [revele, setRevele] = useState<string | null>(null)
 
@@ -1254,19 +1262,7 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
     <div className="shell foyer">
       <div className="foyer-fond" aria-hidden="true" />
       {ouverture && <div className="foyer-fond-ferme" aria-hidden="true" />}
-      <ManaHeader />
-      <header className="sky sky-sous-header">
-        <h1 className="titre-foyer">
-          <button className="titre-lien" onClick={() => setRejouer((x) => x + 1)} aria-label="Relire l'état du ciel">
-            <span className="mot-famille">Famille<sup className="palier-marque" title="Formule Famille — gratuite">✦</sup></span>
-          </button>
-          {' '}
-          <button className="titre-lien" onClick={onGalaxie} aria-label="Les générations">
-            <span className="nom-famille">{ciel.name}</span>
-          </button>
-        </h1>
-        {horsLigne && <p className="whisper">hors réseau — les gestes attendent</p>}
-      </header>
+      <ManaHeader onReglages={onParametres} />
 
       <div className="ciel">
         {ciel.astres.map((a, i) => {
@@ -1295,19 +1291,18 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
       <div className="bas-fixe">
         <EtatCiel textes={etatsDuCiel(ciel)} onClick={onChronologie} rejouer={rejouer} />
 
-        <div className="barre-bas">
-          <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-            <span className="geste-pastille geste-noir"><span className="geste-libelle">lire</span></span>
-          </button>
-
-          <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-            <span className="geste-pastille geste-noir"><span className="geste-libelle">écrire</span></span>
-          </button>
-
-          <button className="geste" onClick={onParametres} aria-label="Paramètres — définir">
-            <span className="geste-pastille geste-noir"><span className="geste-libelle">définir</span></span>
-          </button>
-        </div>
+        <header className="titre-foyer-bas">
+          <h1 className="titre-foyer">
+            <button className="titre-lien" onClick={onGalaxie} aria-label="Les générations">
+              <span className="mot-famille">Famille<sup className="palier-marque" title="Formule Famille — gratuite">✦</sup></span>
+            </button>
+            {' '}
+            <button className="titre-lien" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille">
+              <span className="nom-famille">{ciel.name}</span>
+            </button>
+          </h1>
+          {horsLigne && <p className="whisper">hors réseau — les gestes attendent</p>}
+        </header>
       </div>
     </div>
   )
@@ -1382,9 +1377,10 @@ const GENERATIONS: { nom: string; roles: Role[] }[] = [
   { nom: 'La famille étendue', roles: ['famille'] },
 ]
 
-function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
+function GalaxieVue({ ciel, onOuvrirFrise, onReglages, onRetour }: {
   ciel: CielData
   onOuvrirFrise: (aboutId: string) => void
+  onReglages: () => void
   onRetour: () => void
 }) {
   const parDate = (a: Astre, b: Astre) => {
@@ -1397,7 +1393,8 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
   return (
     <div className="shell papier">
       <RetourNav onRetour={onRetour} />
-      <header className="sky">
+      <ManaHeader onReglages={onReglages} />
+      <header className="sky sky-sous-header">
         <h1 className="galaxie-titre">Les générations</h1>
         <p className="whisper">les générations, des aînés aux enfants</p>
       </header>
@@ -1434,9 +1431,10 @@ function GalaxieVue({ ciel, onOuvrirFrise, onRetour }: {
 
 const UN_JOUR = 86400000
 
-function ChronologieVue({ ciel, onOuvrirFrise, onRetour }: {
+function ChronologieVue({ ciel, onOuvrirFrise, onReglages, onRetour }: {
   ciel: CielData
   onOuvrirFrise: (aboutId: string | null) => void
+  onReglages: () => void
   onRetour: () => void
 }) {
   const scroll = useRef<HTMLDivElement>(null)
@@ -1477,7 +1475,8 @@ function ChronologieVue({ ciel, onOuvrirFrise, onRetour }: {
   return (
     <div className="shell chrono-shell papier">
       <RetourNav onRetour={onRetour} />
-      <header className="sky">
+      <ManaHeader onReglages={onReglages} />
+      <header className="sky sky-sous-header">
         <h1>Le fil du temps</h1>
         <p className="whisper">souvenirs ← · aujourd'hui · → ce qui vient</p>
       </header>
@@ -1520,9 +1519,10 @@ function ChronologieVue({ ciel, onOuvrirFrise, onRetour }: {
 
 /* ---------- Le jardin — les galaxies où l'on appartient ---------- */
 
-function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
+function JardinVue({ onActiver, onRejoindreAutre, onReglages, onRetour }: {
   onActiver: (constellationId: string) => void
   onRejoindreAutre: () => void
+  onReglages: () => void
   onRetour: () => void
 }) {
   const [galaxies, setGalaxies] = useState<Galaxie[] | null>(null)
@@ -1533,7 +1533,8 @@ function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
   return (
     <div className="shell papier">
       <RetourNav onRetour={onRetour} />
-      <header className="sky">
+      <ManaHeader onReglages={onReglages} />
+      <header className="sky sky-sous-header">
         <h1>Le jardin</h1>
         <p className="whisper">Les familles où vous comptez</p>
       </header>
@@ -1570,10 +1571,11 @@ function JardinVue({ onActiver, onRejoindreAutre, onRetour }: {
 
 /* ---------- Inviter — la clé de la maison ---------- */
 
-function Inviter({ ciel, me, onChangerAstre, onRetour }: {
+function Inviter({ ciel, me, onChangerAstre, onReglages, onRetour }: {
   ciel: CielData
   me: Astre
   onChangerAstre: (astreId: string) => void
+  onReglages: () => void
   onRetour: () => void
 }) {
   const [email, setEmail] = useState('')
@@ -1590,7 +1592,8 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
   return (
     <div className="shell papier inviter-shell">
       <RetourNav onRetour={onRetour} />
-      <header className="sky">
+      <ManaHeader onReglages={onReglages} />
+      <header className="sky sky-sous-header">
         <h1>La clé de la maison</h1>
       </header>
       <section className="card" style={{ textAlign: 'center' }}>
@@ -1741,10 +1744,11 @@ function EnregistreurAudio({ onFini, onErreur, onFermer }: { onFini: (url: strin
   )
 }
 
-function Composer({ ciel, me, aboutId = null, onDone }: {
+function Composer({ ciel, me, aboutId = null, onReglages, onDone }: {
   ciel: CielData
   me: Astre
   aboutId?: string | null
+  onReglages: () => void
   onDone: (t: { kind: TransmissionKind; body: string; aboutId: string | null; recipientIds: string[]; happensOn: string | null; imageUrl?: string | null; audioUrl?: string | null; videoUrl?: string | null; musicUrl?: string | null; linkUrl?: string | null } | null) => void
 }) {
   const others = ciel.astres.filter((a) => a.id !== me.id)
@@ -1820,7 +1824,8 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
   return (
     <div className="shell papier">
       <RetourNav onRetour={() => onDone(null)} />
-      <header className="sky carnet-hero-lire">
+      <ManaHeader onReglages={onReglages} />
+      <header className="sky carnet-hero-lire sky-sous-header">
         {sujet && <p className="whisper">au sujet de <b>{nomIntime(sujet)}</b></p>}
       </header>
 
@@ -2060,11 +2065,12 @@ function TxLien({ url }: { url: string }) {
   )
 }
 
-function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissance, onProfil, onNommer }: {
+function FriseVue({ ciel, me, aboutId, onRetour, onReglages, onEcrire, onPortrait, onNaissance, onProfil, onNommer }: {
   ciel: CielData
   me: Astre
   aboutId: string | null
   onRetour: () => void
+  onReglages: () => void
   onEcrire: () => void
   onPortrait: (astreId: string, dataUrl: string) => void
   onNaissance: (astreId: string, date: string) => void
@@ -2110,8 +2116,9 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissan
   return (
     <div className="shell carnet-papier">
       <RetourNav onRetour={onRetour} />
+      <ManaHeader onReglages={onReglages} />
       {!sujet ? (
-        <header className="sky carnet-hero-lire">
+        <header className="sky carnet-hero-lire sky-sous-header">
           <div className="carnet-filtre-barre">
             <button className="carnet-reglages-btn" onClick={() => setReglagesOuvert(true)} aria-label="Archives du carnet">
               <span className="filtre-glyph"><SablierGlyph /></span>
@@ -2121,7 +2128,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissan
           </div>
         </header>
       ) : (
-      <header className="sky">
+      <header className="sky sky-sous-header">
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
         <h1 className="fiche-nom">{sujet ? nomIntime(sujet) : 'Le carnet de famille'}</h1>
         <p className="whisper">
@@ -2243,11 +2250,13 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissan
         </ul>
       )}
 
-      {sujet && (
-        <button className="fiche-ecrire" onClick={onEcrire} aria-label={`Écrire au sujet de ${nomIntime(sujet)}`}>
-          écrire <span aria-hidden="true">→</span>
-        </button>
-      )}
+      <button
+        className="fiche-ecrire"
+        onClick={onEcrire}
+        aria-label={sujet ? `Écrire au sujet de ${nomIntime(sujet)}` : 'Écrire pour toute la famille'}
+      >
+        écrire <span aria-hidden="true">→</span>
+      </button>
 
       {reglagesOuvert && (
         <div className="offrir-veil" onClick={() => setReglagesOuvert(false)}>
