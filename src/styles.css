@@ -1693,7 +1693,8 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .astre-ciel:hover .prenom-bulle,
 .astre-ciel:focus .prenom-bulle,
-.astre-ciel:focus-visible .prenom-bulle {
+.astre-ciel:focus-visible .prenom-bulle,
+.astre-ciel.revele .prenom-bulle {
   opacity: 1; transform: translate(-50%, -9px);
 }
 

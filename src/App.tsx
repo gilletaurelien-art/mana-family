@@ -1173,6 +1173,8 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
 
   // Cliquer « Famille » relance la composition de l'État du Ciel.
   const [rejouer, setRejouer] = useState(0)
+  // Mode initiales : un premier tap révèle le prénom (bulle), le second ouvre le carnet.
+  const [revele, setRevele] = useState<string | null>(null)
 
   return (
     <div className="shell foyer">
@@ -1198,10 +1200,13 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
           return (
             <button
               key={a.id}
-              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''} ${a.avatarUrl ? 'astre-avec-photo' : ''}`}
+              className={`astre-ciel ${halos.has(a.id) ? 'halo' : ''} ${a.avatarUrl ? 'astre-avec-photo' : ''} ${revele === a.id ? 'revele' : ''}`}
               style={{ left: `${left}%`, top: `${top}%`, animationDuration: `${9 + (i % 5) * 1.7}s`, animationDelay: `${-(i * 2.3)}s` }}
               aria-label={nomIntime(a)}
-              onClick={() => onOuvrirFrise(a.id)}
+              onClick={() => {
+                if (initialesSeules && revele !== a.id) { setRevele(a.id); return }
+                onOuvrirFrise(a.id)
+              }}
             >
               <span className="astre-core">
                 {a.avatarUrl ? <img src={a.avatarUrl} alt="" className="astre-photo" /> : <span className="astre-pure-light" />}
