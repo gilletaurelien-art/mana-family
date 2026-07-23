@@ -1628,7 +1628,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 .foyer .prenom {
   position: absolute;
   top: auto; left: 50%; bottom: 0;
-  transform: translate(-50%, calc(100% - 12px));
+  transform: translate(-50%, calc(100% - 18px));
   margin: 0;
   white-space: nowrap;
   pointer-events: none;
