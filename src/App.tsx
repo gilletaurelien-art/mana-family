@@ -67,14 +67,14 @@ function RetourNav({ onRetour }: { onRetour: () => void }) {
 const FAQ: { q: string; r: string }[] = [
   { q: 'Comment je partage un moment ?', r: 'Touchez « écrire », en bas au centre : écrivez quelques mots — ou offrez un petit geste. C’est tout.' },
   { q: 'Où je retrouve ce que la famille a partagé ?', r: 'À gauche, « lire » : c’est le carnet de famille. Tout y est rangé, du plus récent au plus ancien.' },
-  { q: 'C’est quoi la petite lumière autour d’un visage ?', r: 'Quelqu’un a veillé sur ce moment — il l’a lu, il y a pensé. On voit qui a veillé, jamais qui ne l’a pas fait.' },
-  { q: 'Est-ce que la famille voit si je n’ai pas lu ?', r: 'Non. Jamais. Votre silence vous appartient. Personne n’est jamais montré du doigt ici.' },
-  { q: 'Dois-je écrire tous les jours ?', r: 'Non. Le silence est un état légitime. La maison vous attend sans rien réclamer — même après de longues saisons.' },
   { q: 'Comment j’ajoute quelqu’un à la famille ?', r: 'Ici même, dans « découvrir », touchez « inviter ». Vous confiez la clé de la maison à un proche ; il choisit alors qui il est parmi vous.' },
-  { q: 'Comment je change mon nom, ma photo, ma date de naissance ?', r: 'Touchez votre visage, puis « modifier le profil ». Tout est facultatif : vous ne donnez que ce que vous voulez.' },
+  { q: 'Comment je change mon nom, ma photo, ma date de naissance ?', r: 'Touchez votre prénom dans le ciel, puis « modifier le profil ». Tout est facultatif : vous ne notez que ce que vous voulez.' },
   { q: 'Puis-je appartenir à deux familles ?', r: 'Oui : c’est le jardin. Une même personne peut vivre dans plusieurs maisons — deux foyers, une famille de cœur, une lignée.' },
   { q: 'Est-ce que nos souvenirs peuvent disparaître ?', r: 'Non. Ce qui est transmis ne s’efface pas : c’est une ligne que nous ne franchirons jamais. La mémoire de la famille est gardée.' },
   { q: 'Qui peut voir nos moments ?', r: 'Seulement votre famille. Rien n’est public, rien n’est vendu, rien ne sert à autre chose qu’à vous relier.' },
+  { q: 'Qu’est-ce que l’Arbre et les artefacts ?', r: 'L’arbre relie les générations, des aînés aux enfants. Les artefacts sont des objets de mémoire — fresque de lignée, coffret de majorité — que la famille façonne au fil du temps. Réservés à la formule La Lignée.' },
+  { q: 'À quoi sert MANAkids ?', r: 'C’est l’espace des plus jeunes : leurs souvenirs sont protégés et leur accès veillé — un garde-fou toujours actif et gratuit. Le premium ajoute le suivi et, à la majorité, un coffret de souvenirs.' },
+  { q: 'À quoi sert MANAcare ?', r: 'Le pont du soin : un proche aidant ou un soignant peut déposer un mot dans le carnet sans jamais lire la mémoire de la famille. Gratuit pour tous.' },
 ]
 
 /** Les portes de la maison Mana — chacune expliquée, pas seulement nommée. */
@@ -150,19 +150,7 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
       </header>
 
       <section className="assistante-bloc">
-        <h2>Comment ça marche ?</h2>
-        <div className="faq">
-          {FAQ.map((f, i) => (
-            <div className="faq-item" key={i}>
-              <p className="faq-q">{f.q}</p>
-              <p className="faq-r">{f.r}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="assistante-bloc">
-        <h2>Les formules</h2>
+        <h2>MANAfamily</h2>
         <p className="whisper formules-intro">La Famille est gratuite et sans limite de membres. Le Récit et La Lignée sont à venir.</p>
 
         <div className="formule-actuelle">
@@ -199,6 +187,18 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour }: {
         <p className="whisper formules-nb">
           <strong>MANAcare</strong> — le pont du soin&nbsp;: un proche aidant ou un soignant peut déposer un mot dans le carnet sans jamais lire la mémoire de la famille. Gratuit pour tous.
         </p>
+      </section>
+
+      <section className="assistante-bloc">
+        <h2>Fonctionnement</h2>
+        <div className="faq">
+          {FAQ.map((f, i) => (
+            <div className="faq-item" key={i}>
+              <p className="faq-q">{f.q}</p>
+              <p className="faq-r">{f.r}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="assistante-bloc">
@@ -2059,14 +2059,18 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissan
                   }}
                 />
               </label>
-              {' · '}
-              <button className="link" onClick={() => setEnEdition(!enEdition)}>
-                {enEdition ? 'fermer' : 'modifier le profil'}
-              </button>
+              {sujet.id === me.id && (
+                <>
+                  {' · '}
+                  <button className="link" onClick={() => setEnEdition(!enEdition)}>
+                    {enEdition ? 'fermer' : 'modifier le profil'}
+                  </button>
+                </>
+              )}
             </>
           )}
         </p>
-        {sujet && enEdition && (
+        {sujet && enEdition && sujet.id === me.id && (
           <ProfilForm
             sujet={sujet}
             onEnregistrer={(nom, surnom, date, role, pays, codePostal) => {
