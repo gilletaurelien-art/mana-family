@@ -1140,6 +1140,37 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
   const halos = new Set(
     ciel.transmissions.filter((t) => t.aboutId && Object.keys(t.veilles).length > 0).map((t) => t.aboutId as string),
   )
+  // L'activité d'un astre : ce qu'il écrit (auteur) + ce qu'il veille (lecture).
+  // Plus on est actif, plus on se rapproche du centre du ciel ; les inactifs dérivent au bord.
+  const activiteDe = (id: string) =>
+    ciel.transmissions.reduce((s, t) => s + (t.authorId === id ? 1 : 0) + (t.veilles[id] ? 1 : 0), 0)
+  const maxActivite = Math.max(1, ...ciel.astres.map((a) => activiteDe(a.id)))
+
+  // Angle de base de chaque astre (réparti sur le cercle), + les liens :
+  // écrire « au sujet de » quelqu'un rapproche les deux astres l'un de l'autre.
+  const angleBaseDe = new Map<string, number>()
+  ciel.astres.forEach((a, idx) => {
+    const g = [...a.id].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) % 9973, 7)
+    angleBaseDe.set(a.id, (idx / n) * 2 * Math.PI - Math.PI / 2 + ((g % 100) / 100 - 0.5) * 0.9)
+  })
+  const liens = new Map<string, string[]>()
+  ciel.transmissions.forEach((t) => {
+    if (t.aboutId && t.authorId !== t.aboutId) {
+      liens.set(t.authorId, [...(liens.get(t.authorId) ?? []), t.aboutId])
+      liens.set(t.aboutId, [...(liens.get(t.aboutId) ?? []), t.authorId])
+    }
+  })
+  const angleDe = (id: string) => {
+    const base = angleBaseDe.get(id) ?? 0
+    const conn = (liens.get(id) ?? []).map((cid) => angleBaseDe.get(cid)).filter((v): v is number => v != null)
+    if (!conn.length) return base
+    const sx = conn.reduce((s, ca) => s + Math.cos(ca), 0)
+    const sy = conn.reduce((s, ca) => s + Math.sin(ca), 0)
+    const cible = Math.atan2(sy, sx)
+    let d = cible - base
+    d = Math.atan2(Math.sin(d), Math.cos(d)) // plus court chemin
+    return base + d * 0.4 // on tire l'astre à 40 % vers ses proches
+  }
 
   // Vrai au tout premier affichage de l'accueil : le livre s'ouvre en fondu.
   const [ouverture] = useState(() => { const premier = !livreDejaOuvert; livreDejaOuvert = true; return premier })
@@ -1168,10 +1199,11 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
       <div className="ciel">
         {ciel.astres.map((a, i) => {
           const graine = [...a.id].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) % 9973, 7)
-          const angle = (i / n) * 2 * Math.PI - Math.PI / 2 + ((graine % 100) / 100 - 0.5) * 0.9
-          // Un seul cercle familial : le rayon ne dépend plus du « circle »,
-          // juste d'une dérive organique — une constellation, pas trois anneaux.
-          const r = 24 + (graine % 16)
+          // L'angle est tiré vers les proches (écrire « au sujet de » rapproche).
+          const angle = angleDe(a.id)
+          // Le rayon dépend de l'activité : actif (norm→1) au centre, inactif (norm→0) au bord.
+          const norm = activiteDe(a.id) / maxActivite
+          const r = 42 - norm * 30 + ((graine % 7) - 3) * 0.8
           const left = 50 + r * Math.cos(angle) + ((graine % 11) - 5) * 0.8
           const top = 48 + r * 0.8 * Math.sin(angle) + ((graine % 13) - 6) * 0.7
           return (
