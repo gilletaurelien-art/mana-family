@@ -387,7 +387,6 @@ export default function App() {
   if (phase.ecran === 'chargement') {
     return (
       <div className="shell seuil-nuit fond-maison chargement-ecran">
-        <div className="chargement-cle"><img src="/mana-key.jpg" alt="Mana Family" /></div>
         <div className="chargement-spin" role="status" aria-label="Chargement…"></div>
       </div>
     )
@@ -596,16 +595,6 @@ const PROMESSES: { glyphe: string; mot: string }[] = [
 
 /** Les deux piliers — la doctrine Présence / Mémoire, dite simplement,
     chacune portée par son illustration dorée. */
-const PILIERS: { titre: string; mot: string; illus?: string; lien?: string; lienHref?: string }[] = [
-  {
-    titre: 'La Présence fait vivre.\nLa Mémoire fait durer.',
-    illus: '/plume.jpg',
-    mot: 'Notre vision, en clair :\nce que nous protégeons,\net ce que nous vous offrons.',
-    lien: 'Lire le Livre blanc →',
-    lienHref: '/livre-blanc.html',
-  },
-  { titre: '', illus: '/carnet.jpg', mot: '' },
-]
 
 /** La clé-cadenas de « Entrer » — le verrou de la maison, où se glisse la clé. */
 function LockKeyGlyph() {
@@ -627,6 +616,7 @@ function ManaHeader() {
     </header>
   )
 }
+
 
 function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
   return (
@@ -652,28 +642,10 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
           />
         ))}
       </div>
-      <header className="sky vitrine-hero">
-        <img className="vitrine-hero-cle" src="/mana-key.jpg" alt="La clef de la maison Mana" />
-      </header>
-
-      <section className="vitrine-piliers">
-        {PILIERS.map((p) => (
-          <div className="vitrine-pilier" key={p.illus}>
-            {p.illus && <img className="vitrine-pilier-illus" src={p.illus} alt="" aria-hidden="true" />}
-            {p.titre && <span className="vitrine-pilier-titre">{p.titre}</span>}
-            {p.mot && <p>{p.mot}</p>}
-            {p.lien && (
-              <a className="vitrine-livre-lien vitrine-pilier-lien" href={p.lienHref} target="_blank" rel="noopener">
-                {p.lien}
-              </a>
-            )}
-          </div>
-        ))}
-      </section>
-
       <section className="vitrine-pied">
         <div className="vitrine-serment">
           <h2 className="vitrine-serment-titre">Votre Carnet de Famille</h2>
+          <p className="vitrine-pilier-titre vitrine-serment-devise">La Présence fait vivre.<br />La Mémoire fait durer.</p>
           <div className="vitrine-promesses">
             {PROMESSES.map((p) => (
               <p className="vitrine-promesse" key={p.mot}>
@@ -682,6 +654,9 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
               </p>
             ))}
           </div>
+          <a className="vitrine-livre-lien vitrine-serment-lien" href="/livre-blanc.html" target="_blank" rel="noopener">
+            Lire le Livre blanc MANAfamily →
+          </a>
         </div>
       </section>
 
@@ -796,9 +771,6 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
     <div className="shell seuil-nuit fond-maison">
       <RetourNav onRetour={onRetour} />
       <header className="sky porte-sky">
-        <div className="clef-embleme cadre-or">
-          <img src="/mana-key.jpg" alt="La clef de la maison Mana" />
-        </div>
         <h1 className="compte-marque">MANAfamily</h1>
       </header>
 
@@ -1325,15 +1297,15 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
 
         <div className="barre-bas">
           <button className="geste" onClick={() => onOuvrirFrise(null)} aria-label="Le carnet de famille — lire">
-            <span className="geste-rond geste-tuile-img"><img src="/btn-lire.png" alt="Lire" /></span>
+            <span className="geste-pastille geste-noir"><span className="geste-libelle">lire</span></span>
           </button>
 
           <button className="geste geste-ecrire" onClick={onTransmettre} aria-label="Transmettre — écrire">
-            <span className="geste-rond geste-tuile-img"><img src="/btn-ecrire.png" alt="Écrire" /></span>
+            <span className="geste-pastille geste-noir"><span className="geste-libelle">écrire</span></span>
           </button>
 
           <button className="geste" onClick={onParametres} aria-label="Paramètres — définir">
-            <span className="geste-rond geste-tuile-img"><img src="/btn-definir.png" alt="Définir" /></span>
+            <span className="geste-pastille geste-noir"><span className="geste-libelle">définir</span></span>
           </button>
         </div>
       </div>
@@ -1622,7 +1594,6 @@ function Inviter({ ciel, me, onChangerAstre, onRetour }: {
         <h1>La clé de la maison</h1>
       </header>
       <section className="card" style={{ textAlign: 'center' }}>
-        <div className="clef-embleme cadre-or"><img src="/mana-key.jpg" alt="La clef de la maison Mana" /></div>
         <p>Chaque proche ouvre l'application, choisit « Rejoindre avec une clé », et entre :</p>
         <p className="inviter-code">{ciel.inviteCode}</p>
         <p className="whisper slogan-marelle">La clé ne se partage qu'en famille — c'est la porte de votre maison.</p>
@@ -2236,7 +2207,6 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onPortrait, onNaissan
 
       {txs.length === 0 ? (
         <div className="carnet-vierge">
-          <img src="/livre-page-1.jpg" alt="" className="carnet-vierge-page" />
           <p className="carnet-vierge-mot">Le carnet est encore vierge.<br />La première transmission y écrira sa première page.</p>
         </div>
       ) : (

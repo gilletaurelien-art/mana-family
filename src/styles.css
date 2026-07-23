@@ -133,24 +133,6 @@ body {
   font-family: var(--sans);
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image: url('/mana-spiral-filigrane.png');
-  background-position: center 48%;
-  background-repeat: no-repeat;
-  background-size: min(86vw, 680px);
-  mix-blend-mode: multiply;
-  z-index: 0;
-}
-
-/* En mode jour, la spirale de fond disparaît partout — l'Écume reste nue */
-@media (prefers-color-scheme: light) {
-  body::before { display: none; }
-}
-
 #root {
   position: relative;
   z-index: 1;
@@ -1517,20 +1499,36 @@ button:disabled { opacity: 0.35; cursor: default; }
   font-size: 0.95rem; color: #f5edd8;
 }
 
-/* Tuiles-boutons illustrées (Lire · Écrire · Définir) : l'image EST le bouton —
-   cadre, fond étoilé, icône dorée et libellé sont déjà gravés dedans. On la
-   pose telle quelle, sans cadre ni recadrage, à son ratio naturel. */
-.geste-rond.geste-tuile-img {
-  aspect-ratio: auto;
-  border: none;
-  background: none;
-  border-radius: 22px;
-  overflow: visible;
+/* ============================================================
+   GESTES DU BAS — lire · écrire · définir
+   Pastilles noires épurées : le libellé seul, gravé en OR VIVANT
+   (même effet que le mot MANAfamily).
+   ============================================================ */
+.geste-pastille.geste-noir {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0.7rem 0.4rem;
+  border-radius: 16px;
+  background: #05040b;
+  border: 1px solid rgba(229, 184, 66, 0.4);
+  box-shadow: inset 0 0 24px rgba(229, 184, 66, 0.08);
 }
-.geste-rond.geste-tuile-img img {
-  width: 100%; height: auto;
-  object-fit: contain;
-  border-radius: 22px;
+/* Le libellé — or vivant, comme MANAfamily. */
+.geste-libelle {
+  text-align: center;
+  font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1rem;
+  line-height: 1;
+  background: linear-gradient(100deg,
+    var(--or-sombre) 0%, var(--or-mana) 26%, #fff7e0 46%, #ffffff 50%,
+    #fff7e0 54%, var(--or-mana) 74%, var(--or-sombre) 100%);
+  background-size: 240% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  filter: drop-shadow(0 0 6px rgba(229, 184, 66, 0.45));
+  animation: manafamily-lumiere 5s ease-in-out infinite;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .geste-libelle { animation: none; }
 }
 
 /* Le titre MANAfamily de la connexion — effet « or vivant » de la landing. */
@@ -1976,15 +1974,6 @@ button:disabled { opacity: 0.35; cursor: default; }
     radial-gradient(1.4px 1.4px at 10% 32%, #ffffff, transparent);
 }
 /* La spirale filigrane, très douce, par-dessus le ciel. */
-.seuil-nuit::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: url('/mana-spiral-filigrane.png') no-repeat center 40% / min(78vw, 600px);
-  opacity: 0.09;
-}
 /* La déesse : toujours en version nuit (dorée), même si le système est en jour. */
 .seuil-nuit .porte-deesse .logo-nuit { display: inline; }
 .seuil-nuit .porte-deesse .logo-jour { display: none; }
@@ -1997,12 +1986,6 @@ button:disabled { opacity: 0.35; cursor: default; }
   display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 1.7rem;
 }
-.chargement-cle {
-  width: min(58vw, 15rem);
-  border-radius: 20px; overflow: hidden;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5);
-}
-.chargement-cle img { width: 100%; height: auto; display: block; }
 .chargement-spin {
   width: 34px; height: 34px; border-radius: 50%;
   border: 3px solid rgba(253, 246, 227, 0.28);
@@ -2014,18 +1997,6 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 .vitrine-shell { padding-bottom: 3rem; }
 
-/* La clef-emblème sur l'écran d'entrée (la vitrine a sa propre variante). */
-.clef-embleme {
-  display: inline-block;
-  width: min(56vw, 16rem);
-  margin: 0 auto;
-}
-.clef-embleme img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 18px;
-}
 
 /* Les autres portes d'entrée — mot de passe, MANA ID — discrètes. */
 .compte-options {
@@ -2081,14 +2052,6 @@ button:disabled { opacity: 0.35; cursor: default; }
   /* Plus de fond image : le ciel étoilé généré (fixe) transparaît. */
   background: none;
 }
-/* Le héros : la clef enluminée de la maison, avec son halo violet. */
-.vitrine-hero-cle {
-  display: block; width: min(82vw, 24rem); height: auto;
-  margin: auto;
-  border-radius: 18px;
-  filter: drop-shadow(0 0 40px rgba(126, 74, 196, 0.5)) drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
-}
-
 /* Le header fixe de la landing — MANAfamily centré. */
 .vitrine-topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 40;
@@ -2098,7 +2061,7 @@ button:disabled { opacity: 0.35; cursor: default; }
   pointer-events: none;
 }
 .vitrine-topbar > * { pointer-events: auto; }
-.vitrine-topbar .vitrine-marque { align-self: center; margin: 0; font-size: 1.55rem; }
+.vitrine-topbar .vitrine-marque { align-self: center; margin: 0; font-size: 2.51rem; }
 /* « Famille GILLET » se pose juste sous le header MANAfamily (9px). */
 .sky-sous-header { padding-top: calc(max(0.6rem, env(safe-area-inset-top, 0.6rem)) + 1.75rem + 9px); }
 
@@ -2244,15 +2207,6 @@ button:disabled { opacity: 0.35; cursor: default; }
   padding: 1.3rem 1.2rem 1.2rem;
   text-align: center;
 }
-/* Pleine largeur PWA : chaque tableau occupe toute la largeur de sa carte. */
-.vitrine-pilier-illus {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin: 0 auto 0.9rem;
-  border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-}
 .vitrine-pilier-titre {
   display: inline-block;
   font-size: 1.5rem;
@@ -2323,22 +2277,8 @@ button:disabled { opacity: 0.35; cursor: default; }
   margin: 2.4rem auto 0;
   max-width: 30rem;
   position: relative;
-  padding: 2rem 0;
-  background:
-    radial-gradient(ellipse 140% 140% at 50% 50%, rgba(126, 74, 196, 0.18), transparent 45%),
-    radial-gradient(ellipse 110% 110% at 50% 50%, rgba(58, 30, 108, 0.12), transparent 52%),
-    radial-gradient(ellipse 85% 85% at 50% 50%, rgba(126, 74, 196, 0.08), transparent 60%);
-  border-radius: 24px;
-}
-.vitrine-pied::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: 24px;
-  background: url('/mana-spiral-filigrane.png') no-repeat center 45% / min(62vw, 480px);
-  opacity: 0.06;
-  pointer-events: none;
+  padding: 0.8rem 0;
+  background: none;
 }
 .vitrine-pied > * { position: relative; z-index: 1; }
 
@@ -2388,37 +2328,15 @@ button:disabled { opacity: 0.35; cursor: default; }
 .vitrine-pied .vitrine-promesses { margin-top: 1.6rem; text-align: left; }
 
 /* Le serment — carte noire cerclée d'un liseré de lumière qui la balaie. */
+/* Le serment — posé directement sur le ciel étoilé (fond transparent). */
 .vitrine-serment {
   position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border-radius: 20px;
-  padding: 1.7rem 1.5rem;
-  margin: 1.8rem auto 0;
+  padding: 0.4rem 1.2rem;
+  margin: 0.7rem auto 0;
   max-width: 32rem;
   text-align: center;
 }
-.vitrine-serment::before {
-  content: '';
-  position: absolute; z-index: -2;
-  left: 50%; top: 50%;
-  width: 220%; height: 220%;
-  transform: translate(-50%, -50%);
-  background: conic-gradient(from 0deg,
-    transparent 0turn, transparent 0.70turn,
-    rgba(229, 184, 66, 0.45) 0.82turn, #ffffff 0.90turn, rgba(229, 184, 66, 0.45) 0.98turn,
-    transparent 1turn);
-  animation: serment-balayage 5s linear infinite;
-}
-.vitrine-serment::after {
-  content: '';
-  position: absolute; z-index: -1;
-  inset: 1.5px;
-  border-radius: 19px;
-  background: #05040b;
-}
 @keyframes serment-balayage { to { transform: translate(-50%, -50%) rotate(1turn); } }
-@media (prefers-reduced-motion: reduce) { .vitrine-serment::before { animation: none; } }
 
 .vitrine-serment-titre {
   font-family: var(--cursive);
@@ -2426,14 +2344,16 @@ button:disabled { opacity: 0.35; cursor: default; }
   color: var(--etoile);
   margin: 0 0 1.1rem;
 }
+.vitrine-serment-lien { display: inline-block; margin-top: 1.3rem; }
+.vitrine-serment-devise { margin: 0 0 1.3rem; line-height: 1.3; font-size: 1.2rem; }
 .vitrine-pied .vitrine-serment .vitrine-promesses { margin: 0; text-align: left; }
 .vitrine-serment .vitrine-promesse { color: #ffffff; }
 
 /* Badge de pied de page — propulsé par TEMPOsystem. */
 .vitrine-footer {
   text-align: center;
-  padding: 2rem 1rem 5rem;
-  margin-top: 1.4rem;
+  padding: 1rem 1rem 5rem;
+  margin-top: 0.7rem;
   display: flex; flex-direction: column; gap: 0.3rem;
   color: var(--brume); font-size: 0.8rem; letter-spacing: 0.04em;
   border-top: 1px dotted var(--filet);
