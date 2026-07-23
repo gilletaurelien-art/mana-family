@@ -1630,7 +1630,9 @@ button:disabled { opacity: 0.35; cursor: default; }
   top: auto; left: 50%; bottom: 0;
   transform: translate(-50%, calc(100% - 18px));
   margin: 0;
-  white-space: nowrap;
+  white-space: pre-line;
+  text-align: center;
+  line-height: 1.05;
   pointer-events: none;
   font-family: 'Philosopher', var(--serif);
   font-weight: 700;
