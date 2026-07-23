@@ -285,11 +285,14 @@ function MicGlyph({ actif }: { actif: boolean }) {
   )
 }
 
-/** L'entonnoir — replier/déplier les filtres du carnet. */
-function FiltreGlyph() {
+/** Le sablier — les archives du carnet (réglages, tri, recherche). */
+function SablierGlyph() {
   return (
-    <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M3 5h18l-7 8v6l-4 2v-8Z" />
+    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="6" y1="3" x2="18" y2="3" />
+      <line x1="6" y1="21" x2="18" y2="21" />
+      <path d="M8 3v3l4 6 4-6V3" />
+      <path d="M8 21v-3l4-6 4 6v3" />
     </svg>
   )
 }
@@ -1884,9 +1887,9 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
       {!sujet ? (
         <header className="sky carnet-hero-lire">
           <div className="carnet-filtre-barre">
-            <button className="carnet-reglages-btn" onClick={() => setReglagesOuvert(true)} aria-label="Réglages du carnet">
-              <span className="filtre-glyph"><FiltreGlyph /></span>
-              <span>{ordre === 'recent' ? 'Du plus récent' : 'Du plus ancien'}</span>
+            <button className="carnet-reglages-btn" onClick={() => setReglagesOuvert(true)} aria-label="Archives du carnet">
+              <span className="filtre-glyph"><SablierGlyph /></span>
+              <span>Archives</span>
               {filtresActifs > 0 && <span className="carnet-reglages-badge">{filtresActifs}</span>}
             </button>
           </div>
@@ -2029,7 +2032,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
         <div className="offrir-veil" onClick={() => setReglagesOuvert(false)}>
           <div className="offrir-sheet reglages-sheet" role="dialog" aria-label="Réglages du carnet" onClick={(e) => e.stopPropagation()}>
             <button className="offrir-fermer" onClick={() => setReglagesOuvert(false)} aria-label="Fermer">✕</button>
-            <h2 className="offrir-titre">Réglages</h2>
+            <h2 className="offrir-titre">Archives</h2>
 
             <div className="reglages-groupe">
               <span className="reglages-label">Ordre</span>
