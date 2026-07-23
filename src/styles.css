@@ -1532,6 +1532,8 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 .compte-rebours-fini { text-align: center; color: var(--or-mana); font-family: 'Philosopher', var(--serif); font-weight: 700; }
 .compte-acces-invite { margin-top: 1.2rem; }
+/* La liste d'attente, sous la barrière. */
+.compte-attente { margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px dotted var(--filet); }
 
 /* La zone de connexion — toute en Philosopher. */
 .compte-card,

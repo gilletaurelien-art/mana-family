@@ -738,6 +738,28 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
       setDeverrouille(true); setCodeErreur(false)
     } else setCodeErreur(true)
   }
+
+  // La liste d'attente — on prévient à l'ouverture (via Web3Forms → l'univers Mana).
+  const [waitEmail, setWaitEmail] = useState('')
+  const [waitEtat, setWaitEtat] = useState<'idle' | 'envoi' | 'ok' | 'err'>('idle')
+  const waitEmailValide = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(waitEmail.trim())
+  const rejoindreListe = async () => {
+    if (!waitEmailValide) return
+    setWaitEtat('envoi')
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: '6b87a2f3-2183-40e6-befe-23fd66944144',
+          subject: 'Liste d’attente MANAfamily',
+          from_name: 'Liste d’attente MANAfamily',
+          email: waitEmail.trim(),
+        }),
+      })
+      setWaitEtat((await res.json()).success ? 'ok' : 'err')
+    } catch { setWaitEtat('err') }
+  }
   const [etape, setEtape] = useState<'email' | 'envoye'>('email')
   const [mode, setMode] = useState<'lien' | 'motdepasse'>('lien')
   const [email, setEmail] = useState('')
@@ -796,6 +818,29 @@ function CompteVue({ onRetour }: { onRetour: () => void }) {
             />
             {codeErreur && <p className="whisper compte-erreur">Mot de passe incorrect.</p>}
             <button className="primary" disabled={!codeAcces.trim()} onClick={verifierCode}>Entrer</button>
+
+            <div className="compte-attente">
+              {waitEtat === 'ok' ? (
+                <p className="whisper compte-mot">Merci&nbsp;! Vous êtes sur la liste — on vous écrit dès l'ouverture. 🌱</p>
+              ) : (
+                <>
+                  <p className="whisper compte-mot compte-acces-invite">Pas encore de mot de passe&nbsp;? Rejoignez la liste d'attente.</p>
+                  <div className="row">
+                    <input
+                      type="email" inputMode="email" placeholder="votre@email.fr"
+                      value={waitEmail}
+                      onChange={(e) => { setWaitEmail(e.target.value); if (waitEtat === 'err') setWaitEtat('idle') }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && waitEmailValide) rejoindreListe() }}
+                      aria-label="E-mail pour la liste d'attente"
+                    />
+                    <button className="primary" style={{ width: 'auto', marginTop: 0, whiteSpace: 'nowrap' }} disabled={!waitEmailValide || waitEtat === 'envoi'} onClick={rejoindreListe}>
+                      {waitEtat === 'envoi' ? 'Envoi…' : 'Rejoindre'}
+                    </button>
+                  </div>
+                  {waitEtat === 'err' && <p className="whisper compte-erreur">Oups — réessayez dans un instant.</p>}
+                </>
+              )}
+            </div>
           </>
         ) : etape === 'email' ? (
           <>
