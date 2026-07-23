@@ -1552,6 +1552,7 @@ function IconAudio() { return <svg {...ISVG}><rect x="9" y="3" width="6" height=
 function IconMusique() { return <svg {...ISVG}><path d="M9 18V5l10-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="16" cy="16" r="3" /></svg> }
 function IconLien() { return <svg {...ISVG}><path d="M9.5 14.5l5-5" /><path d="M10.8 6.6l1.6-1.6a4 4 0 0 1 5.7 5.7l-2.3 2.3" /><path d="M13.2 17.4l-1.6 1.6a4 4 0 0 1-5.7-5.7l2.3-2.3" /></svg> }
 function IconGeste() { return <svg {...ISVG}><rect x="4" y="9" width="16" height="11" rx="1.6" /><path d="M2.5 9h19M12 9v11" /><path d="M12 9C10 9 7.5 8.2 7.5 6.3A2 2 0 0 1 11.5 6M12 9c2 0 4.5-.8 4.5-2.7A2 2 0 0 0 12.5 6" /></svg> }
+function IconGalerie() { return <svg {...ISVG}><rect x="3" y="3" width="18" height="18" rx="2.4" /><circle cx="8.5" cy="9" r="1.6" /><path d="M21 16l-5-5-9 9" /></svg> }
 
 /** Nettoie le HTML du message : on ne garde que la mise en forme (gras,
     italique, souligné, listes, taille), jamais de script, d'attribut actif,
@@ -1646,9 +1647,9 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
   // Le message — éditeur riche (contenteditable, mise en forme + retours à la ligne).
   const editorRef = useRef<HTMLDivElement>(null)
   const [vide, setVide] = useState(true)
-  const [grand, setGrand] = useState(false)
   const majVide = () => setVide(!editorRef.current?.textContent?.trim())
-  const format = (cmd: string) => { document.execCommand(cmd); editorRef.current?.focus(); majVide() }
+  const format = (cmd: string, val?: string) => { document.execCommand(cmd, false, val); editorRef.current?.focus(); majVide() }
+  const titre = () => format('formatBlock', 'H3')
 
   // Pièces jointes : un médium OU un lien à la fois.
   const [media, setMedia] = useState<{ url: string; medium: Medium } | null>(null)
@@ -1659,12 +1660,15 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
   const [lienOuvert, setLienOuvert] = useState(false)
   const [lienSaisie, setLienSaisie] = useState('')
   const [enregOuvert, setEnregOuvert] = useState(false)
+  const [pjChoix, setPjChoix] = useState<'photo' | 'video' | null>(null)
+  const [geste, setGeste] = useState<[string, string] | null>(null)
 
   const poserMedia = (url: string, medium: Medium) => { setLien(null); setMedia({ url, medium }); setErreur(null) }
   const retirerPj = () => { setMedia(null); setLien(null) }
 
   async function choisirFichier(medium: Medium, file: File | undefined) {
     setErreur(null)
+    setPjChoix(null)
     if (!file) return
     if (medium !== 'photo' && file.size > MEDIA_MAX_MO * 1024 * 1024) {
       setErreur(`Ce fichier dépasse ${MEDIA_MAX_MO} Mo — choisissez un extrait plus court pour l'instant.`)
@@ -1701,11 +1705,11 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
   function transmettre() {
     const brut = editorRef.current?.innerHTML ?? ''
     let corps = assainirHtml(brut).trim()
-    if (corps && grand) corps = `<div style="font-size:1.25em">${corps}</div>`
+    if (geste) corps += `<div class="tx-geste">${geste[0]} ${geste[1]}</div>`
     onDone({ kind: 'souvenir', body: corps, aboutId, recipientIds: others.map((a) => a.id), happensOn: null, ...champPj() })
   }
 
-  const pret = !vide || !!media || !!lien
+  const pret = !vide || !!media || !!lien || !!geste
 
   return (
     <div className="shell papier">
@@ -1717,16 +1721,16 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
       <section className="card composer-card">
         {/* 1. Le message — éditeur riche */}
         <div className="rt-barre">
+          <button type="button" className="rt-btn rt-titre" onMouseDown={(e) => e.preventDefault()} onClick={titre} aria-label="Titre">Titre</button>
+          <span className="rt-flex" aria-hidden="true" />
           <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('bold')} aria-label="Gras"><b>G</b></button>
           <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('italic')} aria-label="Italique"><i>I</i></button>
           <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('underline')} aria-label="Souligner"><u>S</u></button>
           <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('insertUnorderedList')} aria-label="Puce">•</button>
-          <span className="rt-sep" aria-hidden="true" />
-          <button type="button" className={`rt-btn rt-taille ${grand ? 'on' : ''}`} onMouseDown={(e) => e.preventDefault()} onClick={() => setGrand((g) => !g)} aria-label="Taille du texte">{grand ? 'A' : 'a'}</button>
         </div>
         <div
           ref={editorRef}
-          className={`rt-editeur ${grand ? 'rt-grand' : ''} ${vide ? 'rt-vide' : ''}`}
+          className={`rt-editeur ${vide ? 'rt-vide' : ''}`}
           contentEditable
           role="textbox"
           aria-multiline="true"
@@ -1749,19 +1753,24 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
             <button type="button" className="composer-lien-retirer" onClick={retirerPj} aria-label="Retirer le lien">✕</button>
           </div>
         )}
+        {geste && (
+          <div className="composer-lien-apercu composer-geste-apercu">
+            <span className="composer-geste-emoji" aria-hidden="true">{geste[0]}</span>
+            <span className="composer-geste-mot">{geste[1]}</span>
+            <button type="button" className="composer-lien-retirer" onClick={() => setGeste(null)} aria-label="Retirer le geste">✕</button>
+          </div>
+        )}
         {prepMedia && <p className="whisper naissance-note">Préparation…</p>}
         {erreur && <p className="whisper naissance-note composer-media-erreur">{erreur}</p>}
 
         {/* 3. Les 6 symboles de pièce jointe */}
         <div className="composer-attach">
-          <label className="attach-btn" aria-label="Joindre une photo">
+          <button type="button" className="attach-btn" onClick={() => { setErreur(null); setPjChoix('photo') }} aria-label="Joindre une photo">
             <IconPhoto /><span>Photo</span>
-            <input type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; choisirFichier('photo', f) }} />
-          </label>
-          <label className="attach-btn" aria-label="Joindre une vidéo">
+          </button>
+          <button type="button" className="attach-btn" onClick={() => { setErreur(null); setPjChoix('video') }} aria-label="Joindre une vidéo">
             <IconVideo /><span>Vidéo</span>
-            <input type="file" accept="video/*" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; choisirFichier('video', f) }} />
-          </label>
+          </button>
           <button type="button" className="attach-btn" onClick={() => { setErreur(null); setEnregOuvert(true) }} aria-label="Enregistrer un audio">
             <IconAudio /><span>Audio</span>
           </button>
@@ -1803,13 +1812,34 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
         </div>
       )}
 
+      {pjChoix && (
+        <div className="offrir-veil" onClick={() => setPjChoix(null)}>
+          <div className="offrir-sheet" role="dialog" aria-label={pjChoix === 'photo' ? 'Ajouter une photo' : 'Ajouter une vidéo'} onClick={(e) => e.stopPropagation()}>
+            <button className="offrir-fermer" onClick={() => setPjChoix(null)} aria-label="Fermer">✕</button>
+            <h2 className="offrir-titre">{pjChoix === 'photo' ? 'Une photo' : 'Une vidéo'}</h2>
+            <div className="pj-choix">
+              <label className="pj-choix-btn">
+                <span className="pj-choix-ico" aria-hidden="true">{pjChoix === 'photo' ? <IconPhoto /> : <IconVideo />}</span>
+                <span>{pjChoix === 'photo' ? 'Prendre une photo' : 'Filmer une vidéo'}</span>
+                <input type="file" accept={pjChoix === 'photo' ? 'image/*' : 'video/*'} capture="environment" hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; choisirFichier(pjChoix, f) }} />
+              </label>
+              <label className="pj-choix-btn">
+                <span className="pj-choix-ico" aria-hidden="true"><IconGalerie /></span>
+                <span>Depuis la galerie</span>
+                <input type="file" accept={pjChoix === 'photo' ? 'image/*' : 'video/*'} hidden onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; choisirFichier(pjChoix, f) }} />
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
+
       {offrirOuvert && (
         <div className="offrir-veil" onClick={() => setOffrirOuvert(false)}>
           <div className="offrir-sheet" role="dialog" aria-label="Offrir un geste" onClick={(e) => e.stopPropagation()}>
             <button className="offrir-fermer" onClick={() => setOffrirOuvert(false)} aria-label="Fermer">✕</button>
-            <h2 className="offrir-titre">Offrir un geste</h2>
+            <h2 className="offrir-titre">Un geste</h2>
             <p className="whisper offrir-mot">
-              Une attention {sujet ? <>pour <b>{nomIntime(sujet)}</b></> : <>pour toute la famille</>} — touchez pour l'offrir.
+              Une attention {sujet ? <>pour <b>{nomIntime(sujet)}</b></> : <>pour toute la famille</>} — touchez pour la joindre au message.
             </p>
             <div className="offrir-capsules">
               {GESTES.map(([emoji, libelle]) => (
@@ -1817,7 +1847,7 @@ function Composer({ ciel, me, aboutId = null, onDone }: {
                   key={libelle}
                   type="button"
                   className="offrir-capsule"
-                  onClick={() => onDone({ kind: 'souvenir', body: `${emoji} ${libelle}`, aboutId, recipientIds: others.map((a) => a.id), happensOn: null })}
+                  onClick={() => { setGeste([emoji, libelle]); setOffrirOuvert(false) }}
                 >
                   <span className="offrir-emoji" aria-hidden="true">{emoji}</span>
                   <span>{libelle}</span>
@@ -2097,7 +2127,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onEcrire, onVeiller, onPortrait
                 <div className="tx-foot">
                   <span className="tx-meta">
                     {nameOf(t.authorId)}
-                    {t.aboutId ? ` · au sujet de ${nameOf(t.aboutId)}` : ''}
+                    {t.aboutId && <><span className="tx-meta-apropos"> · au sujet de </span>{nameOf(t.aboutId)}</>}
                   </span>
                   {/* La lueur, asymétrique : on montre qui a veillé, jamais qui manque. */}
                   {lueurs.length > 0 && <span className="lueur">✦ {lueurs.join(', ')}</span>}

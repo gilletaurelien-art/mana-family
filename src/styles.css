@@ -614,6 +614,9 @@ button:disabled { opacity: 0.35; cursor: default; }
 .rt-btn.on { border-color: var(--or-mana); color: var(--etoile); }
 .rt-btn.rt-taille { font-family: 'Philosopher', var(--serif); font-weight: 700; }
 .rt-sep { width: 1px; height: 1.3rem; background: var(--filet); margin: 0 0.15rem; }
+.rt-flex { flex: 1; }
+.rt-btn.rt-titre { font-family: 'Philosopher', var(--serif); font-weight: 700; padding: 0 0.7rem; width: auto; }
+.rt-editeur h3 { font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1.35em; margin: 0.3rem 0; color: var(--etoile); }
 .rt-editeur {
   min-height: 19.5rem; padding: 0.8rem 0.9rem;
   border: 1px solid var(--filet); border-radius: 14px; background: var(--champ);
@@ -664,6 +667,24 @@ button:disabled { opacity: 0.35; cursor: default; }
   border: 1px solid var(--filet); border-radius: 12px; background: var(--champ);
   color: var(--encre); font-family: var(--mono); font-size: 0.95rem;
 }
+/* Le geste joint — pastille dans le Composer. */
+.composer-geste-apercu { align-items: center; }
+.composer-geste-emoji { font-size: 1.3rem; line-height: 1; }
+.composer-geste-mot { flex: 1; color: var(--etoile); font-family: 'Philosopher', var(--serif); font-weight: 700; }
+.tx-geste { margin-top: 0.4rem; font-family: 'Philosopher', var(--serif); font-size: 1.1rem; color: var(--etoile); }
+
+/* Le choix Photo/Vidéo — prendre sur le vif ou depuis la galerie. */
+.pj-choix { display: grid; gap: 0.6rem; margin-top: 0.9rem; }
+.pj-choix-btn {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.9rem 1rem; border-radius: 14px;
+  border: 1px solid var(--filet); background: var(--champ);
+  color: var(--etoile); cursor: pointer;
+  font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1.02rem;
+}
+.pj-choix-btn:hover { border-color: var(--or-mana); }
+.pj-choix-ico { color: var(--or-mana); display: inline-flex; }
+.pj-choix-ico svg { width: 24px; height: 24px; }
 
 /* ---- L'enregistreur audio ---- */
 .enreg-sheet { text-align: center; }
@@ -1218,6 +1239,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 }
 /* L'auteur, à la main. */
 .tx-meta { font-family: var(--cursive); color: rgba(255, 253, 246, 0.92); font-size: 1rem; }
+.tx-meta-apropos { font-family: var(--mono); font-size: 0.82rem; color: var(--brume); letter-spacing: -0.01em; }
 
 /* La lueur — un halo chaud, jamais un point rouge, jamais un chiffre */
 .lueur {
