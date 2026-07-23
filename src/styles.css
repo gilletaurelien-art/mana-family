@@ -1671,6 +1671,32 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* Familles nombreuses : l'initiale seule. */
 .foyer .prenom-initiale { font-size: 1.1rem; }
 
+/* La bulle du prénom complet — au survol / focus (utile en mode initiales). */
+.prenom-bulle {
+  position: absolute;
+  left: 50%; bottom: 100%;
+  transform: translate(-50%, -4px);
+  white-space: nowrap;
+  padding: 0.28rem 0.7rem; border-radius: 999px;
+  background: rgba(8, 6, 14, 0.94);
+  border: 1px solid rgba(229, 184, 66, 0.5);
+  color: #f5edd8; font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 0.9rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 6;
+}
+.prenom-bulle::after {
+  content: ''; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: rgba(8, 6, 14, 0.94);
+}
+.astre-ciel:hover .prenom-bulle,
+.astre-ciel:focus .prenom-bulle,
+.astre-ciel:focus-visible .prenom-bulle {
+  opacity: 1; transform: translate(-50%, -9px);
+}
+
 /* Toutes les étoiles brillent — chacun veille. Grande étoile dorée (×3),
    nom posé dessus. */
 .foyer .astre-pure-light {

@@ -1207,6 +1207,7 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
                 {a.avatarUrl ? <img src={a.avatarUrl} alt="" className="astre-photo" /> : <span className="astre-pure-light" />}
               </span>
               <span className={`prenom ${initialesSeules ? 'prenom-initiale' : ''}`}>{initialesSeules ? nomIntime(a).charAt(0).toUpperCase() : nomIntime(a).split(' ').join('\n')}</span>
+              {initialesSeules && <span className="prenom-bulle" aria-hidden="true">{nomIntime(a)}</span>}
             </button>
           )
         })}
