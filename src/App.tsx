@@ -352,7 +352,9 @@ export default function App() {
     // Mode test (dev-only) : ?demo=1 ouvre l'intérieur avec une fausse famille,
     // sans auth ni base. Jamais actif en production (import.meta.env.DEV).
     if (import.meta.env.DEV && new URLSearchParams(window.location.search).has('demo')) {
-      const d = demoCiel()
+      const demoParam = new URLSearchParams(window.location.search).get('demo')
+      const nMembres = demoParam && /^\d+$/.test(demoParam) ? Math.max(6, parseInt(demoParam, 10)) : 6
+      const d = demoCiel(nMembres)
       setCiel(d)
       // QA visuel dev-only : ?demo=1&ecran=porte|fondation|choisir-moi|rejoindre|hisser|…
       // saute directement sur un écran, avec des données de démo pour ceux
@@ -1144,22 +1146,27 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onTransmettre, onGalaxie, onC
   // la famille proche (cercles 1-2) sur l'anneau interne, la famille étendue
   // (cercle 3) sur l'anneau externe (2× le diamètre).
   const CENTRE_X = 50, CENTRE_Y = 47
-  const R_PROCHE = 19
+  const autres = ciel.astres.filter((a) => a.id !== ciel.meId)
+  const procheList = autres.filter((a) => a.circle <= 2)
+  const etendueList = autres.filter((a) => a.circle >= 3)
+  // Rayons adaptatifs : plus l'anneau est peuplé, plus il s'élargit pour aérer.
+  // On garde l'idée « étendue = 2× proche », borné pour tenir dans le ciel.
+  const R_PROCHE = Math.max(16, Math.min(24, procheList.length * 2.4))
+  const R_ETENDUE = Math.min(44, R_PROCHE * 2)
   const posDe = new Map<string, { left: number; top: number }>()
   posDe.set(ciel.meId, { left: CENTRE_X, top: CENTRE_Y })
   const placerAnneau = (liste: Astre[], rayon: number) => {
     liste.forEach((a, k) => {
       const g = [...a.id].reduce((s, ch) => (s * 31 + ch.charCodeAt(0)) % 9973, 7)
-      const angle = (k / Math.max(1, liste.length)) * 2 * Math.PI - Math.PI / 2 + ((g % 100) / 100 - 0.5) * 0.35
+      const angle = (k / Math.max(1, liste.length)) * 2 * Math.PI - Math.PI / 2 + ((g % 100) / 100 - 0.5) * 0.28
       posDe.set(a.id, {
-        left: CENTRE_X + rayon * Math.cos(angle) + ((g % 9) - 4) * 0.5,
-        top: CENTRE_Y + rayon * 0.82 * Math.sin(angle) + ((g % 11) - 5) * 0.5,
+        left: CENTRE_X + rayon * Math.cos(angle) + ((g % 9) - 4) * 0.4,
+        top: CENTRE_Y + rayon * 0.82 * Math.sin(angle) + ((g % 11) - 5) * 0.4,
       })
     })
   }
-  const autres = ciel.astres.filter((a) => a.id !== ciel.meId)
-  placerAnneau(autres.filter((a) => a.circle <= 2), R_PROCHE)        // famille proche (diamètre 1)
-  placerAnneau(autres.filter((a) => a.circle >= 3), R_PROCHE * 2)    // famille étendue (diamètre 2)
+  placerAnneau(procheList, R_PROCHE)     // famille proche (anneau interne)
+  placerAnneau(etendueList, R_ETENDUE)   // famille étendue (anneau externe)
 
   // Vrai au tout premier affichage de l'accueil : le livre s'ouvre en fondu.
   const [ouverture] = useState(() => { const premier = !livreDejaOuvert; livreDejaOuvert = true; return premier })

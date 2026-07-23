@@ -9,19 +9,43 @@ import type { Ciel } from './remote'
 const jours = (n: number) => new Date(Date.now() - n * 86400000).toISOString()
 const dans = (n: number) => new Date(Date.now() + n * 86400000).toISOString()
 
-export function demoCiel(): Ciel {
+// Membres supplémentaires pour tester une grande famille (?demo=20).
+const NOMS_EXTRA: { nom: string; nomDoux?: string; role: import('./types').Role; circle: 1 | 2 | 3 }[] = [
+  { nom: 'Camille', role: 'enfant', circle: 1 },
+  { nom: 'Louis', role: 'parent', circle: 1 },
+  { nom: 'Emma', role: 'enfant', circle: 1 },
+  { nom: 'Hugo', nomDoux: 'Papi Hugo', role: 'grand_parent', circle: 2 },
+  { nom: 'Chloé', role: 'soutien', circle: 2 },
+  { nom: 'Nathan', nomDoux: 'Cousin Nathan', role: 'famille', circle: 3 },
+  { nom: 'Manon', role: 'famille', circle: 3 },
+  { nom: 'Lucas', role: 'enfant', circle: 1 },
+  { nom: 'Sarah', nomDoux: 'Tata Sarah', role: 'soutien', circle: 2 },
+  { nom: 'Théo', role: 'famille', circle: 3 },
+  { nom: 'Inès', role: 'enfant', circle: 1 },
+  { nom: 'Paul', nomDoux: 'Tonton Paul', role: 'soutien', circle: 2 },
+  { nom: 'Zoé', role: 'famille', circle: 3 },
+  { nom: 'Adam', role: 'famille', circle: 3 },
+]
+
+export function demoCiel(nMembres = 6): Ciel {
+  const base: Ciel['astres'] = [
+    { id: 'a-moi', name: 'Aurélien', role: 'parent', circle: 1, birthDate: '1985-04-12' },
+    { id: 'a-jeanne', name: 'Jeanne', role: 'grand_parent', circle: 2, birthDate: '1948-09-03', nomDoux: 'Mamie' },
+    { id: 'a-jules', name: 'Jules', role: 'enfant', circle: 1, birthDate: '2015-06-21' },
+    { id: 'a-lea', name: 'Léa', role: 'enfant', circle: 1, birthDate: '2018-02-10' },
+    { id: 'a-marc', name: 'Marc', role: 'soutien', circle: 2, birthDate: '1979-11-30', nomDoux: 'Tonton Marc' },
+    { id: 'a-rose', name: 'Rose', role: 'famille', circle: 3, birthDate: '1952-07-19', nomDoux: 'Tante Rose' },
+  ]
+  const extras: Ciel['astres'] = NOMS_EXTRA.slice(0, Math.max(0, nMembres - base.length)).map((m, i) => ({
+    id: `x-${i}`, name: m.nom, role: m.role, circle: m.circle,
+    birthDate: `19${60 + (i % 40)}-0${1 + (i % 9)}-1${i % 9}`,
+    ...(m.nomDoux ? { nomDoux: m.nomDoux } : {}),
+  }))
   return {
     name: 'Gillet',
     inviteCode: 'DEMO-MANA',
     meId: 'a-moi',
-    astres: [
-      { id: 'a-moi', name: 'Aurélien', role: 'parent', circle: 1, birthDate: '1985-04-12' },
-      { id: 'a-jeanne', name: 'Jeanne', role: 'grand_parent', circle: 2, birthDate: '1948-09-03', nomDoux: 'Mamie' },
-      { id: 'a-jules', name: 'Jules', role: 'enfant', circle: 1, birthDate: '2015-06-21' },
-      { id: 'a-lea', name: 'Léa', role: 'enfant', circle: 1, birthDate: '2018-02-10' },
-      { id: 'a-marc', name: 'Marc', role: 'soutien', circle: 2, birthDate: '1979-11-30', nomDoux: 'Tonton Marc' },
-      { id: 'a-rose', name: 'Rose', role: 'famille', circle: 3, birthDate: '1952-07-19', nomDoux: 'Tante Rose' },
-    ],
+    astres: [...base, ...extras],
     transmissions: [
       {
         id: 't1', authorId: 'a-moi', aboutId: 'a-jules', kind: 'souvenir',
