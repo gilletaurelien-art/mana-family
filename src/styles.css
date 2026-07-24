@@ -2156,7 +2156,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 /* La barre du bas fixe — « Entrer » (login), même effet doré que MANAfamily. */
 .vitrine-bottombar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-  display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+  display: flex; flex-direction: column; align-items: center; gap: 1.2rem;
   padding: 3rem 1rem max(1rem, env(safe-area-inset-bottom, 1rem));
   pointer-events: none;
   background: linear-gradient(to top, #04030a 0%, #04030a 86%, rgba(4, 3, 10, 0) 100%);
