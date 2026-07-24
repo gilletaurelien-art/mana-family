@@ -1885,6 +1885,8 @@ function Composer({ ciel, me, aboutId = null, onReglages, onDone }: {
 
       <section className="card composer-card">
         {/* 1. Le message — éditeur riche */}
+        <details className="composer-repli">
+          <summary className="composer-repli-tete"><span>Mise en forme</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
         <div className="rt-barre">
           <button type="button" className="rt-btn rt-titre" onMouseDown={(e) => e.preventDefault()} onClick={titre} aria-label="Titre">Titre</button>
           <span className="rt-flex" aria-hidden="true" />
@@ -1893,6 +1895,7 @@ function Composer({ ciel, me, aboutId = null, onReglages, onDone }: {
           <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('underline')} aria-label="Souligner"><u>S</u></button>
           <button type="button" className="rt-btn" onMouseDown={(e) => e.preventDefault()} onClick={() => format('insertUnorderedList')} aria-label="Puce">•</button>
         </div>
+        </details>
         <div
           ref={editorRef}
           className={`rt-editeur ${vide ? 'rt-vide' : ''}`}
@@ -1929,6 +1932,8 @@ function Composer({ ciel, me, aboutId = null, onReglages, onDone }: {
         {erreur && <p className="whisper naissance-note composer-media-erreur">{erreur}</p>}
 
         {/* 3. Les 6 symboles de pièce jointe */}
+        <details className="composer-repli">
+          <summary className="composer-repli-tete"><span>Ajouter à ce message</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
         <div className="composer-attach">
           <button type="button" className="attach-btn" onClick={() => { setErreur(null); setPjChoix('photo') }} aria-label="Joindre une photo">
             <IconPhoto /><span>Photo</span>
@@ -1950,6 +1955,7 @@ function Composer({ ciel, me, aboutId = null, onReglages, onDone }: {
             <IconGeste /><span>Un geste</span>
           </button>
         </div>
+        </details>
 
         <div className="row">
           <button onClick={() => onDone(null)}>Annuler</button>

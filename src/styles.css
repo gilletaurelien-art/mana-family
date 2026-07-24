@@ -304,6 +304,18 @@ body:has(.carnet-hero)::before { display: none; }
 .reglages-repli[open] .reglages-tete { margin-bottom: 0.6rem; }
 .reglages-repli .bloc-chevron { font-size: 1.1rem; }
 
+/* Menus repliables du Composer (écrire) — mise en forme & pièces jointes. */
+.composer-repli { border: 1px solid var(--filet); border-radius: 12px; padding: 0.55rem 0.75rem; margin: 0.7rem 0; }
+.composer-repli-tete {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  font-family: var(--mono); font-size: 0.82rem; letter-spacing: 0.04em; color: var(--brume);
+}
+.composer-repli-tete::-webkit-details-marker { display: none; }
+.composer-repli-tete::marker { content: ''; }
+.composer-repli[open] .composer-repli-tete { margin-bottom: 0.6rem; }
+.composer-repli .bloc-chevron { font-size: 1.1rem; }
+
 /* Découvrir — bloc « Mon compte » : déconnexion + suppression. */
 .compte-deco, .compte-supprimer {
   display: block; width: 100%; margin-top: 0.7rem;
