@@ -377,6 +377,19 @@ function KindGlyph({ kind }: { kind: TransmissionKind }) {
   }
 }
 
+/** Les glyphes gravés des cartes de la vitrine — cadenas, cœur, infini. */
+function CartePromesseGlyph({ icone }: { icone: 'prive' | 'don' | 'toujours' }) {
+  const svg = { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.55, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
+  switch (icone) {
+    case 'prive': // le cadenas — rien n'est public
+      return <svg {...svg}><rect x="5" y="10.5" width="14" height="9.5" rx="2.4" /><path d="M8 10.5V7.4a4 4 0 0 1 8 0v3.1" /><circle cx="12" cy="14.7" r="1.4" fill="currentColor" stroke="none" /><path d="M12 16.1v2" /></svg>
+    case 'don': // le cœur — vos souvenirs ne servent qu'à vous relier
+      return <svg {...svg}><path d="M12 20C3 13 6 4 12 8.5 18 4 21 13 12 20Z" /></svg>
+    case 'toujours': // l'infini — ce qui est transmis reste
+      return <svg {...svg}><path d="M12 12C9 8 3 8 3 12S9 16 12 12S18 8 21 12S15 16 12 12Z" /></svg>
+  }
+}
+
 /** Le sablier — les archives du carnet (réglages, tri, recherche). */
 function SablierGlyph() {
   return (
@@ -681,10 +694,10 @@ export default function App() {
 /* ---------- La vitrine — le premier seuil, avant toute connexion ---------- */
 
 /** Ce que la maison promet — trois lignes de confiance, pas des arguments de vente. */
-const PROMESSES: { glyphe: string; titre: string; mot: string }[] = [
-  { glyphe: '🔒', titre: 'Privé', mot: 'Rien n’est public — seulement votre famille voit vos moments.' },
-  { glyphe: '🤍', titre: 'Jamais vendu', mot: 'Vos souvenirs ne servent à rien d’autre qu’à vous relier.' },
-  { glyphe: '♾️', titre: 'Pour toujours', mot: 'Ce qui est transmis reste, gardé pour ceux qui viennent.' },
+const PROMESSES: { icone: 'prive' | 'don' | 'toujours'; titre: string; mot: string }[] = [
+  { icone: 'prive', titre: 'Privé', mot: 'Rien n’est public — seulement votre famille voit vos moments.' },
+  { icone: 'don', titre: 'Jamais vendu', mot: 'Vos souvenirs ne servent à rien d’autre qu’à vous relier.' },
+  { icone: 'toujours', titre: 'Pour toujours', mot: 'Ce qui est transmis reste, gardé pour ceux qui viennent.' },
 ]
 
 /** Les deux piliers — la doctrine Présence / Mémoire, dite simplement,
@@ -747,7 +760,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
           <div className="vitrine-cartes">
             {PROMESSES.map((p) => (
               <div className="vitrine-carte" key={p.titre}>
-                <span className="vitrine-carte-glyphe" aria-hidden="true">{p.glyphe}</span>
+                <span className="vitrine-carte-glyphe" aria-hidden="true"><CartePromesseGlyph icone={p.icone} /></span>
                 <h3 className="vitrine-carte-titre">{p.titre}</h3>
                 <p className="vitrine-carte-texte">{p.mot}</p>
               </div>

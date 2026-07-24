@@ -2362,8 +2362,9 @@ button:disabled { opacity: 0.35; cursor: default; }
 .vitrine-carte-glyphe {
   grid-row: 1 / span 2;
   align-self: center;
-  font-size: 1.55rem; line-height: 1;
-  filter: drop-shadow(0 0 8px rgba(229, 184, 66, 0.28));
+  display: inline-flex; line-height: 0;
+  color: var(--or-mana);
+  filter: drop-shadow(0 0 7px rgba(229, 184, 66, 0.30));
 }
 .vitrine-carte-titre {
   grid-column: 2; margin: 0;
