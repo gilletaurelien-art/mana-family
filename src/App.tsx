@@ -1644,19 +1644,22 @@ function Inviter({ ciel, onReglages, onRetour }: {
       <RetourNav onRetour={onRetour} />
       <ManaHeader onReglages={onReglages} />
       <header className="sky sky-sous-header">
-        <h1>La clé de la maison</h1>
+        <h1>Inviter un proche</h1>
       </header>
-      <section className="card" style={{ textAlign: 'center' }}>
-        <p>Chaque proche ouvre l'application, choisit « Rejoindre avec une clé », et entre :</p>
-        <p className="inviter-code">{ciel.inviteCode}</p>
-        <p className="whisper slogan-marelle">La clé ne se partage qu'en famille — c'est la porte de votre maison.</p>
 
-        <h2>Ou envoyer un lien</h2>
-        <p className="whisper">Un e-mail avec le lien — le proche rejoint la maison sans saisir la clé.</p>
+      <section className="card">
+        <h2>Rejoindre la famille</h2>
+        <p className="whisper">Invitez un proche par e-mail : il reçoit un lien et rejoint votre famille en un geste — sans rien à saisir.</p>
         <div className="row">
           <input type="email" inputMode="email" placeholder="e-mail du proche" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="E-mail du proche" />
           <button className="primary" style={{ width: 'auto', marginTop: 0 }} disabled={!emailValide} onClick={envoyerParEmail}>Envoyer</button>
         </div>
+      </section>
+
+      <section className="card" style={{ textAlign: 'center' }}>
+        <h2>La clé de la maison</h2>
+        <p className="whisper slogan-marelle">Réservée à MANAcare — le cercle du soin (aidants, soignants). Ils rejoignent en saisissant cette clé.</p>
+        <p className="inviter-code">{ciel.inviteCode}</p>
       </section>
     </div>
   )
