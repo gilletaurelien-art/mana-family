@@ -329,11 +329,15 @@ body:has(.carnet-hero)::before { display: none; }
 .fiche-repli .bloc-chevron { font-size: 1.1rem; }
 
 /* Découvrir — bloc « Mon compte » : déconnexion + suppression. */
-.compte-deco, .compte-supprimer {
-  display: block; width: 100%; margin-top: 0.7rem;
-  border-radius: 12px; padding: 0.7rem 1rem; cursor: pointer;
+/* Les quatre boutons du compte : même gabarit (pleine largeur, même padding),
+   aérés par un espace régulier. Seule la couleur change d'un bouton à l'autre. */
+.compte-export, .compte-deco, .compte-quitter, .compte-supprimer {
+  display: block; width: 100%; margin-top: 0.9rem;
+  border-radius: 12px; padding: 0.9rem 1rem; cursor: pointer;
   font-family: var(--mono); font-size: 0.9rem; letter-spacing: 0.02em;
+  text-align: center;
 }
+.compte-export:first-of-type { margin-top: 1.1rem; }
 .compte-deco { border: 1px solid var(--filet); background: var(--champ); color: var(--etoile); }
 .compte-deco:hover { border-color: var(--or-mana); }
 .compte-export { border: 1px solid rgba(229, 184, 66, 0.5); background: var(--champ); color: var(--or-doux); }
