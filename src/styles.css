@@ -379,7 +379,7 @@ body:has(.carnet-hero)::before { display: none; }
 .supprimer-valider:disabled { opacity: 0.5; }
 
 /* Le tableau des formules (découvrir). */
-.formules-intro { margin: -0.4rem 0 0.8rem; }
+.formules-intro { margin: 0 0 1.1rem; }
 
 /* Formule actuelle — la carte de statut de l'abonnement */
 .formule-actuelle {
@@ -420,11 +420,12 @@ body:has(.carnet-hero)::before { display: none; }
 
 /* Changer de formule — grisé jusqu'aux paiements */
 .formule-changer {
-  display: flex; flex-direction: column; gap: 0.55rem; margin: 0 0 1.1rem;
+  display: flex; flex-direction: column; gap: 0.9rem; margin: 0 0 1.4rem;
 }
 .formule-btn {
-  font-family: var(--mono); font-size: 0.85rem; font-weight: 700;
-  padding: 0.7rem 1rem; border-radius: 12px;
+  width: 100%; text-align: center;
+  font-family: var(--mono); font-size: 0.9rem; font-weight: 700;
+  padding: 0.9rem 1rem; border-radius: 12px;
   border: 1px solid var(--filet); background: var(--champ); color: var(--brume);
   cursor: not-allowed; opacity: 0.55;
 }
@@ -433,7 +434,7 @@ body:has(.carnet-hero)::before { display: none; }
 }
 
 .formules-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.formules-nb { margin: 0.9rem 0 0; font-size: 0.78rem; line-height: 1.5; }
+.formules-nb { margin: 1.2rem 0 0; font-size: 0.78rem; line-height: 1.55; }
 .formules-nb strong { color: var(--or-doux); font-weight: 700; }
 .formules-table {
   width: 100%; border-collapse: collapse;
@@ -463,19 +464,19 @@ body:has(.carnet-hero)::before { display: none; }
 .assistante-shell .mot-famille { font-family: 'Philosopher', var(--serif); font-weight: 700; font-size: 1em; }
 
 /* Les questions douces */
-.faq { display: flex; flex-direction: column; gap: 1.1rem; }
+.faq { display: flex; flex-direction: column; gap: 1.5rem; }
 .faq-item { }
-.faq-q { font-family: var(--serif); color: var(--or-doux); font-size: 1.05rem; margin: 0 0 0.25rem; }
-.faq-r { color: var(--encre); line-height: 1.55; margin: 0; font-size: 0.96rem; }
+.faq-q { font-family: var(--serif); color: var(--or-doux); font-size: 1.05rem; margin: 0 0 0.45rem; }
+.faq-r { color: var(--encre); line-height: 1.6; margin: 0; font-size: 0.96rem; }
 
 /* Les portes de la maison */
 .portes { list-style: none; padding: 0; margin: 0; }
-.porte { border-bottom: 1px dotted var(--filet); padding: 0.9rem 0.2rem; }
+.porte { border-bottom: 1px dotted var(--filet); padding: 1.15rem 0.2rem; }
 .porte a { display: block; text-decoration: none; color: inherit; }
 .porte-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
 .porte-nom { font-family: var(--serif); font-size: 1.08rem; color: var(--etoile); }
 .porte-mot { font-size: 0.8rem; color: var(--brume); white-space: nowrap; }
-.porte-desc { display: block; margin-top: 0.35rem; color: var(--brume); line-height: 1.5; font-size: 0.92rem; }
+.porte-desc { display: block; margin-top: 0.5rem; color: var(--brume); line-height: 1.55; font-size: 0.92rem; }
 .porte.ici .porte-mot { color: var(--or-mana); }
 .porte.bientot { opacity: 0.55; }
 
