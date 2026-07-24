@@ -3,7 +3,7 @@ import type { Astre, Constellation, Role, Transmission, TransmissionKind } from 
 import { ROLES, nomIntime } from './types'
 import { archiverHeritage, chargerHeritage } from './store'
 import { demoCiel } from './demo'
-import { connexionMotDePasse, envoyerLien, monEmail, quitterFamille, seDeconnecter, sessionCertifiee, supabase, supprimerCompte } from './lib/supabase'
+import { connexionMotDePasse, envoyerLien, quitterFamille, seDeconnecter, sessionCertifiee, supabase, supprimerCompte } from './lib/supabase'
 import {
   activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierNomDoux, modifierProfil, poserNaissance, rejoindre, transmettre,
   type Ciel as CielData, type Galaxie,
@@ -67,9 +67,11 @@ const FAQ: { q: string; r: string }[] = [
 
 /** Les portes de la maison Mana — chacune expliquée, pas seulement nommée. */
 const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boolean; bientot?: boolean }[] = [
+  { nom: 'le Guide Fondateur', etat: 'commencer', mot: 'Le guide pour fonder votre maison et la faire grandir — les premiers gestes, les bons réflexes.', href: '/guide-fondateur.html' },
+  { nom: 'le livre blanc MANAfamily', etat: 'notre vision', mot: 'Ce que nous protégeons, et ce que nous vous offrons — la doctrine de la maison, en clair.', href: '/livre-blanc.html' },
   { nom: 'La Constitution numérique', etat: 'nos engagements', mot: 'Ce que nous refuserons toujours de faire : capter votre attention, vous culpabiliser, vendre vos données, effacer votre mémoire.', href: 'https://constitution.manahome.org' },
-  { nom: 'Alliance Mana', etat: 'l’association', mot: 'L’association qui porte la maison Mana en France — qui nous sommes, ce que nous construisons.', href: 'https://www.manafrance.org' },
-  { nom: 'Mana citoyen', etat: 'territoires', mot: 'Actions territoriales, entraides, bénévolat.', href: 'https://www.manafrance.org' },
+  { nom: 'Alliance Mana', etat: 'l’association', mot: 'L’association qui porte la maison Mana en France — qui nous sommes, ce que nous construisons.', href: 'https://alliancemana.org' },
+  { nom: 'Mana citoyen', etat: 'territoires', mot: 'Actions territoriales, entraides, bénévolat.', href: 'https://mana.bzh' },
   { nom: 'TempoSystem', etat: 'le moteur', mot: 'La comptabilité discrète du temps que les êtres humains se consacrent. Elle travaille en coulisse ; vous ne la voyez jamais.', href: 'https://temposystem.eu' },
 ]
 
@@ -155,11 +157,10 @@ function InviterContenu({ ciel }: { ciel: CielData }) {
 
 /** L'univers Mana — pleine page : l'assistante, les questions douces, les portes de la maison. */
 
-function AssistanteVue({ ciel, me, onJardin, onParametres, onRetour, onDeconnexion, onQuitter, onSupprimer, onExporter }: {
+function AssistanteVue({ ciel, me, onJardin, onRetour, onDeconnexion, onQuitter, onSupprimer, onExporter }: {
   ciel: CielData
   me: Astre
   onJardin: () => void
-  onParametres: () => void
   onRetour: () => void
   onDeconnexion: () => void
   onQuitter: () => void
@@ -173,7 +174,7 @@ function AssistanteVue({ ciel, me, onJardin, onParametres, onRetour, onDeconnexi
       <ManaHeader />
       <header className="sky sky-sous-header">
         <p className="whisper assistante-nav">
-          <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button>
+          <span className="mot-famille">{nomIntime(me)}</span>
         </p>
       </header>
 
@@ -401,7 +402,6 @@ type Phase =
   | { ecran: 'chronologie' }
   | { ecran: 'galaxie' }
   | { ecran: 'jardin' }
-  | { ecran: 'parametres' }
   | { ecran: 'assistante' }
   | { ecran: 'supprimer-compte' }
   | { ecran: 'frise'; aboutId: string | null }
@@ -637,23 +637,12 @@ export default function App() {
     )
   }
 
-  if (phase.ecran === 'parametres') {
-    return (
-      <ParametresVue
-        onRetour={() => setPhase({ ecran: 'ciel' })}
-        onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
-        onUnivers={() => setPhase({ ecran: 'assistante' })}
-      />
-    )
-  }
-
   if (phase.ecran === 'assistante') {
     return (
       <AssistanteVue
         ciel={ciel}
         me={me}
         onJardin={() => setPhase({ ecran: 'jardin' })}
-        onParametres={() => setPhase({ ecran: 'parametres' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
         onQuitter={async () => { setPhase({ ecran: 'chargement' }); await quitterFamille(); await rafraichir() }}
@@ -1416,36 +1405,6 @@ function CielVue({ ciel, horsLigne, onOuvrirFrise, onGalaxie, onChronologie, onP
 }
 
 /* ---------- Paramètres personnels ---------- */
-
-function ParametresVue({ onRetour, onDeconnexion, onUnivers }: {
-  onRetour: () => void
-  onDeconnexion: () => void
-  onUnivers: () => void
-}) {
-  const [email, setEmail] = useState<string | null>(null)
-  useEffect(() => { monEmail().then(setEmail) }, [])
-
-  return (
-    <div className="shell papier">
-      <RetourNav onRetour={onRetour} />
-      <header className="sky">
-        <h1>Paramètres</h1>
-      </header>
-
-      <section className="card">
-        <h2>Mon compte</h2>
-        <p className="whisper">Connecté{email ? <> en tant que <b>{email}</b></> : ''} — votre accès à la famille vous suit d'un appareil à l'autre.</p>
-        <button onClick={onDeconnexion} style={{ marginTop: '0.6rem' }}>Se déconnecter</button>
-      </section>
-
-      <section className="card">
-        <h2>L'univers Mana</h2>
-        <p className="whisper">Les formules, le jardin, les invitations et les réponses aux questions courantes.</p>
-        <button onClick={onUnivers} style={{ marginTop: '0.6rem' }}>Découvrir l'univers Mana →</button>
-      </section>
-    </div>
-  )
-}
 
 /* ---------- La galaxie — les générations de la famille ---------- */
 
