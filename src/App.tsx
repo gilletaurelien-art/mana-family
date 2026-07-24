@@ -721,7 +721,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
     <div className="shell vitrine-shell seuil-nuit fond-maison">
       <ManaHeader />
       <div className="vitrine-bottombar">
-        <p className="vitrine-entrer-devise">La Présence fait vivre.<br />La Mémoire fait durer.</p>
+        <p className="vitrine-entrer-devise">La Présence fait vivre.<br /><br />La Mémoire fait durer.</p>
         <button className="vitrine-entrer-bas" onClick={onSeConnecter} aria-label="Se connecter avec votre clé">
           <span className="vitrine-entrer-mot">Entrer</span>
           <LockKeyGlyph />
