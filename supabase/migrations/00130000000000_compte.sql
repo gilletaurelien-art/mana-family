@@ -7,8 +7,12 @@
 -- ⚠️ SCHÉMA : dans la base MANA fusionnée, toute la maison Family vit
 -- dans le schéma `family` (le client cible db.schema = 'family', voir
 -- src/lib/supabase.ts). Ces fonctions y sont donc créées et cherchent
--- leurs tables via search_path = family. `auth.users` (schéma auth,
--- partagé) est toujours qualifié. À exécuter dans le SQL Editor.
+-- leurs tables via search_path = family. À exécuter dans le SQL Editor.
+--
+-- SUPPRESSION DU COMPTE AUTH : ces fonctions ne touchent PAS au schéma
+-- `auth`. La suppression de `auth.users` est faite par l'Edge Function
+-- `supprimer-compte` (service_role) — voir supabase/functions/. Le RPC
+-- prépare tout côté famille (anonymisation + purge des FK vers auth).
 --
 -- Modèle multi-familles (migration « jardin ») :
 --   * device_links(user_id, constellation_id) → astre_id : une ligne par
@@ -109,15 +113,15 @@ begin
   end loop;
 
   -- c) Déliaison de tous les appareils/galaxies de ce compte + coupure des
-  --    liens résiduels vers l'auth.
+  --    liens résiduels vers l'auth (les FK vers auth.users sont ainsi purgées,
+  --    ce qui permet à l'Edge Function de supprimer ensuite le compte auth).
   delete from device_current where user_id = v_uid;
   delete from device_links   where user_id = v_uid;
   update astres set user_id = null where user_id = v_uid;
 
-  -- d) Suppression du compte d'authentification (cascade auth interne :
-  --    identities, sessions…). Les FK applicatives ont été purgées ci-dessus.
-  delete from auth.users where id = v_uid;
-
+  -- La suppression de auth.users elle-même est faite par l'Edge Function
+  -- `supprimer-compte` (service_role) : une fonction SQL n'a pas toujours le
+  -- droit d'écrire dans le schéma `auth`. Ici, on a tout préparé côté famille.
   return jsonb_build_object('ok', true);
 end $$;
 

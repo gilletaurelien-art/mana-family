@@ -64,12 +64,13 @@ export async function seDeconnecter(): Promise<void> {
   await supabase.auth.signOut()
 }
 
-/** Suppression définitive du compte. Tente l'effacement côté serveur via la
-    fonction `supprimer_compte` (SECURITY DEFINER, à créer côté base), puis
-    déconnecte dans tous les cas. Tant que la fonction serveur n'existe pas,
-    l'utilisateur est au moins déconnecté et ses appareils déliés. */
+/** Suppression définitive du compte. L'Edge Function `supprimer-compte`
+    (service_role) fait le nettoyage famille (RPC `supprimer_compte`, RGPD) PUIS
+    supprime le compte auth. On garde un appel RPC direct en repli au cas où
+    l'Edge Function ne serait pas encore déployée, et on déconnecte toujours. */
 export async function supprimerCompte(): Promise<void> {
-  try { await supabase.rpc('supprimer_compte') } catch { /* fonction serveur à venir */ }
+  try { await supabase.rpc('supprimer_compte') } catch { /* repli : nettoyage famille */ }
+  try { await supabase.functions.invoke('supprimer-compte') } catch { /* edge function à déployer */ }
   await supabase.auth.signOut()
 }
 
