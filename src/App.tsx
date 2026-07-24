@@ -681,10 +681,10 @@ export default function App() {
 /* ---------- La vitrine — le premier seuil, avant toute connexion ---------- */
 
 /** Ce que la maison promet — trois lignes de confiance, pas des arguments de vente. */
-const PROMESSES: { glyphe: string; mot: string }[] = [
-  { glyphe: '🔒', mot: 'Rien n’est public. Seulement votre famille voit vos moments.' },
-  { glyphe: '🔒', mot: 'Rien n’est vendu. Vos souvenirs ne servent à rien d’autre qu’à vous relier.' },
-  { glyphe: '🔒', mot: 'Rien ne s’efface. Ce qui est transmis reste, gardé pour ceux qui viennent.' },
+const PROMESSES: { glyphe: string; titre: string; mot: string }[] = [
+  { glyphe: '🔒', titre: 'Privé', mot: 'Rien n’est public — seulement votre famille voit vos moments.' },
+  { glyphe: '🤍', titre: 'Jamais vendu', mot: 'Vos souvenirs ne servent à rien d’autre qu’à vous relier.' },
+  { glyphe: '♾️', titre: 'Pour toujours', mot: 'Ce qui est transmis reste, gardé pour ceux qui viennent.' },
 ]
 
 /** Les deux piliers — la doctrine Présence / Mémoire, dite simplement,
@@ -744,12 +744,13 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       <section className="vitrine-pied">
         <div className="vitrine-serment">
           <h2 className="vitrine-serment-titre">Votre Carnet de Famille</h2>
-          <div className="vitrine-promesses">
+          <div className="vitrine-cartes">
             {PROMESSES.map((p) => (
-              <p className="vitrine-promesse" key={p.mot}>
-                <span className="vitrine-promesse-glyphe" aria-hidden="true">{p.glyphe}</span>
-                <span>{p.mot}</span>
-              </p>
+              <div className="vitrine-carte" key={p.titre}>
+                <span className="vitrine-carte-glyphe" aria-hidden="true">{p.glyphe}</span>
+                <h3 className="vitrine-carte-titre">{p.titre}</h3>
+                <p className="vitrine-carte-texte">{p.mot}</p>
+              </div>
             ))}
           </div>
         </div>
