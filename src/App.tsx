@@ -770,11 +770,14 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       </section>
 
       <footer className="vitrine-footer">
-        <div className="vitrine-securite" aria-label="Nos garanties">
-          <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🔒</span> Privé</span>
-          <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🛡️</span> Protégé</span>
-          <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🔐</span> Chiffré</span>
-          <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🚫</span> Sans publicité</span>
+        <div className="vitrine-garanties">
+          <h3 className="vitrine-garanties-titre">Vos garanties</h3>
+          <div className="vitrine-securite" aria-label="Nos garanties">
+            <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🔒</span> Privé</span>
+            <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🛡️</span> Protégé</span>
+            <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🔐</span> Chiffré</span>
+            <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🚫</span> Sans publicité</span>
+          </div>
         </div>
         <nav className="legal-liens" aria-label="Informations légales">
           <a href="/mentions-legales.html">Mentions légales</a>

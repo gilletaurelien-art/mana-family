@@ -2500,6 +2500,21 @@ button:disabled { opacity: 0.35; cursor: default; }
 .vitrine-footer b { color: var(--etoile); font-weight: 600; }
 .vitrine-footer-legal { font-size: 0.72rem; opacity: 0.8; }
 
+/* Les garanties de sécurité — mini-encadré titré. */
+.vitrine-garanties {
+  margin: 0.2rem auto 0;
+  max-width: 30rem;
+  padding: 0.85rem 1rem 1rem;
+  border: 1px solid var(--filet);
+  border-radius: 14px;
+  background: rgba(198, 178, 255, 0.04);
+}
+.vitrine-garanties-titre {
+  margin: 0 0 0.7rem;
+  font-family: 'Philosopher', var(--serif); font-weight: 700;
+  font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--or-mana);
+}
 /* Les garanties de sécurité — une rangée de symboles au-dessus du badge. */
 .vitrine-securite {
   display: flex; flex-wrap: wrap; justify-content: center;
