@@ -5,22 +5,10 @@ import { archiverHeritage, chargerHeritage } from './store'
 import { demoCiel } from './demo'
 import { connexionMotDePasse, envoyerLien, monEmail, quitterFamille, seDeconnecter, sessionCertifiee, supabase, supprimerCompte } from './lib/supabase'
 import {
-  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierNomDoux, modifierProfil, poserNaissance, poserPortrait, rejoindre, transmettre,
+  activerGalaxie, astresDe, charger, fonder, hisser, mesGalaxies, modifierNomDoux, modifierProfil, poserNaissance, rejoindre, transmettre,
   type Ciel as CielData, type Galaxie,
 } from './remote'
 
-/** Portrait : recadré carré, réduit à 128px — jamais l'original dans la mémoire. */
-async function preparerPortrait(file: File): Promise<string> {
-  const img = await createImageBitmap(file)
-  const size = 128
-  const canvas = document.createElement('canvas')
-  canvas.width = size
-  canvas.height = size
-  const ctx = canvas.getContext('2d')!
-  const s = Math.min(img.width, img.height)
-  ctx.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size)
-  return canvas.toDataURL('image/jpeg', 0.82)
-}
 
 /** Pièce jointe : ratio préservé, réduite au plus grand côté (palier « compressé »
     ~1600px de la formule Famille), JPEG. On ne garde jamais l'original. */
@@ -572,7 +560,6 @@ export default function App() {
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onReglages={() => setPhase({ ecran: 'assistante' })}
         onEcrire={() => setPhase({ ecran: 'composer', aboutId: phase.aboutId })}
-        onPortrait={(astreId, url) => setCiel(poserPortrait(ciel, astreId, url))}
         onNaissance={(astreId, date) => setCiel(poserNaissance(ciel, astreId, date))}
         onProfil={(astreId, nom, surnom, date, role, pays, codePostal) => setCiel(modifierProfil(ciel, astreId, nom, surnom, date, role, pays, codePostal))}
         onNommer={(astreId, nomDoux) => setCiel(modifierNomDoux(ciel, astreId, nomDoux))}
@@ -2125,14 +2112,13 @@ function TxLien({ url }: { url: string }) {
   )
 }
 
-function FriseVue({ ciel, me, aboutId, onRetour, onReglages, onEcrire, onPortrait, onNaissance, onProfil, onNommer }: {
+function FriseVue({ ciel, me, aboutId, onRetour, onReglages, onEcrire, onNaissance, onProfil, onNommer }: {
   ciel: CielData
   me: Astre
   aboutId: string | null
   onRetour: () => void
   onReglages: () => void
   onEcrire: () => void
-  onPortrait: (astreId: string, dataUrl: string) => void
   onNaissance: (astreId: string, date: string) => void
   onProfil: (astreId: string, nom: string, surnom: string, date: string | null, role: Role, pays: string, codePostal: string) => void
   onNommer: (astreId: string, nomDoux: string) => void
@@ -2191,28 +2177,15 @@ function FriseVue({ ciel, me, aboutId, onRetour, onReglages, onEcrire, onPortrai
       <header className="sky sky-sous-header">
         {sujet?.avatarUrl && <img src={sujet.avatarUrl} alt="" className="portrait-frise" />}
         <h1 className="fiche-nom">{sujet ? nomIntime(sujet) : 'Le carnet de famille'}</h1>
+        <details className="fiche-repli">
+          <summary className="fiche-repli-tete"><span>Profil</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
         <p className="whisper">
           {sujet && (
             <>
-              <label className="link portrait-label">
-                {sujet.avatarUrl ? 'changer le portrait' : 'poser un portrait'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={async (e) => {
-                    const f = e.target.files?.[0]
-                    if (f) onPortrait(sujet.id, await preparerPortrait(f))
-                  }}
-                />
-              </label>
               {sujet.id === me.id && (
-                <>
-                  {' · '}
-                  <button className="link" onClick={() => setEnEdition(!enEdition)}>
-                    {enEdition ? 'fermer' : 'modifier le profil'}
-                  </button>
-                </>
+                <button className="link" onClick={() => setEnEdition(!enEdition)}>
+                  {enEdition ? 'fermer' : 'modifier le profil'}
+                </button>
               )}
             </>
           )}
@@ -2269,6 +2242,7 @@ function FriseVue({ ciel, me, aboutId, onRetour, onReglages, onEcrire, onPortrai
             </p>
           )
         )}
+        </details>
       </header>
       )}
 

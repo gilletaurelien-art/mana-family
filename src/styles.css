@@ -316,6 +316,18 @@ body:has(.carnet-hero)::before { display: none; }
 .composer-repli[open] .composer-repli-tete { margin-bottom: 0.6rem; }
 .composer-repli .bloc-chevron { font-size: 1.1rem; }
 
+/* Menu « Profil » repliable dans la fiche d'un proche. */
+.fiche-repli { display: inline-block; text-align: left; margin: 0.4rem auto 0; border: 1px solid var(--filet); border-radius: 12px; padding: 0.5rem 0.9rem; min-width: min(20rem, 80vw); }
+.fiche-repli-tete {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+  font-family: var(--mono); font-size: 0.82rem; letter-spacing: 0.04em; color: var(--brume);
+}
+.fiche-repli-tete::-webkit-details-marker { display: none; }
+.fiche-repli-tete::marker { content: ''; }
+.fiche-repli[open] .fiche-repli-tete { margin-bottom: 0.6rem; }
+.fiche-repli .bloc-chevron { font-size: 1.1rem; }
+
 /* Découvrir — bloc « Mon compte » : déconnexion + suppression. */
 .compte-deco, .compte-supprimer {
   display: block; width: 100%; margin-top: 0.7rem;
