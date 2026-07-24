@@ -752,9 +752,6 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
               </p>
             ))}
           </div>
-          <a className="vitrine-livre-lien vitrine-serment-lien" href="/livre-blanc.html" target="_blank" rel="noopener">
-            Lire le Livre blanc MANAfamily →
-          </a>
         </div>
       </section>
 
@@ -774,6 +771,9 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
         </nav>
         <a href="https://temposystem.eu" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }} aria-label="propulsé par TEMPOsystem">propulsé par <b>TEMPOsystem</b></a>
         <span className="vitrine-footer-legal">© 2026 · Tous droits réservés</span>
+        <a className="vitrine-livre-lien" href="/livre-blanc.html" target="_blank" rel="noopener">
+          Lire le Livre blanc MANAfamily →
+        </a>
       </footer>
     </div>
   )
