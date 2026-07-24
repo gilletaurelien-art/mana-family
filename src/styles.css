@@ -2498,13 +2498,13 @@ button:disabled { opacity: 0.35; cursor: default; }
 
 .vitrine-serment-titre {
   font-family: var(--cursive);
-  font-size: 1.7rem;
+  font-size: 1.14rem;
   color: var(--etoile);
   margin: 0 0 1.1rem;
 }
 .titre-coeur {
-  width: 0.82em; height: 0.82em;
-  vertical-align: -0.04em; margin-right: 0.12em;
+  width: 1.35em; height: 1.35em;
+  vertical-align: -0.16em; margin-right: 0.18em;
   color: var(--etoile);
   filter: drop-shadow(0 0 8px rgba(245, 237, 216, 0.35));
 }
