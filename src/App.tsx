@@ -584,7 +584,7 @@ export default function App() {
         onInviter={() => setPhase({ ecran: 'inviter' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
-        onQuitter={async () => { setPhase({ ecran: 'chargement' }); await quitterFamille(); setCiel(null); setPhase({ ecran: 'porte' }) }}
+        onQuitter={async () => { setPhase({ ecran: 'chargement' }); await quitterFamille(); await rafraichir() }}
         onSupprimer={() => setPhase({ ecran: 'supprimer-compte' })}
       />
     )
