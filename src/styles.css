@@ -2164,7 +2164,7 @@ button:disabled { opacity: 0.35; cursor: default; }
 .vitrine-bottombar > * { pointer-events: auto; }
 .vitrine-entrer-devise {
   margin: 0; text-align: center; pointer-events: none;
-  font-family: var(--cursive); font-size: 1.15rem; line-height: 1.35;
+  font-family: var(--cursive); font-size: 1.14rem; line-height: 1.35;
   color: var(--etoile); text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
 }
 .vitrine-entrer-bas {
