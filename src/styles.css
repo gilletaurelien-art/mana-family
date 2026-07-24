@@ -2501,6 +2501,7 @@ button:disabled { opacity: 0.35; cursor: default; }
   font-size: 1.14rem;
   color: var(--etoile);
   margin: 0 0 1.1rem;
+  text-align: center;
 }
 .titre-coeur {
   width: 1.35em; height: 1.35em;
