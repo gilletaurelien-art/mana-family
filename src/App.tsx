@@ -258,6 +258,13 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
       </section>
 
       <footer className="assistante-footer">
+        <nav className="legal-liens" aria-label="Informations légales">
+          <a href="/mentions-legales.html">Mentions légales</a>
+          <span aria-hidden="true">·</span>
+          <a href="/cgu.html">CGU</a>
+          <span aria-hidden="true">·</span>
+          <a href="/confidentialite.html">Confidentialité</a>
+        </nav>
         <a href="https://temposystem.eu" target="_blank" rel="noopener noreferrer" className="tempo-badge" aria-label="propulsé par TEMPOsystem">
           propulsé par <b>TEMPOsystem</b>
         </a>
@@ -755,6 +762,13 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
           <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🔐</span> Chiffré</span>
           <span className="vitrine-securite-item"><span className="vitrine-securite-glyphe" aria-hidden="true">🚫</span> Sans publicité</span>
         </div>
+        <nav className="legal-liens" aria-label="Informations légales">
+          <a href="/mentions-legales.html">Mentions légales</a>
+          <span aria-hidden="true">·</span>
+          <a href="/cgu.html">CGU</a>
+          <span aria-hidden="true">·</span>
+          <a href="/confidentialite.html">Confidentialité</a>
+        </nav>
         <a href="https://temposystem.eu" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }} aria-label="propulsé par TEMPOsystem">propulsé par <b>TEMPOsystem</b></a>
         <span className="vitrine-footer-legal">© 2026 · Tous droits réservés</span>
       </footer>
