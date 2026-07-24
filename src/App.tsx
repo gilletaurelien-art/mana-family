@@ -162,8 +162,8 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
         </p>
       </header>
 
-      <section className="assistante-bloc">
-        <h2>Nos formules</h2>
+      <details className="assistante-bloc bloc-repli">
+        <summary className="bloc-tete"><h2>Nos formules</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
         <p className="whisper formules-intro">La Famille est gratuite et sans limite de membres. Le Récit et La Lignée sont à venir.</p>
 
         <div className="formule-actuelle">
@@ -200,10 +200,10 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
         <p className="whisper formules-nb">
           <strong>MANAcare</strong> — le pont du soin&nbsp;: un proche aidant ou un soignant peut déposer un mot dans le carnet sans jamais lire la mémoire de la famille. Gratuit pour tous.
         </p>
-      </section>
+      </details>
 
-      <section className="assistante-bloc">
-        <h2>Fonctionnement</h2>
+      <details className="assistante-bloc bloc-repli">
+        <summary className="bloc-tete"><h2>Fonctionnement</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
         <div className="faq">
           {FAQ.map((f, i) => (
             <div className="faq-item" key={i}>
@@ -212,10 +212,10 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
             </div>
           ))}
         </div>
-      </section>
+      </details>
 
-      <section className="assistante-bloc">
-        <h2>Les portes de la maison Mana</h2>
+      <details className="assistante-bloc bloc-repli">
+        <summary className="bloc-tete"><h2>Les portes de la maison Mana</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
         <ul className="portes">
           {PORTES.map((p) => {
             const contenu = (
@@ -236,10 +236,10 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
             )
           })}
         </ul>
-      </section>
+      </details>
 
-      <section className="assistante-bloc">
-        <h2>Mon compte</h2>
+      <details className="assistante-bloc bloc-repli">
+        <summary className="bloc-tete"><h2>Mon compte</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
         <p className="whisper">Connecté en tant que <span className="mot-famille">{nomIntime(me)}</span> — votre accès à la famille vous suit d'un appareil à l'autre.</p>
         <button className="compte-export" onClick={onExporter}>Exporter mes souvenirs</button>
         <button className="compte-deco" onClick={onDeconnexion}>Se déconnecter</button>
@@ -255,7 +255,7 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
           </div>
         )}
         <button className="compte-supprimer" onClick={onSupprimer}>Supprimer mon compte</button>
-      </section>
+      </details>
 
       <footer className="assistante-footer">
         <nav className="legal-liens" aria-label="Informations légales">

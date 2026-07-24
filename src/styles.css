@@ -277,6 +277,22 @@ body:has(.carnet-hero)::before { display: none; }
 /* La barre de liens (jardin · paramètres · inviter) — centrée sous le titre MANAfamily. */
 .assistante-nav { text-align: center; }
 
+/* Menus repliables (Découvrir) — chaque section s'enroule pour une page limpide. */
+.bloc-repli { overflow: hidden; }
+.bloc-tete {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.8rem;
+}
+.bloc-tete::-webkit-details-marker { display: none; }
+.bloc-tete::marker { content: ''; }
+.bloc-tete h2 { margin: 0; }
+.bloc-chevron {
+  flex: none; color: var(--or-doux); font-size: 1.3rem; line-height: 1;
+  transition: transform 0.25s ease;
+}
+.bloc-repli[open] .bloc-chevron { transform: rotate(180deg); }
+.bloc-repli[open] .bloc-tete { margin-bottom: 0.9rem; }
+
 /* Découvrir — bloc « Mon compte » : déconnexion + suppression. */
 .compte-deco, .compte-supprimer {
   display: block; width: 100%; margin-top: 0.7rem;
