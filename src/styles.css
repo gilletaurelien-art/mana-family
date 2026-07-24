@@ -285,6 +285,8 @@ body:has(.carnet-hero)::before { display: none; }
 }
 .compte-deco { border: 1px solid var(--filet); background: var(--champ); color: var(--etoile); }
 .compte-deco:hover { border-color: var(--or-mana); }
+.compte-export { border: 1px solid rgba(229, 184, 66, 0.5); background: var(--champ); color: var(--or-doux); }
+.compte-export:hover { border-color: var(--or-mana); color: var(--or-mana); }
 .compte-quitter { border: 1px solid var(--filet); background: var(--champ); color: var(--etoile); }
 .compte-quitter:hover { border-color: var(--or-mana); }
 .compte-quitter-box { margin-top: 0.7rem; text-align: left; }

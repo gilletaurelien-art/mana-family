@@ -87,11 +87,60 @@ const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boo
   { nom: 'TempoSystem', etat: 'le moteur', mot: 'La comptabilité discrète du temps que les êtres humains se consacrent. Elle travaille en coulisse ; vous ne la voyez jamais.', href: 'https://temposystem.eu' },
 ]
 
-/** L'univers Mana — pleine page : l'assistante, les questions douces, les portes de la maison. */
-/** Nous écrire — formulaire de contact (Web3Forms → contact@manahome.org).
-    Éléments natifs de l'app → thème jour/nuit automatique. */
+/** Export RGPD (portabilité) : un fichier JSON lisible avec le profil de
+    l'utilisateur et les souvenirs qui le concernent (qu'il a écrits, qui
+    parlent de lui, ou qui lui sont adressés). Généré côté client à partir du
+    ciel déjà chargé — aucune donnée ne quitte l'appareil que par ce fichier. */
+function exporterMesDonnees(ciel: CielData, me: Astre): void {
+  const nomDe = (id: string | null) => {
+    const a = id ? ciel.astres.find((x) => x.id === id) : null
+    return a ? nomIntime(a) : null
+  }
+  const enTexte = (html: string) => {
+    try { return new DOMParser().parseFromString(html, 'text/html').body.textContent?.trim() ?? '' }
+    catch { return html }
+  }
+  const miens = ciel.transmissions.filter((t) => t.authorId === me.id || t.aboutId === me.id || t.forMe)
+  const data = {
+    export: {
+      application: 'MANA Family',
+      genereLe: new Date().toISOString(),
+      apropos: 'Vos données personnelles et les souvenirs qui vous concernent (portabilité RGPD).',
+    },
+    famille: ciel.name,
+    moi: {
+      prenom: me.name,
+      surnom: me.nickname ?? null,
+      naissance: me.birthDate ?? null,
+      role: me.role,
+      pays: me.country ?? null,
+      codePostal: me.postalCode ?? null,
+    },
+    souvenirs: miens.map((t) => ({
+      date: t.createdAt,
+      concerneLeMoment: t.happensOn ?? null,
+      auteur: nomDe(t.authorId),
+      auSujetDe: nomDe(t.aboutId),
+      type: t.kind,
+      message: enTexte(t.body),
+      contientUnMedia: Boolean(t.imageUrl || t.audioUrl || t.videoUrl || t.musicUrl),
+      lien: t.linkUrl ?? null,
+    })),
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `mana-family-${new Date().toISOString().slice(0, 10)}.json`
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
 
-function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeconnexion, onQuitter, onSupprimer }: {
+/** L'univers Mana — pleine page : l'assistante, les questions douces, les portes de la maison. */
+
+function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeconnexion, onQuitter, onSupprimer, onExporter }: {
   me: Astre
   onJardin: () => void
   onParametres: () => void
@@ -100,6 +149,7 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
   onDeconnexion: () => void
   onQuitter: () => void
   onSupprimer: () => void
+  onExporter: () => void
 }) {
   const [confirmQuit, setConfirmQuit] = useState(false)
   return (
@@ -191,6 +241,7 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
       <section className="assistante-bloc">
         <h2>Mon compte</h2>
         <p className="whisper">Connecté en tant que <span className="mot-famille">{nomIntime(me)}</span> — votre accès à la famille vous suit d'un appareil à l'autre.</p>
+        <button className="compte-export" onClick={onExporter}>Exporter mes souvenirs</button>
         <button className="compte-deco" onClick={onDeconnexion}>Se déconnecter</button>
         {!confirmQuit ? (
           <button className="compte-quitter" onClick={() => setConfirmQuit(true)}>Quitter la famille</button>
@@ -586,6 +637,7 @@ export default function App() {
         onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
         onQuitter={async () => { setPhase({ ecran: 'chargement' }); await quitterFamille(); await rafraichir() }}
         onSupprimer={() => setPhase({ ecran: 'supprimer-compte' })}
+        onExporter={() => exporterMesDonnees(ciel, me)}
       />
     )
   }
