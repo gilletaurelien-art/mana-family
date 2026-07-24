@@ -757,6 +757,9 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       <section className="vitrine-pied">
         <div className="vitrine-serment">
           <h2 className="vitrine-serment-titre">Votre Carnet de Famille</h2>
+          <div className="vitrine-accroche">
+            <p className="vitrine-accroche-texte">Un lieu rien qu'à votre famille, pour garder vivant ce qui vous <strong>relie</strong> — et le <strong>transmettre</strong> à ceux qui viennent.</p>
+          </div>
           <div className="vitrine-cartes">
             {PROMESSES.map((p) => (
               <div className="vitrine-carte" key={p.titre}>
