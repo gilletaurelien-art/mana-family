@@ -390,6 +390,15 @@ function CartePromesseGlyph({ icone }: { icone: 'prive' | 'don' | 'toujours' }) 
   }
 }
 
+/** Le cœur crème du titre — remplace le mot « Votre ». */
+function CoeurCreme() {
+  return (
+    <svg className="titre-coeur" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 20C3 13 6 4 12 8.5 18 4 21 13 12 20Z" fill="currentColor" />
+    </svg>
+  )
+}
+
 /** Le sablier — les archives du carnet (réglages, tri, recherche). */
 function SablierGlyph() {
   return (
@@ -756,7 +765,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       </div>
       <section className="vitrine-pied">
         <div className="vitrine-serment">
-          <h2 className="vitrine-serment-titre">Votre Carnet de Famille</h2>
+          <h2 className="vitrine-serment-titre" aria-label="Votre Carnet de Famille"><CoeurCreme /> Carnet de Famille</h2>
           <div className="vitrine-accroche">
             <p className="vitrine-accroche-texte">Un lieu rien qu'à votre famille, pour garder vivant ce qui vous <strong>relie</strong> — et le <strong>transmettre</strong> à ceux qui viennent.</p>
           </div>
