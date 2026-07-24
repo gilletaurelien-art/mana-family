@@ -379,7 +379,6 @@ body:has(.carnet-hero)::before { display: none; }
 .supprimer-valider:disabled { opacity: 0.5; }
 
 /* Le tableau des formules (découvrir). */
-.formules-intro { margin: 0 0 1.1rem; }
 
 /* Formule actuelle — la carte de statut de l'abonnement */
 .formule-actuelle {
@@ -428,9 +427,6 @@ body:has(.carnet-hero)::before { display: none; }
   padding: 0.9rem 1rem; border-radius: 12px;
   border: 1px solid var(--filet); background: var(--champ); color: var(--brume);
   cursor: not-allowed; opacity: 0.55;
-}
-.formule-bientot {
-  text-align: center; margin: 0.1rem 0 0; font-size: 0.72rem;
 }
 
 .formules-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }

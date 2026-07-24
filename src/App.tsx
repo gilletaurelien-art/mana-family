@@ -152,8 +152,6 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
 
       <details className="assistante-bloc bloc-repli">
         <summary className="bloc-tete"><h2>Nos formules</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
-        <p className="whisper formules-intro">La Famille est gratuite et sans limite de membres. Le Récit et La Lignée sont à venir.</p>
-
         <div className="formule-actuelle">
           <span className="formule-actuelle-label">Votre formule</span>
           <span className="formule-actuelle-nom">Famille<sup className="palier-marque">✦</sup></span>
@@ -163,7 +161,6 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
         <div className="formule-changer">
           <button className="formule-btn" disabled>Passer au Récit · 9 €/mois</button>
           <button className="formule-btn" disabled>Passer à La Lignée · 39 €/mois</button>
-          <p className="whisper formule-bientot">Le changement de formule ouvrira au lancement des paiements.</p>
         </div>
 
         <div className="formules-table-wrap">
@@ -1658,7 +1655,7 @@ function Inviter({ ciel, onReglages, onRetour }: {
 
       <section className="card" style={{ textAlign: 'center' }}>
         <h2>La clé de la maison</h2>
-        <p className="whisper slogan-marelle">Réservée à MANAcare — le cercle du soin (aidants, soignants). Ils rejoignent en saisissant cette clé.</p>
+        <p className="whisper">Réservée à MANAcare — le cercle du soin (aidants, soignants). Ils rejoignent en saisissant cette clé.</p>
         <p className="inviter-code">{ciel.inviteCode}</p>
       </section>
     </div>
