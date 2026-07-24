@@ -2318,25 +2318,25 @@ function FriseVue({ ciel, me, aboutId, onRetour, onReglages, onEcrire, onPortrai
             <button className="offrir-fermer" onClick={() => setReglagesOuvert(false)} aria-label="Fermer">✕</button>
             <h2 className="offrir-titre">Archives</h2>
 
-            <div className="reglages-groupe">
-              <span className="reglages-label">Ordre</span>
+            <details className="reglages-groupe reglages-repli">
+              <summary className="reglages-tete"><span className="reglages-label">Ordre</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
               <div className="reglages-segment">
                 <button className={ordre === 'recent' ? 'on' : ''} onClick={() => setOrdre('recent')}>Du plus récent</button>
                 <button className={ordre === 'ancien' ? 'on' : ''} onClick={() => setOrdre('ancien')}>Du plus ancien</button>
               </div>
-            </div>
+            </details>
 
-            <div className="reglages-groupe">
-              <span className="reglages-label">Période</span>
+            <details className="reglages-groupe reglages-repli">
+              <summary className="reglages-tete"><span className="reglages-label">Période</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
               <div className="reglages-chips">
                 {PERIODES.map((p) => (
                   <button key={p.id} className={`reglages-chip ${periode === p.id ? 'on' : ''}`} onClick={() => setPeriode(p.id)}>{p.label}</button>
                 ))}
               </div>
-            </div>
+            </details>
 
-            <div className="reglages-groupe">
-              <span className="reglages-label">Recherche précise</span>
+            <details className="reglages-groupe reglages-repli">
+              <summary className="reglages-tete"><span className="reglages-label">Recherche précise</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
               <div className="reglages-chips">
                 {RECH_MODES.map((r) => (
                   <button key={r.m} className={`reglages-chip ${rechMode === r.m ? 'on' : ''}`} onClick={() => { setRechMode(r.m); setRechVal('') }}>{r.label}</button>
@@ -2351,31 +2351,31 @@ function FriseVue({ ciel, me, aboutId, onRetour, onReglages, onEcrire, onPortrai
               {rechMode === 'annee' && (
                 <input className="carnet-filtre-select reglages-date" type="number" min="1990" max="2100" placeholder="Ex. 2026" value={rechVal} onChange={(e) => setRechVal(e.target.value)} aria-label="Choisir une année" />
               )}
-            </div>
+            </details>
 
-            <div className="reglages-groupe">
-              <span className="reglages-label">Auteur</span>
+            <details className="reglages-groupe reglages-repli">
+              <summary className="reglages-tete"><span className="reglages-label">Auteur</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
               <select className="carnet-filtre-select" value={auteurFiltre} onChange={(e) => setAuteurFiltre(e.target.value)} aria-label="Filtrer par auteur">
                 <option value="">Tous</option>
                 {ciel.astres.map((a) => (<option key={a.id} value={a.id}>{nomIntime(a)}</option>))}
               </select>
-            </div>
+            </details>
 
-            <div className="reglages-groupe">
-              <span className="reglages-label">Sujet</span>
+            <details className="reglages-groupe reglages-repli">
+              <summary className="reglages-tete"><span className="reglages-label">Sujet</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
               <select className="carnet-filtre-select" value={sujetFiltre} onChange={(e) => setSujetFiltre(e.target.value)} aria-label="Filtrer par sujet">
                 <option value="">Tous</option>
                 {ciel.astres.map((a) => (<option key={a.id} value={a.id}>{nomIntime(a)}</option>))}
               </select>
-            </div>
+            </details>
 
-            <div className="reglages-groupe">
-              <span className="reglages-label">Médium</span>
+            <details className="reglages-groupe reglages-repli">
+              <summary className="reglages-tete"><span className="reglages-label">Médium</span><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
               <select className="carnet-filtre-select" value={mediumFiltre} onChange={(e) => setMediumFiltre(e.target.value as '' | Medium)} aria-label="Filtrer par médium">
                 <option value="">Tous</option>
                 {MEDIUMS.map((m) => (<option key={m.id} value={m.id}>{m.label}</option>))}
               </select>
-            </div>
+            </details>
 
             <div className="reglages-actions">
               {filtresActifs > 0 && (

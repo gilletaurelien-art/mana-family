@@ -293,6 +293,17 @@ body:has(.carnet-hero)::before { display: none; }
 .bloc-repli[open] .bloc-chevron { transform: rotate(180deg); }
 .bloc-repli[open] .bloc-tete { margin-bottom: 0.9rem; }
 
+/* Filtres repliables de l'Archives (carnet) — même logique d'accordéon. */
+.reglages-repli { overflow: hidden; }
+.reglages-tete {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+}
+.reglages-tete::-webkit-details-marker { display: none; }
+.reglages-tete::marker { content: ''; }
+.reglages-repli[open] .reglages-tete { margin-bottom: 0.6rem; }
+.reglages-repli .bloc-chevron { font-size: 1.1rem; }
+
 /* Découvrir — bloc « Mon compte » : déconnexion + suppression. */
 .compte-deco, .compte-supprimer {
   display: block; width: 100%; margin-top: 0.7rem;
