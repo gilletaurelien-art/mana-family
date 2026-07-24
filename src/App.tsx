@@ -721,6 +721,7 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
     <div className="shell vitrine-shell seuil-nuit fond-maison">
       <ManaHeader />
       <div className="vitrine-bottombar">
+        <p className="vitrine-entrer-devise">La Présence fait vivre.<br />La Mémoire fait durer.</p>
         <button className="vitrine-entrer-bas" onClick={onSeConnecter} aria-label="Se connecter avec votre clé">
           <span className="vitrine-entrer-mot">Entrer</span>
           <LockKeyGlyph />
@@ -743,7 +744,6 @@ function VitrineVue({ onSeConnecter }: { onSeConnecter: () => void }) {
       <section className="vitrine-pied">
         <div className="vitrine-serment">
           <h2 className="vitrine-serment-titre">Votre Carnet de Famille</h2>
-          <p className="vitrine-pilier-titre vitrine-serment-devise">La Présence fait vivre.<br />La Mémoire fait durer.</p>
           <div className="vitrine-promesses">
             {PROMESSES.map((p) => (
               <p className="vitrine-promesse" key={p.mot}>
