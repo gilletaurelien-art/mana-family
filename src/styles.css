@@ -469,6 +469,16 @@ body:has(.carnet-hero)::before { display: none; }
 .portes { list-style: none; padding: 0; margin: 0; }
 .porte { border-bottom: 1px dotted var(--filet); padding: 1.15rem 0.2rem; }
 .porte a { display: block; text-decoration: none; color: inherit; }
+/* « Rejoindre une autre famille » — action interne, présentée comme une porte. */
+.porte-btn {
+  display: block; width: 100%; text-align: left;
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: inherit; font-family: inherit;
+}
+.porte-btn .porte-mot { color: var(--or-mana); }
+/* Sous-bloc « clé » (MANAcare) dans le menu Inviter. */
+.inviter-cle { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px dotted var(--filet); text-align: center; }
+.inviter-cle-titre { font-family: 'Philosopher', var(--serif); font-weight: 700; color: var(--etoile); font-size: 1.1rem; margin: 0 0 0.5rem; }
 .porte-tete { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
 .porte-nom { font-family: var(--serif); font-size: 1.08rem; color: var(--etoile); }
 .porte-mot { font-size: 0.8rem; color: var(--brume); white-space: nowrap; }

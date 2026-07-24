@@ -67,8 +67,6 @@ const FAQ: { q: string; r: string }[] = [
 
 /** Les portes de la maison Mana — chacune expliquée, pas seulement nommée. */
 const PORTES: { nom: string; etat: string; mot: string; href?: string; ici?: boolean; bientot?: boolean }[] = [
-  { nom: 'Mana Family', etat: 'vous y êtes', mot: 'La maison de votre famille : partager un moment, veiller sur les autres, garder la mémoire vivante.', ici: true },
-  { nom: 'Mana Home', etat: 'le site', mot: 'La porte publique de la maison. Pour découvrir ce qu’est Mana Family et le faire connaître autour de vous.', href: 'https://manahome.org' },
   { nom: 'La Constitution numérique', etat: 'nos engagements', mot: 'Ce que nous refuserons toujours de faire : capter votre attention, vous culpabiliser, vendre vos données, effacer votre mémoire.', href: 'https://constitution.manahome.org' },
   { nom: 'Alliance Mana', etat: 'l’association', mot: 'L’association qui porte la maison Mana en France — qui nous sommes, ce que nous construisons.', href: 'https://www.manafrance.org' },
   { nom: 'Mana citoyen', etat: 'territoires', mot: 'Actions territoriales, entraides, bénévolat.', href: 'https://www.manafrance.org' },
@@ -126,13 +124,42 @@ function exporterMesDonnees(ciel: CielData, me: Astre): void {
   URL.revokeObjectURL(url)
 }
 
+/** Contenu « inviter » : e-mail pour rejoindre la famille, clé pour MANAcare.
+    Réutilisable — embarqué comme menu dans les Réglages. */
+function InviterContenu({ ciel }: { ciel: CielData }) {
+  const [email, setEmail] = useState('')
+  const emailValide = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())
+  const lien = `${window.location.origin}/?clef=${ciel.inviteCode}`
+  const envoyerParEmail = () => {
+    const sujet = encodeURIComponent('Rejoignez notre famille sur MANAfamily')
+    const corps = encodeURIComponent(
+      `Bonjour,\n\nJe vous ouvre la porte de notre famille sur MANAfamily. Il suffit de cliquer :\n${lien}\n\n(ou d'entrer la clé « ${ciel.inviteCode} » dans l'application.)\n\nÀ bientôt à la maison.`,
+    )
+    window.location.href = `mailto:${email.trim()}?subject=${sujet}&body=${corps}`
+  }
+  return (
+    <>
+      <p className="whisper">Invitez un proche par e-mail : il reçoit un lien et rejoint votre famille en un geste — sans rien à saisir.</p>
+      <div className="row">
+        <input type="email" inputMode="email" placeholder="e-mail du proche" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="E-mail du proche" />
+        <button className="primary" style={{ width: 'auto', marginTop: 0 }} disabled={!emailValide} onClick={envoyerParEmail}>Envoyer</button>
+      </div>
+      <div className="inviter-cle">
+        <h3 className="inviter-cle-titre">La clé de la maison</h3>
+        <p className="whisper">Réservée à MANAcare — le cercle du soin (aidants, soignants). Ils rejoignent en saisissant cette clé.</p>
+        <p className="inviter-code">{ciel.inviteCode}</p>
+      </div>
+    </>
+  )
+}
+
 /** L'univers Mana — pleine page : l'assistante, les questions douces, les portes de la maison. */
 
-function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeconnexion, onQuitter, onSupprimer, onExporter }: {
+function AssistanteVue({ ciel, me, onJardin, onParametres, onRetour, onDeconnexion, onQuitter, onSupprimer, onExporter }: {
+  ciel: CielData
   me: Astre
   onJardin: () => void
   onParametres: () => void
-  onInviter: () => void
   onRetour: () => void
   onDeconnexion: () => void
   onQuitter: () => void
@@ -146,9 +173,14 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
       <ManaHeader />
       <header className="sky sky-sous-header">
         <p className="whisper assistante-nav">
-          <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button> · <button className="link" onClick={onInviter}>inviter</button>
+          <span className="mot-famille">{nomIntime(me)}</span> · <button className="link" onClick={onJardin}>le jardin</button> · <button className="link" onClick={onParametres}>paramètres</button>
         </p>
       </header>
+
+      <details className="assistante-bloc bloc-repli">
+        <summary className="bloc-tete"><h2>Inviter un proche</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
+        <InviterContenu ciel={ciel} />
+      </details>
 
       <details className="assistante-bloc bloc-repli">
         <summary className="bloc-tete"><h2>Nos formules</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
@@ -200,8 +232,17 @@ function AssistanteVue({ me, onJardin, onParametres, onInviter, onRetour, onDeco
       </details>
 
       <details className="assistante-bloc bloc-repli">
-        <summary className="bloc-tete"><h2>Les portes de la maison Mana</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
+        <summary className="bloc-tete"><h2>Le Jardin de la maison MANA</h2><span className="bloc-chevron" aria-hidden="true">⌄</span></summary>
         <ul className="portes">
+          <li className="porte">
+            <button className="porte-btn" onClick={onJardin}>
+              <span className="porte-tete">
+                <span className="porte-nom">Rejoindre une autre famille</span>
+                <span className="porte-mot">→</span>
+              </span>
+              <span className="porte-desc">Une même personne peut appartenir à plusieurs familles — deux foyers, la famille de cœur, la lignée.</span>
+            </button>
+          </li>
           {PORTES.map((p) => {
             const contenu = (
               <>
@@ -360,7 +401,6 @@ type Phase =
   | { ecran: 'chronologie' }
   | { ecran: 'galaxie' }
   | { ecran: 'jardin' }
-  | { ecran: 'inviter' }
   | { ecran: 'parametres' }
   | { ecran: 'assistante' }
   | { ecran: 'supprimer-compte' }
@@ -597,16 +637,6 @@ export default function App() {
     )
   }
 
-  if (phase.ecran === 'inviter') {
-    return (
-      <Inviter
-        ciel={ciel}
-        onReglages={() => setPhase({ ecran: 'assistante' })}
-        onRetour={() => setPhase({ ecran: 'ciel' })}
-      />
-    )
-  }
-
   if (phase.ecran === 'parametres') {
     return (
       <ParametresVue
@@ -620,10 +650,10 @@ export default function App() {
   if (phase.ecran === 'assistante') {
     return (
       <AssistanteVue
+        ciel={ciel}
         me={me}
         onJardin={() => setPhase({ ecran: 'jardin' })}
         onParametres={() => setPhase({ ecran: 'parametres' })}
-        onInviter={() => setPhase({ ecran: 'inviter' })}
         onRetour={() => setPhase({ ecran: 'ciel' })}
         onDeconnexion={async () => { await seDeconnecter(); setCiel(null); setPhase({ ecran: 'vitrine' }) }}
         onQuitter={async () => { setPhase({ ecran: 'chargement' }); await quitterFamille(); await rafraichir() }}
@@ -1614,50 +1644,6 @@ function JardinVue({ onActiver, onRejoindreAutre, onReglages, onRetour }: {
           </p>
         </section>
       )}
-    </div>
-  )
-}
-
-/* ---------- Inviter — la clé de la maison ---------- */
-
-function Inviter({ ciel, onReglages, onRetour }: {
-  ciel: CielData
-  onReglages: () => void
-  onRetour: () => void
-}) {
-  const [email, setEmail] = useState('')
-  const emailValide = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())
-  const lien = `${window.location.origin}/?clef=${ciel.inviteCode}`
-  const envoyerParEmail = () => {
-    const sujet = encodeURIComponent('Rejoignez notre famille sur MANAfamily')
-    const corps = encodeURIComponent(
-      `Bonjour,\n\nJe vous ouvre la porte de notre famille sur MANAfamily. Il suffit de cliquer :\n${lien}\n\n(ou d'entrer la clé « ${ciel.inviteCode} » dans l'application.)\n\nÀ bientôt à la maison.`,
-    )
-    window.location.href = `mailto:${email.trim()}?subject=${sujet}&body=${corps}`
-  }
-
-  return (
-    <div className="shell papier inviter-shell">
-      <RetourNav onRetour={onRetour} />
-      <ManaHeader onReglages={onReglages} />
-      <header className="sky sky-sous-header">
-        <h1>Inviter un proche</h1>
-      </header>
-
-      <section className="card">
-        <h2>Rejoindre la famille</h2>
-        <p className="whisper">Invitez un proche par e-mail : il reçoit un lien et rejoint votre famille en un geste — sans rien à saisir.</p>
-        <div className="row">
-          <input type="email" inputMode="email" placeholder="e-mail du proche" value={email} onChange={(e) => setEmail(e.target.value)} aria-label="E-mail du proche" />
-          <button className="primary" style={{ width: 'auto', marginTop: 0 }} disabled={!emailValide} onClick={envoyerParEmail}>Envoyer</button>
-        </div>
-      </section>
-
-      <section className="card" style={{ textAlign: 'center' }}>
-        <h2>La clé de la maison</h2>
-        <p className="whisper">Réservée à MANAcare — le cercle du soin (aidants, soignants). Ils rejoignent en saisissant cette clé.</p>
-        <p className="inviter-code">{ciel.inviteCode}</p>
-      </section>
     </div>
   )
 }
